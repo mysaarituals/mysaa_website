@@ -13,13 +13,12 @@
 
 <link rel="stylesheet" href="styles.css" />
 
-<!-- React (no build step needed — works directly on GitHub Pages) -->
+<!-- React (pre-compiled app.js — no in-browser JSX transform needed) -->
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body>
 <div id="root"></div>
-<script type="text/babel" data-presets="react" src="app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
