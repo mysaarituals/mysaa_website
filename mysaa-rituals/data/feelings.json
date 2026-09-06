@@ -1,7 +1,0 @@
-[
-  { "slug": "warm-grounding", "name": "Warm & Grounding", "description": "Sandalwood, dhoop, woody and earthy fragrances.", "active": true },
-  { "slug": "floral-romantic", "name": "Floral & Romantic", "description": "Rose, jasmine, mogra and floral fragrances.", "active": true },
-  { "slug": "night-blooming-dreamy", "name": "Night-Blooming & Dreamy", "description": "Raat ki Rani and deeper evening fragrances.", "active": true },
-  { "slug": "calm-mindful", "name": "Calm & Mindful", "description": "Soft, relaxing and meditative fragrances.", "active": true },
-  { "slug": "fresh-uplifting", "name": "Fresh & Uplifting", "description": "Fresh floral and refreshing fragrances.", "active": true }
-]
