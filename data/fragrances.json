@@ -1,0 +1,42 @@
+[
+  {
+    "slug": "dhoop-chandan",
+    "name": "Dhoop & Chandan",
+    "notes": "Sandalwood, warm wood, incense, earth",
+    "description": "A warm, grounding fragrance inspired by the familiar aroma of sandalwood and dhoop.",
+    "mood": "Warm, Grounding, Meditative, Comforting",
+    "active": true
+  },
+  {
+    "slug": "gajre-ka-shringar",
+    "name": "Gajre Ka Shringar",
+    "notes": "Jasmine, mogra, fresh white florals",
+    "description": "Inspired by the fragrance of fresh gajras and the timeless beauty of jasmine.",
+    "mood": "Floral, Romantic, Fresh, Nostalgic",
+    "active": true
+  },
+  {
+    "slug": "madhuban",
+    "name": "Madhuban",
+    "notes": "Raat ki Rani, rose, deep florals",
+    "description": "A deep floral fragrance inspired by flowers that come alive after sunset.",
+    "mood": "Dreamy, Sensual, Night-blooming, Romantic",
+    "active": true
+  },
+  {
+    "slug": "saanjh",
+    "name": "Saanjh",
+    "notes": "Soft amber, quiet woods, evening air",
+    "description": "An evening-inspired sensory experience, made for the hour when the day exhales.",
+    "mood": "Calm, Warm, Reflective, Evening ritual",
+    "active": true
+  },
+  {
+    "slug": "gulab-ki-chitthi",
+    "name": "Gulab Ki Chitthi",
+    "notes": "Rose, soft florals, nostalgic sweetness",
+    "description": "A fragrance that feels like receiving an old handwritten letter carrying the scent of roses.",
+    "mood": "Romantic, Nostalgic, Delicate, Personal",
+    "active": true
+  }
+]

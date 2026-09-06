@@ -1,0 +1,5 @@
+[
+  { "slug": "candles", "name": "Candles", "active": true },
+  { "slug": "gift-hampers", "name": "Gift Hampers", "active": true },
+  { "slug": "custom-creations", "name": "Custom Creations", "active": true }
+]
