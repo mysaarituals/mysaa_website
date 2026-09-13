@@ -129,6 +129,39 @@ img { max-width: 100%; display: block; }
 .why-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
 @media (min-width:768px) { .why-grid { grid-template-columns:repeat(4,1fr); } }
 
+.catalogue-layout { display:grid; grid-template-columns:1fr; gap:40px; align-items:start; }
+@media (min-width:860px) { .catalogue-layout { grid-template-columns:260px 1fr; gap:56px; } }
+
+input[type="range"].price-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+}
+input[type="range"].price-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--clay);
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px var(--clay);
+}
+input[type="range"].price-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--clay);
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px var(--clay);
+}
+
 /* Premium brand surfaces */
 button, a { transition: opacity .2s ease, transform .25s ease, background-color .25s ease, border-color .25s ease; }
 button:hover, a:hover { opacity: .82; }

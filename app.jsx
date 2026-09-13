@@ -153,12 +153,97 @@ function InstagramIcon({ color = "currentColor", size = 16 }) {
     </svg>
   );
 }
+function SearchIcon({ color = "currentColor", size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.7">
+      <circle cx="11" cy="11" r="7" />
+      <path d="M21 21l-4.3-4.3" />
+    </svg>
+  );
+}
+function ChevronDownIcon({ color = "currentColor", size = 12 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  );
+}
+function HandIcon({ color = C.rust, size = 26 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M8 12V5.5a1.5 1.5 0 0 1 3 0V11" />
+      <path d="M11 11V4a1.5 1.5 0 0 1 3 0v7" />
+      <path d="M14 11V5.5a1.5 1.5 0 0 1 3 0V13" />
+      <path d="M8 12l-1.6-1.4a1.4 1.4 0 0 0-2 2L8.6 17A5 5 0 0 0 12.4 19h1.1a5.5 5.5 0 0 0 5.5-5.5V9.5a1.5 1.5 0 0 0-3 0" />
+    </svg>
+  );
+}
+function FlameIcon({ color = C.rust, size = 26 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M12 2.5c1 3-3 4.5-3 8.5a3 3 0 0 0 6 0c0-1.5-1-2-1-3.5 1.5 1 3 3.2 3 5.5a5 5 0 0 1-10 0c0-4.5 4-6.5 5-10.5z" />
+    </svg>
+  );
+}
+function SparkleIcon({ color = C.rust, size = 26 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6L12 3z" />
+      <path d="M19 15l.7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15z" />
+    </svg>
+  );
+}
+function GiftIcon({ color = C.rust, size = 26 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <rect x="3" y="9" width="18" height="11" rx="1" />
+      <path d="M3 9h18v3H3z" fill={color} stroke="none" opacity={0.12} />
+      <path d="M12 9v11" />
+      <path d="M12 9C9 9 7.5 7.8 7.5 6.2A2.2 2.2 0 0 1 9.7 4c1.7 0 2.3 1.8 2.3 5z" />
+      <path d="M12 9c3 0 4.5-1.2 4.5-2.8A2.2 2.2 0 0 0 14.3 4c-1.7 0-2.3 1.8-2.3 5z" />
+    </svg>
+  );
+}
+const WHY_ITEMS = [
+  { icon: HandIcon, title: "Handcrafted", body: "Made with care, not mass-produced." },
+  { icon: FlameIcon, title: "Fragrance-led", body: "Inspired by memories, moods and familiar Indian aromas." },
+  { icon: SparkleIcon, title: "Personal", body: "Custom fragrances, formats, labels and gifting options." },
+  { icon: GiftIcon, title: "Thoughtful Gifting", body: "Created for moments worth remembering." },
+];
+function WhyGrid({ items = WHY_ITEMS }) {
+  return (
+    <div className="why-grid">
+      {items.map(({ icon: Icon, title, body }) => (
+        <div key={title} className="hairline-top">
+          <div style={{ marginBottom: 14 }}><Icon /></div>
+          <h4 style={{ ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 8 }}>{title}</h4>
+          <p style={{ ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.6 }}>{body}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 /* ============================================================
    Header / Footer
    ============================================================ */
-function Header({ nav, settings }) {
+function Header({ nav, settings, route }) {
   const [open, setOpen] = useState(false);
+  const [discoverOpen, setDiscoverOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchVal, setSearchVal] = useState("");
+  const links = [["Home", "home", null], ["Catalogue", "catalogue", "all"]];
+  const discoverLinks = [
+    ["Shop by Fragrance", "catalogue", "fragrance", null],
+    ["Shop by Candle", "catalogue", "candle", null],
+    ["Wax Melts & Sachets", "catalogue", "category", { value: "wax-melts" }],
+    ["Gift Hampers", "catalogue", "category", { value: "gift-hampers" }],
+    ["Create Your Ritual", "create-ritual", null, null],
+  ];
+  const tailLinks = [["About", "about", null], ["Contact", "contact", null]];
+  const isActive = (page) => route && route.page === page;
+  const linkStyle = (page) => ({ ...sans, fontSize: 14, color: isActive(page) ? C.rust : C.ink });
+  const runSearch = () => { if (searchVal.trim()) nav("catalogue", "all", { q: searchVal.trim() }); setSearchOpen(false); };
   return (
     <header style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(250,247,240,0.94)", borderBottom: `1px solid ${C.line}`, backdropFilter: "blur(6px)" }}>
 
@@ -168,13 +253,42 @@ function Header({ nav, settings }) {
         </button>
 
         <nav style={{ display: "flex", alignItems: "center", gap: 30 }} className="desktop-nav">
-          <button onClick={() => nav("home")} style={{ ...sans, fontSize: 14, color: C.ink }}>Home</button>
-          <button onClick={() => nav("catalogue", "all")} style={{ ...sans, fontSize: 14, color: C.ink }}>Catalogue</button>
-          <button onClick={() => nav("about")} style={{ ...sans, fontSize: 14, color: C.ink }}>About</button>
-          <button onClick={() => nav("contact")} style={{ ...sans, fontSize: 14, color: C.ink }}>Contact</button>
+          {links.map(([lbl, page, param]) => (
+            <button key={lbl} onClick={() => nav(page, param)} style={linkStyle(page)}>{lbl}</button>
+          ))}
+          <div style={{ position: "relative" }} onMouseEnter={() => setDiscoverOpen(true)} onMouseLeave={() => setDiscoverOpen(false)}>
+            <button onClick={() => setDiscoverOpen((v) => !v)} style={{ ...sans, fontSize: 14, color: C.ink, display: "inline-flex", alignItems: "center", gap: 5 }}>
+              Discover <ChevronDownIcon />
+            </button>
+            {discoverOpen && (
+              <div style={{ position: "absolute", top: "100%", left: 0, background: "#FFFDFA", border: `1px solid ${C.line}`, boxShadow: "0 12px 28px rgba(68,55,47,0.12)", minWidth: 210, padding: "8px 0", zIndex: 60 }}>
+                {discoverLinks.map(([lbl, page, param, query]) => (
+                  <button key={lbl} onClick={() => { nav(page, param, query); setDiscoverOpen(false); }}
+                    style={{ ...sans, display: "block", width: "100%", textAlign: "left", fontSize: 13.5, color: C.ink, padding: "10px 18px" }}>
+                    {lbl}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          {tailLinks.map(([lbl, page, param]) => (
+            <button key={lbl} onClick={() => nav(page, param)} style={linkStyle(page)}>{lbl}</button>
+          ))}
         </nav>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div className="desktop-nav" style={{ position: "relative" }}>
+            {searchOpen ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <input autoFocus value={searchVal} onChange={(e) => setSearchVal(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") runSearch(); if (e.key === "Escape") setSearchOpen(false); }}
+                  placeholder="Search…" style={{ ...sans, fontSize: 13, padding: "8px 12px", border: `1px solid ${C.line}`, background: "#fff", width: 170 }} />
+                <button onClick={runSearch} aria-label="Search" style={{ color: C.ink }}><SearchIcon /></button>
+              </div>
+            ) : (
+              <button onClick={() => setSearchOpen(true)} aria-label="Search" style={{ color: C.ink, display: "flex" }}><SearchIcon /></button>
+            )}
+          </div>
           <a href={waLink(settings.whatsapp, "Hello Mysaa Rituals, I would like to know more about your products.")}
             target="_blank" rel="noreferrer" className="desktop-nav"
             style={{ ...sans, fontSize: 12.5, letterSpacing: "0.08em", textTransform: "uppercase", display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", border: `1px solid ${C.ink}`, color: C.ink, borderRadius: 2 }}>
@@ -190,8 +304,8 @@ function Header({ nav, settings }) {
 
       {open && (
         <div className="mobile-only" style={{ padding: "0 20px 20px", display: "flex", flexDirection: "column", gap: 2, background: C.cream, borderTop: `1px solid ${C.line}` }}>
-          {[["Home", "home", null], ["Catalogue", "catalogue", "all"], ["About", "about", null], ["Contact", "contact", null]].map(([lbl, page, param]) => (
-            <button key={lbl} onClick={() => { nav(page, param); setOpen(false); }}
+          {[...links.map((l) => [...l, null]), ...discoverLinks, ...tailLinks.map((l) => [...l, null])].map(([lbl, page, param, query]) => (
+            <button key={lbl} onClick={() => { nav(page, param, query); setOpen(false); }}
               style={{ ...sans, textAlign: "left", padding: "12px 4px", fontSize: 15, color: C.ink, borderBottom: `1px solid ${C.line}` }}>
               {lbl}
             </button>
@@ -367,7 +481,7 @@ function HomePage({ data, nav, settings }) {
               Handcrafted candles and gifts inspired by Indian fragrances, memories and everyday rituals.
             </p>
             <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap", marginBottom: 18 }}>
-              <Button variant="ghost" onClick={() => nav("catalogue", "all")}>Explore the Collection</Button>
+              <Button variant="rust" onClick={() => nav("catalogue", "all")}>Explore the Collection</Button>
               <Button variant="outline" onClick={() => nav("create-ritual")}>Create Your Ritual</Button>
             </div>
             <a href={waLink(settings.whatsapp, "Hello Mysaa Rituals!")} target="_blank" rel="noreferrer"
@@ -377,6 +491,10 @@ function HomePage({ data, nav, settings }) {
           </div>
           <Placeholder label="Hero product photograph" ratio="4 / 3" />
         </div>
+      </section>
+
+      <section className="container" style={{ padding: "56px 20px 8px" }}>
+        <WhyGrid />
       </section>
 
       <section className="container" style={{ padding: "72px 20px" }}>
@@ -468,11 +586,13 @@ function HomePage({ data, nav, settings }) {
 }
 
 function CataloguePage({ data, nav, initialType, initialQuery }) {
+  const maxPrice = useMemo(() => Math.max(1000, ...data.products.map((p) => p.price || 0)), [data.products]);
   const [fragrance, setFragrance] = useState(initialType === "fragrance" ? (initialQuery.value || "all") : "all");
   const [category, setCategory] = useState(
     initialType === "category" ? (initialQuery.value || "all") : initialType === "candle" ? "hero-jar-candle" : "all"
   );
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialQuery.q || "");
+  const [priceCap, setPriceCap] = useState(maxPrice);
 
   const fragranceById = Object.fromEntries(data.fragrances.map((f) => [f.slug, f]));
 
@@ -481,63 +601,83 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
       if (!p.active) return false;
       if (category !== "all" && p.categorySlug !== category) return false;
       if (fragrance !== "all" && p.fragranceSlug !== fragrance) return false;
-      if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
+      if ((p.price || 0) > priceCap) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        if (!p.name.toLowerCase().includes(q) && !(p.shortDescription || "").toLowerCase().includes(q)) return false;
+      }
       return true;
     });
-  }, [data.products, category, fragrance, search]);
+  }, [data.products, category, fragrance, search, priceCap]);
 
-  const resetFilters = () => { setCategory("all"); setFragrance("all"); setSearch(""); };
+  const filtersActive = category !== "all" || fragrance !== "all" || !!search || priceCap < maxPrice;
+  const resetFilters = () => { setCategory("all"); setFragrance("all"); setSearch(""); setPriceCap(maxPrice); };
 
   return (
     <div className="container" style={{ padding: "48px 20px 80px" }}>
-      <SectionHeading eyebrow="The Full Collection" title="Catalogue" sub="Browse by fragrance, or by candle format, wax melts and gift hampers." />
+      <SectionHeading eyebrow="Catalogue" title="The Collection" sub="Explore fragrances, candles and gifts made for everyday rituals and meaningful moments." />
 
-      <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 20 }}>
-        <input
-          value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products…"
-          style={{ ...sans, fontSize: 14, padding: "12px 16px", border: `1px solid ${C.line}`, background: "#FCFAF7", maxWidth: 320 }}
+      <div className="catalogue-layout" style={{ marginTop: 36 }}>
+        <aside>
+          <div style={{ marginBottom: 32 }}>
+            <p style={{ ...label, color: C.ink70, marginBottom: 10 }}>Search</p>
+            <input
+              value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by product, fragrance or feeling…"
+              style={{ ...sans, fontSize: 14, padding: "12px 16px", width: "100%", border: `1px solid ${C.line}`, background: "#FCFAF7" }}
+            />
+          </div>
 
-        />
+          <div style={{ marginBottom: 32 }}>
+            <p style={{ ...label, color: C.ink70, marginBottom: 12 }}>{priceCap >= maxPrice ? "Up to any price" : `Up to ${inr(priceCap)}`}</p>
+            <input type="range" min={0} max={maxPrice} step={50} value={priceCap} onChange={(e) => setPriceCap(Number(e.target.value))} className="price-range" />
+          </div>
+
+          <div style={{ marginBottom: 32 }}>
+            <p style={{ ...label, color: C.ink70, marginBottom: 10 }}>Shop by Category</p>
+            <div className="chip-wrap">
+              <FilterChip active={category === "all"} onClick={() => setCategory("all")}>All</FilterChip>
+              {data.categories.filter((c) => c.active).map((c) => (
+                <FilterChip key={c.slug} active={category === c.slug} onClick={() => setCategory(c.slug)}>{c.name}</FilterChip>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 32 }}>
+            <p style={{ ...label, color: C.ink70, marginBottom: 10 }}>Shop by Fragrance</p>
+            <div className="chip-wrap">
+              <FilterChip active={fragrance === "all"} onClick={() => setFragrance("all")}>All</FilterChip>
+              {data.fragrances.filter((f) => f.active).map((f) => (
+                <FilterChip key={f.slug} active={fragrance === f.slug} onClick={() => setFragrance(f.slug)}>{f.name}</FilterChip>
+              ))}
+            </div>
+          </div>
+
+          {filtersActive && (
+            <button onClick={resetFilters} style={{ ...label, color: C.rust, textAlign: "left", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+              Clear filters
+            </button>
+          )}
+        </aside>
 
         <div>
-          <p style={{ ...label, color: C.ink70, marginBottom: 10 }}>Shop by Category</p>
-          <div className="chip-wrap">
-            <FilterChip active={category === "all"} onClick={() => setCategory("all")}>All</FilterChip>
-            {data.categories.filter((c) => c.active).map((c) => (
-              <FilterChip key={c.slug} active={category === c.slug} onClick={() => setCategory(c.slug)}>{c.name}</FilterChip>
-            ))}
-          </div>
+          {filtered.length === 0 ? (
+            <div style={{ border: `1px solid ${C.line}`, background: C.card, padding: "80px 24px", textAlign: "center" }}>
+              <h3 style={{ ...serif, fontSize: 24, color: C.ink, fontWeight: 500, marginBottom: 14 }}>Nothing here yet.</h3>
+              <p style={{ ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.7, maxWidth: 420, margin: "0 auto 22px" }}>
+                Try a different fragrance or feeling — or tell us what you're imagining and we'll create it.
+              </p>
+              <Button variant="outline" onClick={resetFilters}>Clear filters</Button>
+            </div>
+          ) : (
+            <>
+              <p style={{ ...sans, fontSize: 13, color: C.ink70, marginBottom: 20 }}>{filtered.length} product{filtered.length !== 1 ? "s" : ""} found</p>
+              <div className="product-grid">
+                {filtered.map((p) => <ProductCard key={p.slug} product={p} fragrance={fragranceById[p.fragranceSlug]} nav={nav} />)}
+              </div>
+            </>
+          )}
         </div>
-
-        <div>
-          <p style={{ ...label, color: C.ink70, marginBottom: 10 }}>Shop by Fragrance</p>
-          <div className="chip-wrap">
-            <FilterChip active={fragrance === "all"} onClick={() => setFragrance("all")}>All</FilterChip>
-            {data.fragrances.filter((f) => f.active).map((f) => (
-              <FilterChip key={f.slug} active={fragrance === f.slug} onClick={() => setFragrance(f.slug)}>{f.name}</FilterChip>
-            ))}
-          </div>
-        </div>
-
-        {(category !== "all" || fragrance !== "all" || search) && (
-          <button onClick={resetFilters} style={{ ...label, color: C.rust, textAlign: "left", textDecoration: "underline", textUnderlineOffset: "3px" }}>
-            Clear filters
-          </button>
-        )}
       </div>
-
-      <p style={{ ...sans, fontSize: 13, color: C.ink70, marginTop: 28 }}>{filtered.length} product{filtered.length !== 1 ? "s" : ""} found</p>
-
-      <div className="product-grid" style={{ marginTop: 20 }}>
-        {filtered.map((p) => <ProductCard key={p.slug} product={p} fragrance={fragranceById[p.fragranceSlug]} nav={nav} />)}
-      </div>
-
-      {filtered.length === 0 && (
-        <div style={{ padding: "60px 0", textAlign: "center" }}>
-          <p style={{ ...sans, color: C.ink70, marginBottom: 20 }}>No products match those filters yet.</p>
-          <Button variant="outline" onClick={resetFilters}>Clear filters</Button>
-        </div>
-      )}
     </div>
   );
 }
@@ -709,18 +849,8 @@ function AboutPage() {
 
       <div style={{ marginTop: 64 }}>
         <SectionHeading eyebrow="Why Mysaa Rituals" title="Slow, deliberate, personal." />
-        <div className="why-grid" style={{ marginTop: 32 }}>
-          {[
-            ["Handcrafted", "Made with care, not mass-produced."],
-            ["Fragrance-led", "Inspired by memories, moods and familiar Indian aromas."],
-            ["Personal", "Custom fragrances, formats, labels and gifting options."],
-            ["Thoughtful Gifting", "Created for moments worth remembering."],
-          ].map(([t, d]) => (
-            <div key={t} className="hairline-top">
-              <h4 style={{ ...serif, fontSize: 16, color: C.ink, fontWeight: 500, marginBottom: 8 }}>{t}</h4>
-              <p style={{ ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.6 }}>{d}</p>
-            </div>
-          ))}
+        <div style={{ marginTop: 32 }}>
+          <WhyGrid />
         </div>
       </div>
 
@@ -806,7 +936,7 @@ function App() {
 
   return (
     <React.Fragment>
-      <Header nav={nav} settings={settings} />
+      <Header nav={nav} settings={settings} route={route} />
       <main style={{ minHeight: "60vh" }}>{page}</main>
       <Footer nav={nav} settings={settings} />
       <WhatsAppFloat settings={settings} />
