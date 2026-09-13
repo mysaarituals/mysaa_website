@@ -26,13 +26,10 @@ scripts/
   build_xlsx_from_json.py JSON → Excel (rebuilds the sheet from scratch)
 ```
 
-<<<<<<< HEAD
 ## Design system
 
 The UI follows the supplied Mysaa Rituals reference CSS: warm ivory grounds, ink-brown typography, muted terracotta/clay and brass accents, Cormorant Garamond display type, Karla body type, fine borders, generous whitespace and subtle editorial hover motion.
 
-=======
->>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
 ## 1. Deploy to GitHub Pages
 
 1. Create a GitHub repository (e.g. `mysaa-rituals`).
