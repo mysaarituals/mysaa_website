@@ -1,0 +1,7 @@
+[
+  { "slug": "hero-jar-candle", "name": "Hero Jar Candle", "subtitle": "220 ml", "active": true },
+  { "slug": "wide-jar-candle", "name": "Wide Jar Candle", "subtitle": "120 ml", "active": true },
+  { "slug": "shot-glass-candle", "name": "Shot Glass Candle", "subtitle": "60 ml", "active": true },
+  { "slug": "wax-melts", "name": "Wax Melts & Sachets", "subtitle": "Fragrance, no flame", "active": true },
+  { "slug": "gift-hampers", "name": "Gift Hampers", "subtitle": "Curated sets", "active": true }
+]
