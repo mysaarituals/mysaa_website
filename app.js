@@ -13,6 +13,7 @@
    ============================================================ */
 const { useState, useEffect, useMemo, useCallback } = React;
 const C = {
+<<<<<<< HEAD
     ink: "#44372F",
     ink70: "#75685D",
     gold: "#A98755",
@@ -25,6 +26,20 @@ const C = {
 };
 const serif = { fontFamily: "'Cormorant Garamond', serif" };
 const sans = { fontFamily: "'Karla', sans-serif" };
+=======
+    ink: "#201C17",
+    ink70: "#6B6259",
+    gold: "#A97A3F",
+    goldDeep: "#8C6431",
+    rust: "#A9683F",
+    rustDeep: "#8C5330",
+    cream: "#FCFAF7",
+    card: "#F7F2EA",
+    line: "#E7E0D4",
+};
+const serif = { fontFamily: "'Fraunces', serif" };
+const sans = { fontFamily: "'Inter', sans-serif" };
+>>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
 const label = { ...sans, fontSize: 11.5, letterSpacing: "0.11em", textTransform: "uppercase" };
 const inr = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
 function waLink(number, message) {
@@ -132,7 +147,11 @@ function InstagramIcon({ color = "currentColor", size = 16 }) {
    ============================================================ */
 function Header({ nav, settings }) {
     const [open, setOpen] = useState(false);
+<<<<<<< HEAD
     return (React.createElement("header", { style: { position: "sticky", top: 0, zIndex: 40, background: "rgba(250,247,240,0.94)", borderBottom: `1px solid ${C.line}`, backdropFilter: "blur(6px)" } },
+=======
+    return (React.createElement("header", { style: { position: "sticky", top: 0, zIndex: 40, background: "rgba(252,250,247,0.95)", borderBottom: `1px solid ${C.line}`, backdropFilter: "blur(6px)" } },
+>>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
         React.createElement("div", { className: "container", style: { display: "flex", alignItems: "center", justifyContent: "space-between", height: 76 } },
             React.createElement("button", { onClick: () => nav("home"), "aria-label": "Mysaa Rituals home", style: { display: "flex", alignItems: "center" } },
                 React.createElement(Logo, { size: 50 })),
@@ -153,7 +172,11 @@ function Header({ nav, settings }) {
             React.createElement("a", { href: waLink(settings.whatsapp, "Hello Mysaa Rituals, I would like to know more about your products."), target: "_blank", rel: "noreferrer", style: { ...sans, marginTop: 12, textAlign: "center", padding: "12px 4px", fontSize: 14, color: "#fff", background: C.ink } }, "Chat on WhatsApp")))));
 }
 function Footer({ nav, settings }) {
+<<<<<<< HEAD
     return (React.createElement("footer", { style: { background: "#FCFAF7", borderTop: `1px solid ${C.line}`, marginTop: 80 } },
+=======
+    return (React.createElement("footer", { style: { background: "#fff", borderTop: `1px solid ${C.line}`, marginTop: 80 } },
+>>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
         React.createElement("div", { className: "container", style: { padding: "56px 20px 32px" } },
             React.createElement("div", { className: "footer-grid" },
                 React.createElement("div", null,
@@ -272,11 +295,19 @@ function HomePage({ data, nav, settings }) {
             React.createElement("div", { className: "container", style: { padding: "72px 20px" } },
                 React.createElement(SectionHeading, { eyebrow: "Two Ways In", title: "Discover your ritual", align: "center" }),
                 React.createElement("div", { className: "two-ways-grid", style: { marginTop: 40 } },
+<<<<<<< HEAD
                     React.createElement("button", { onClick: () => nav("catalogue", "fragrance"), style: { background: "#FCFAF7", border: `1px solid ${C.line}`, padding: "36px 28px", textAlign: "left" } },
                         React.createElement("h3", { style: { ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 10 } }, "Shop by Fragrance"),
                         React.createElement("p", { style: { ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.6, marginBottom: 16 } }, "Find the scent that feels like you."),
                         React.createElement("span", { style: { ...label, color: C.rust } }, "Explore \u2192")),
                     React.createElement("button", { onClick: () => nav("catalogue", "candle"), style: { background: "#FCFAF7", border: `1px solid ${C.line}`, padding: "36px 28px", textAlign: "left" } },
+=======
+                    React.createElement("button", { onClick: () => nav("catalogue", "fragrance"), style: { background: "#fff", border: `1px solid ${C.line}`, padding: "36px 28px", textAlign: "left" } },
+                        React.createElement("h3", { style: { ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 10 } }, "Shop by Fragrance"),
+                        React.createElement("p", { style: { ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.6, marginBottom: 16 } }, "Find the scent that feels like you."),
+                        React.createElement("span", { style: { ...label, color: C.rust } }, "Explore \u2192")),
+                    React.createElement("button", { onClick: () => nav("catalogue", "candle"), style: { background: "#fff", border: `1px solid ${C.line}`, padding: "36px 28px", textAlign: "left" } },
+>>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
                         React.createElement("h3", { style: { ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 10 } }, "Shop by Candle"),
                         React.createElement("p", { style: { ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.6, marginBottom: 16 } }, "Hero jar, wide jar or shot glass \u2014 pick your size."),
                         React.createElement("span", { style: { ...label, color: C.rust } }, "Explore \u2192"))))),
@@ -335,7 +366,11 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
     return (React.createElement("div", { className: "container", style: { padding: "48px 20px 80px" } },
         React.createElement(SectionHeading, { eyebrow: "The Full Collection", title: "Catalogue", sub: "Browse by fragrance, or by candle format, wax melts and gift hampers." }),
         React.createElement("div", { style: { marginTop: 32, display: "flex", flexDirection: "column", gap: 20 } },
+<<<<<<< HEAD
             React.createElement("input", { value: search, onChange: (e) => setSearch(e.target.value), placeholder: "Search products\u2026", style: { ...sans, fontSize: 14, padding: "12px 16px", border: `1px solid ${C.line}`, background: "#FCFAF7", maxWidth: 320 } }),
+=======
+            React.createElement("input", { value: search, onChange: (e) => setSearch(e.target.value), placeholder: "Search products\u2026", style: { ...sans, fontSize: 14, padding: "12px 16px", border: `1px solid ${C.line}`, background: "#fff", maxWidth: 320 } }),
+>>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
             React.createElement("div", null,
                 React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Shop by Category"),
                 React.createElement("div", { className: "chip-wrap" },
@@ -442,12 +477,20 @@ function CreateRitualPage({ settings }) {
 function Field({ label: text, ...props }) {
     return (React.createElement("label", { style: { display: "block" } },
         React.createElement("span", { style: { ...label, color: C.ink70, display: "block", marginBottom: 8 } }, text),
+<<<<<<< HEAD
         React.createElement("input", { ...props, style: { ...sans, width: "100%", fontSize: 14, padding: "12px 14px", border: `1px solid ${C.line}`, background: "#FCFAF7" } })));
+=======
+        React.createElement("input", { ...props, style: { ...sans, width: "100%", fontSize: 14, padding: "12px 14px", border: `1px solid ${C.line}`, background: "#fff" } })));
+>>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
 }
 function FieldArea({ label: text, ...props }) {
     return (React.createElement("label", { style: { display: "block" } },
         React.createElement("span", { style: { ...label, color: C.ink70, display: "block", marginBottom: 8 } }, text),
+<<<<<<< HEAD
         React.createElement("textarea", { ...props, rows: 4, style: { ...sans, width: "100%", fontSize: 14, padding: "12px 14px", border: `1px solid ${C.line}`, background: "#FCFAF7", resize: "vertical" } })));
+=======
+        React.createElement("textarea", { ...props, rows: 4, style: { ...sans, width: "100%", fontSize: 14, padding: "12px 14px", border: `1px solid ${C.line}`, background: "#fff", resize: "vertical" } })));
+>>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
 }
 function AboutPage() {
     return (React.createElement("div", { className: "container", style: { padding: "48px 20px 80px", maxWidth: 760 } },
