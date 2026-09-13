@@ -13,7 +13,6 @@
 const { useState, useEffect, useMemo, useCallback } = React;
 
 const C = {
-<<<<<<< HEAD
   ink: "#44372F",
   ink70: "#75685D",
   gold: "#A98755",
@@ -26,20 +25,6 @@ const C = {
 };
 const serif = { fontFamily: "'Cormorant Garamond', serif" };
 const sans = { fontFamily: "'Karla', sans-serif" };
-=======
-  ink: "#201C17",
-  ink70: "#6B6259",
-  gold: "#A97A3F",
-  goldDeep: "#8C6431",
-  rust: "#A9683F",
-  rustDeep: "#8C5330",
-  cream: "#FCFAF7",
-  card: "#F7F2EA",
-  line: "#E7E0D4",
-};
-const serif = { fontFamily: "'Fraunces', serif" };
-const sans = { fontFamily: "'Inter', sans-serif" };
->>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
 const label = { ...sans, fontSize: 11.5, letterSpacing: "0.11em", textTransform: "uppercase" };
 
 const inr = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
@@ -175,11 +160,8 @@ function InstagramIcon({ color = "currentColor", size = 16 }) {
 function Header({ nav, settings }) {
   const [open, setOpen] = useState(false);
   return (
-<<<<<<< HEAD
     <header style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(250,247,240,0.94)", borderBottom: `1px solid ${C.line}`, backdropFilter: "blur(6px)" }}>
-=======
-    <header style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(252,250,247,0.95)", borderBottom: `1px solid ${C.line}`, backdropFilter: "blur(6px)" }}>
->>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
+
       <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 76 }}>
         <button onClick={() => nav("home")} aria-label="Mysaa Rituals home" style={{ display: "flex", alignItems: "center" }}>
           <Logo size={50} />
@@ -226,11 +208,8 @@ function Header({ nav, settings }) {
 
 function Footer({ nav, settings }) {
   return (
-<<<<<<< HEAD
     <footer style={{ background: "#FCFAF7", borderTop: `1px solid ${C.line}`, marginTop: 80 }}>
-=======
-    <footer style={{ background: "#fff", borderTop: `1px solid ${C.line}`, marginTop: 80 }}>
->>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
+
       <div className="container" style={{ padding: "56px 20px 32px" }}>
         <div className="footer-grid">
           <div>
@@ -411,20 +390,16 @@ function HomePage({ data, nav, settings }) {
         <div className="container" style={{ padding: "72px 20px" }}>
           <SectionHeading eyebrow="Two Ways In" title="Discover your ritual" align="center" />
           <div className="two-ways-grid" style={{ marginTop: 40 }}>
-<<<<<<< HEAD
+
             <button onClick={() => nav("catalogue", "fragrance")} style={{ background: "#FCFAF7", border: `1px solid ${C.line}`, padding: "36px 28px", textAlign: "left" }}>
-=======
-            <button onClick={() => nav("catalogue", "fragrance")} style={{ background: "#fff", border: `1px solid ${C.line}`, padding: "36px 28px", textAlign: "left" }}>
->>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
+
               <h3 style={{ ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 10 }}>Shop by Fragrance</h3>
               <p style={{ ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.6, marginBottom: 16 }}>Find the scent that feels like you.</p>
               <span style={{ ...label, color: C.rust }}>Explore →</span>
             </button>
-<<<<<<< HEAD
+
             <button onClick={() => nav("catalogue", "candle")} style={{ background: "#FCFAF7", border: `1px solid ${C.line}`, padding: "36px 28px", textAlign: "left" }}>
-=======
-            <button onClick={() => nav("catalogue", "candle")} style={{ background: "#fff", border: `1px solid ${C.line}`, padding: "36px 28px", textAlign: "left" }}>
->>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
+
               <h3 style={{ ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 10 }}>Shop by Candle</h3>
               <p style={{ ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.6, marginBottom: 16 }}>Hero jar, wide jar or shot glass — pick your size.</p>
               <span style={{ ...label, color: C.rust }}>Explore →</span>
@@ -520,11 +495,8 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
       <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 20 }}>
         <input
           value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products…"
-<<<<<<< HEAD
           style={{ ...sans, fontSize: 14, padding: "12px 16px", border: `1px solid ${C.line}`, background: "#FCFAF7", maxWidth: 320 }}
-=======
-          style={{ ...sans, fontSize: 14, padding: "12px 16px", border: `1px solid ${C.line}`, background: "#fff", maxWidth: 320 }}
->>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
+
         />
 
         <div>
@@ -709,11 +681,8 @@ function Field({ label: text, ...props }) {
   return (
     <label style={{ display: "block" }}>
       <span style={{ ...label, color: C.ink70, display: "block", marginBottom: 8 }}>{text}</span>
-<<<<<<< HEAD
       <input {...props} style={{ ...sans, width: "100%", fontSize: 14, padding: "12px 14px", border: `1px solid ${C.line}`, background: "#FCFAF7" }} />
-=======
-      <input {...props} style={{ ...sans, width: "100%", fontSize: 14, padding: "12px 14px", border: `1px solid ${C.line}`, background: "#fff" }} />
->>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
+
     </label>
   );
 }
@@ -721,11 +690,8 @@ function FieldArea({ label: text, ...props }) {
   return (
     <label style={{ display: "block" }}>
       <span style={{ ...label, color: C.ink70, display: "block", marginBottom: 8 }}>{text}</span>
-<<<<<<< HEAD
       <textarea {...props} rows={4} style={{ ...sans, width: "100%", fontSize: 14, padding: "12px 14px", border: `1px solid ${C.line}`, background: "#FCFAF7", resize: "vertical" }} />
-=======
-      <textarea {...props} rows={4} style={{ ...sans, width: "100%", fontSize: 14, padding: "12px 14px", border: `1px solid ${C.line}`, background: "#fff", resize: "vertical" }} />
->>>>>>> f2b091bec6bf9ee7cd981796a6a3e8d4ab17ade6
+
     </label>
   );
 }
