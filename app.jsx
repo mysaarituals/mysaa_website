@@ -27,7 +27,18 @@ const serif = { fontFamily: "'Cormorant Garamond', serif" };
 const sans = { fontFamily: "'Karla', sans-serif" };
 const label = { ...sans, fontSize: 11.5, letterSpacing: "0.11em", textTransform: "uppercase" };
 
-const inr = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
+const inr = (n) => Number(n || 0) > 0 ? `₹${Number(n).toLocaleString("en-IN")}` : "Enquire";
+
+function productImage(product, index = 0) {
+  const images = Array.isArray(product?.images) ? product.images : [];
+  return images[index] || `assets/catalogue/${product.fragranceSlug}/${product.categorySlug}/0${index + 1}-cover.jpg`;
+}
+
+function ImageOrPlaceholder({ src, label: text, ratio = "4 / 5" }) {
+  const [failed, setFailed] = React.useState(false);
+  if (!src || failed) return <Placeholder label={text} ratio={ratio} />;
+  return <div style={{aspectRatio: ratio, background: C.card, border: `1px solid ${C.line}`, overflow: "hidden"}}><img src={src} alt={text || "Mysaa Rituals"} onError={() => setFailed(true)} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}} /></div>;
+}
 
 function waLink(number, message) {
   const clean = (number || "").replace(/[^0-9]/g, "");
@@ -390,7 +401,7 @@ function ProductCard({ product, fragrance, nav }) {
         <p style={{ ...label, color: C.ink70, marginBottom: 8, minHeight: 14 }}>
           {product.bestseller ? "Bestseller" : product.isNew ? "New" : product.customizable ? "Customizable" : "\u00A0"}
         </p>
-        <Placeholder label={product.name} />
+        <ImageOrPlaceholder src={productImage(product, 0)} label={product.name} />
       </div>
       <div style={{ paddingTop: 14 }}>
         <h3 style={{ ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 }}>{product.name}</h3>
@@ -407,7 +418,7 @@ function ProductCard({ product, fragrance, nav }) {
 function FragranceCard({ fragrance, nav }) {
   return (
     <button onClick={() => nav("catalogue", "fragrance", { value: fragrance.slug })} style={{ textAlign: "left", display: "block" }}>
-      <Placeholder label={fragrance.name} ratio="1 / 1" />
+      <ImageOrPlaceholder src={`assets/catalogue/fragrances/${fragrance.slug}/01-cover.jpg`} label={fragrance.name} ratio="1 / 1" />
       <div style={{ paddingTop: 14 }}>
         <h3 style={{ ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 6 }}>{fragrance.name}</h3>
         <p style={{ ...sans, fontSize: 13, color: C.ink70, lineHeight: 1.6, marginBottom: 8 }} className="line-clamp-2">{fragrance.description}</p>
@@ -722,7 +733,7 @@ function ProductDetailPage({ data, nav, slug, settings }) {
       </p>
 
       <div className="product-detail-grid">
-        <Placeholder label={product.name} ratio="4 / 5" />
+        <ImageOrPlaceholder src={productImage(product, 0)} label={product.name} ratio="4 / 5" />
 
         <div>
           <h1 style={{ ...serif, fontSize: "clamp(26px,4vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 14 }}>{product.name}</h1>

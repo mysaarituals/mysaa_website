@@ -106,3 +106,94 @@ Then open `http://localhost:8000`.
   payment processing, matching how the brand currently sells. The
   quantity selector and Order button on each product page prefill a
   WhatsApp message with the product name, quantity and total price.
+
+
+## 6. Product image folder & naming convention
+
+The website automatically looks for product images using this exact structure:
+
+```
+assets/
+  catalogue/
+    <fragrance-slug>/
+      <category-slug>/
+        01-cover.jpg
+        02-detail.jpg
+        03-lifestyle.jpg
+```
+
+Example:
+
+```
+assets/catalogue/
+  gulab-ki-chitthi/
+    hero-jar-candle/
+      01-cover.jpg
+      02-detail.jpg
+      03-lifestyle.jpg
+```
+
+You do **not** need to edit the HTML to add these photos. Replace/add the image files with the exact names above and push them to GitHub.
+
+Fragrance cover images use:
+
+```
+assets/catalogue/fragrances/<fragrance-slug>/01-cover.jpg
+```
+
+Example:
+
+```
+assets/catalogue/fragrances/madhuban/01-cover.jpg
+```
+
+### Image rules
+
+- `01-cover.jpg` is the main image shown on product cards and the product detail page.
+- `02-detail.jpg` and `03-lifestyle.jpg` are optional additional images and are stored in the Excel/JSON data for future gallery use.
+- Keep filenames lowercase and use exactly `01-cover.jpg`, `02-detail.jpg`, `03-lifestyle.jpg`.
+- JPG is recommended. PNG also works if the path in the Excel `image1/image2/image3` columns is changed accordingly.
+- Keep the fragrance and category folder names exactly as their `slug` values.
+
+### Current catalogue combinations
+
+The workbook now contains **25 combinations**:
+
+- 5 fragrances:
+  - gulab-ki-chitthi
+  - dhoop-chandan
+  - gajre-ka-shringar
+  - madhuban
+  - raat-ki-rani
+- 5 formats:
+  - hero-jar-candle
+  - wide-jar-candle
+  - shot-glass-candle
+  - wax-melts (displayed as Wax Sachet Combo)
+  - gift-hampers
+
+Every fragrance is paired with every format.
+
+### Pricing
+
+The current generated prices use the existing category prices as starting values:
+
+- Hero Jar: ₹950 (Madhuban Hero Jar retains the existing ₹1,050 price)
+- Wide Jar: ₹650
+- Shot Glass: ₹350
+- Wax Sachet Combo: ₹350
+- Gift Hampers: Enquire
+
+**Edit the `price` column in `data/mysaa_products.xlsx` with your final prices.** A price of `0` displays as `Enquire`.
+
+### Updating the website after Excel edits
+
+After editing `data/mysaa_products.xlsx`:
+
+```bash
+python3 scripts/xlsx_to_json.py
+```
+
+Then push the updated `data/*.json` files to GitHub.
+
+The Products sheet contains `image1`, `image2`, and `image3` columns. These paths should normally be left as generated unless you change your image filenames.

@@ -50,7 +50,7 @@ def main():
     headers = [
         "slug", "name", "categorySlug", "fragranceSlug", "price", "volume", "weight",
         "materials", "packaging", "shortDescription", "about", "bestseller",
-        "isNew", "customizable", "active",
+        "isNew", "customizable", "active", "image1", "image2", "image3",
     ]
     rows = []
     for p in products:
@@ -59,7 +59,7 @@ def main():
             p.get("price", 0), p.get("volume", ""), p.get("weight", ""), p.get("materials", ""),
             p.get("packaging", ""), p.get("shortDescription", ""), p.get("about", ""),
             p.get("bestseller", False), p.get("isNew", False), p.get("customizable", False),
-            p.get("active", True),
+            p.get("active", True), *(p.get("images", []) + ["", "", ""])[:3],
         ])
     write_sheet(ws, headers, rows)
 

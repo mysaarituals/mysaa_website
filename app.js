@@ -1,5 +1,3 @@
-(function () {
-"use strict";
 /* ============================================================
    MYSAA RITUALS — Digital Catalogue
    Static, single-page React app (no build step; runs on GitHub Pages).
@@ -27,7 +25,18 @@ const C = {
 const serif = { fontFamily: "'Cormorant Garamond', serif" };
 const sans = { fontFamily: "'Karla', sans-serif" };
 const label = { ...sans, fontSize: 11.5, letterSpacing: "0.11em", textTransform: "uppercase" };
-const inr = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
+const inr = (n) => Number(n || 0) > 0 ? `₹${Number(n).toLocaleString("en-IN")}` : "Enquire";
+function productImage(product, index = 0) {
+    const images = Array.isArray(product === null || product === void 0 ? void 0 : product.images) ? product.images : [];
+    return images[index] || `assets/catalogue/${product.fragranceSlug}/${product.categorySlug}/0${index + 1}-cover.jpg`;
+}
+function ImageOrPlaceholder({ src, label: text, ratio = "4 / 5" }) {
+    const [failed, setFailed] = React.useState(false);
+    if (!src || failed)
+        return React.createElement(Placeholder, { label: text, ratio: ratio });
+    return React.createElement("div", { style: { aspectRatio: ratio, background: C.card, border: `1px solid ${C.line}`, overflow: "hidden" } },
+        React.createElement("img", { src: src, alt: text || "Mysaa Rituals", onError: () => setFailed(true), style: { width: "100%", height: "100%", objectFit: "cover", display: "block" } }));
+}
 function waLink(number, message) {
     const clean = (number || "").replace(/[^0-9]/g, "");
     return `https://wa.me/${clean}?text=${encodeURIComponent(message)}`;
@@ -275,7 +284,7 @@ function ProductCard({ product, fragrance, nav }) {
     return (React.createElement("button", { onClick: () => nav("product", product.slug), style: { textAlign: "left", display: "block" } },
         React.createElement("div", { className: "hairline-top", style: { paddingTop: 0 } },
             React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 8, minHeight: 14 } }, product.bestseller ? "Bestseller" : product.isNew ? "New" : product.customizable ? "Customizable" : "\u00A0"),
-            React.createElement(Placeholder, { label: product.name })),
+            React.createElement(ImageOrPlaceholder, { src: productImage(product, 0), label: product.name })),
         React.createElement("div", { style: { paddingTop: 14 } },
             React.createElement("h3", { style: { ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 } }, product.name),
             React.createElement("p", { style: { ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }, className: "line-clamp-2" }, product.shortDescription),
@@ -285,7 +294,7 @@ function ProductCard({ product, fragrance, nav }) {
 }
 function FragranceCard({ fragrance, nav }) {
     return (React.createElement("button", { onClick: () => nav("catalogue", "fragrance", { value: fragrance.slug }), style: { textAlign: "left", display: "block" } },
-        React.createElement(Placeholder, { label: fragrance.name, ratio: "1 / 1" }),
+        React.createElement(ImageOrPlaceholder, { src: `assets/catalogue/fragrances/${fragrance.slug}/01-cover.jpg`, label: fragrance.name, ratio: "1 / 1" }),
         React.createElement("div", { style: { paddingTop: 14 } },
             React.createElement("h3", { style: { ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 6 } }, fragrance.name),
             React.createElement("p", { style: { ...sans, fontSize: 13, color: C.ink70, lineHeight: 1.6, marginBottom: 8 }, className: "line-clamp-2" }, fragrance.description),
@@ -476,7 +485,7 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             " / ",
             React.createElement("span", { style: { color: C.ink } }, product.name)),
         React.createElement("div", { className: "product-detail-grid" },
-            React.createElement(Placeholder, { label: product.name, ratio: "4 / 5" }),
+            React.createElement(ImageOrPlaceholder, { src: productImage(product, 0), label: product.name, ratio: "4 / 5" }),
             React.createElement("div", null,
                 React.createElement("h1", { style: { ...serif, fontSize: "clamp(26px,4vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 14 } }, product.name),
                 React.createElement("p", { style: { ...sans, fontSize: 22, color: C.ink, marginBottom: 16 } }, inr(product.price)),
@@ -626,4 +635,3 @@ function App() {
 }
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(React.createElement(App, null));
-})();
