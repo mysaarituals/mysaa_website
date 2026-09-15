@@ -20,10 +20,13 @@ data/
   fragrances.json    the 5 signature fragrances
   categories.json    Hero Jar / Wide Jar / Shot Glass / Wax Melts / Hampers
   settings.json      brand name, WhatsApp number, email, Instagram, etc.
+  images.json        auto-generated map of which photos exist (see §6)
   mysaa_products.xlsx   an Excel copy of everything above, for easy editing
 scripts/
-  xlsx_to_json.py         Excel → JSON (run this after editing the sheet)
-  build_xlsx_from_json.py JSON → Excel (rebuilds the sheet from scratch)
+  xlsx_to_json.py            Excel → JSON (run this after editing the sheet)
+  build_xlsx_from_json.py    JSON → Excel (rebuilds the sheet from scratch)
+  build_image_manifest.py    scans assets/catalogue/ → writes data/images.json
+assets/catalogue/    your product & fragrance photos (see §6)
 ```
 
 ## Design system
@@ -100,8 +103,6 @@ Then open `http://localhost:8000`.
 
 ## Notes
 
-- Product photos are placeholders — add real photos to `assets/` and
-  wire up the `images` field in `products.json` when ready.
 - All ordering goes through WhatsApp — there's no shopping cart or
   payment processing, matching how the brand currently sells. The
   quantity selector and Order button on each product page prefill a
@@ -110,16 +111,20 @@ Then open `http://localhost:8000`.
 
 ## 6. Product image folder & naming convention
 
-The website automatically looks for product images using this exact structure:
+Product photos live under `assets/catalogue/`. **Any filename works** —
+`.jpg`, `.jpeg`, `.png` or `.webp`, with any descriptive name you like
+(e.g. straight off your phone). You do not need to rename anything to
+match a strict pattern.
 
 ```
 assets/
   catalogue/
     <fragrance-slug>/
       <category-slug>/
-        01-cover.jpg
-        02-detail.jpg
-        03-lifestyle.jpg
+        (any photo files here — e.g. "diwali hamper shot 1.jpeg")
+    fragrances/
+      <fragrance-slug>/
+        (any photo files here)
 ```
 
 Example:
@@ -128,63 +133,50 @@ Example:
 assets/catalogue/
   gulab-ki-chitthi/
     hero-jar-candle/
-      01-cover.jpg
-      02-detail.jpg
-      03-lifestyle.jpg
+      hero jar lit candle.jpg
+      hero jar packaging.jpg
+  fragrances/
+    gulab-ki-chitthi/
+      rose petals flatlay.jpg
 ```
 
-You do **not** need to edit the HTML to add these photos. Replace/add the image files with the exact names above and push them to GitHub.
-
-Fragrance cover images use:
-
-```
-assets/catalogue/fragrances/<fragrance-slug>/01-cover.jpg
-```
-
-Example:
-
-```
-assets/catalogue/fragrances/madhuban/01-cover.jpg
-```
-
-### Image rules
-
-- `01-cover.jpg` is the main image shown on product cards and the product detail page.
-- `02-detail.jpg` and `03-lifestyle.jpg` are optional additional images and are stored in the Excel/JSON data for future gallery use.
-- Keep filenames lowercase and use exactly `01-cover.jpg`, `02-detail.jpg`, `03-lifestyle.jpg`.
-- JPG is recommended. PNG also works if the path in the Excel `image1/image2/image3` columns is changed accordingly.
-- Keep the fragrance and category folder names exactly as their `slug` values.
+- The **fragrance** and **category** folder names must exactly match
+  the `slug` values in `fragrances.json` / `categories.json` (e.g.
+  `hero-jar-candle`, not `Hero Jar Candle`).
+- If a folder has more than one photo, they're shown in
+  alphabetical/number order — prefix with `01_`, `02_`, `03_` etc. if
+  you want to control which one is the "cover" photo. This is optional.
+- After adding, removing or renaming any photos, **run this once**:
+  ```bash
+  python3 scripts/build_image_manifest.py
+  ```
+  This scans the folders and writes `data/images.json`, which is what
+  the website actually reads to know which photos exist. Commit and
+  push `data/images.json` along with the new photos.
+- If a product/fragrance folder has no photos yet, the site shows a
+  clean text placeholder instead — nothing breaks.
 
 ### Current catalogue combinations
 
-The workbook now contains **25 combinations**:
+The catalogue contains **25 combinations**:
 
-- 5 fragrances:
-  - gulab-ki-chitthi
-  - dhoop-chandan
-  - gajre-ka-shringar
-  - madhuban
-  - raat-ki-rani
-- 5 formats:
-  - hero-jar-candle
-  - wide-jar-candle
-  - shot-glass-candle
-  - wax-melts (displayed as Wax Sachet Combo)
-  - gift-hampers
+- 5 fragrances: gulab-ki-chitthi, dhoop-chandan, gajre-ka-shringar,
+  madhuban, raat-ki-rani
+- 5 formats: hero-jar-candle, wide-jar-candle, shot-glass-candle,
+  wax-melts (displayed as "Wax Sachet Combo"), gift-hampers
 
 Every fragrance is paired with every format.
 
 ### Pricing
 
-The current generated prices use the existing category prices as starting values:
-
-- Hero Jar: ₹950 (Madhuban Hero Jar retains the existing ₹1,050 price)
+- Hero Jar: ₹950 (Madhuban Hero Jar keeps its original ₹1,050)
 - Wide Jar: ₹650
 - Shot Glass: ₹350
 - Wax Sachet Combo: ₹350
-- Gift Hampers: Enquire
+- Gift Hampers: Enquire (price is `0`, which the site displays as "Enquire")
 
-**Edit the `price` column in `data/mysaa_products.xlsx` with your final prices.** A price of `0` displays as `Enquire`.
+Edit the `price` column in `data/mysaa_products.xlsx` (or `price` in
+`products.json` directly) with your final prices.
 
 ### Updating the website after Excel edits
 
@@ -194,6 +186,6 @@ After editing `data/mysaa_products.xlsx`:
 python3 scripts/xlsx_to_json.py
 ```
 
-Then push the updated `data/*.json` files to GitHub.
-
-The Products sheet contains `image1`, `image2`, and `image3` columns. These paths should normally be left as generated unless you change your image filenames.
+Then push the updated `data/*.json` files to GitHub. This does not
+touch photos — run `build_image_manifest.py` separately if you've
+also changed photos.

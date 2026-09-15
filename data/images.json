@@ -1,0 +1,75 @@
+{
+  "products": {
+    "dhoop-chandan/gift-hampers": [
+      "assets/catalogue/dhoop-chandan/gift-hampers/01_dhoop%20and%20chandan%20gift%20hamper.jpeg",
+      "assets/catalogue/dhoop-chandan/gift-hampers/02_dhoop%20and%20chandan%20shot%20glass.jpeg",
+      "assets/catalogue/dhoop-chandan/gift-hampers/03_dhoop%20and%20chandan%20fragrance2.jpeg"
+    ],
+    "dhoop-chandan/shot-glass-candle": [
+      "assets/catalogue/dhoop-chandan/shot-glass-candle/01_dhoop%20and%20chandan%20shot%20glass%202.jpeg"
+    ],
+    "dhoop-chandan/wax-melts": [
+      "assets/catalogue/dhoop-chandan/wax-melts/01_dhoop%20and%20chandan%20sachets.jpeg"
+    ],
+    "gajre-ka-shringar/gift-hampers": [
+      "assets/catalogue/gajre-ka-shringar/gift-hampers/01_gajre%20ka%20shringar%20fragrance%202.jpeg",
+      "assets/catalogue/gajre-ka-shringar/gift-hampers/02_gajre%20ka%20shringar%20fragrance.jpeg",
+      "assets/catalogue/gajre-ka-shringar/gift-hampers/03_gajre%20ka%20shringar%20shot%20glass.jpeg"
+    ],
+    "gajre-ka-shringar/shot-glass-candle": [
+      "assets/catalogue/gajre-ka-shringar/shot-glass-candle/01_gajre%20ka%20shringar%20shot%20glass.jpeg"
+    ],
+    "gajre-ka-shringar/wax-melts": [
+      "assets/catalogue/gajre-ka-shringar/wax-melts/01_gajre%20ka%20shringar%20fragrance.jpeg"
+    ],
+    "gajre-ka-shringar/wide-jar-candle": [
+      "assets/catalogue/gajre-ka-shringar/wide-jar-candle/01_gajre%20ka%20shringar%20fragrance.jpeg"
+    ],
+    "gulab-ki-chitthi/gift-hampers": [
+      "assets/catalogue/gulab-ki-chitthi/gift-hampers/01_gulab%20ki%20chitthi%20fragrance.jpeg"
+    ],
+    "madhuban/gift-hampers": [
+      "assets/catalogue/madhuban/gift-hampers/01_madhuban%20fragrance.jpeg"
+    ],
+    "madhuban/wax-melts": [
+      "assets/catalogue/madhuban/wax-melts/01_madhuban%20fragrance.jpeg"
+    ],
+    "raat-ki-rani/gift-hampers": [
+      "assets/catalogue/raat-ki-rani/gift-hampers/01_raat%20ki%20rani%20fragrance.jpeg"
+    ],
+    "raat-ki-rani/hero-jar-candle": [
+      "assets/catalogue/raat-ki-rani/hero-jar-candle/01_raat%20ki%20rani%20hero%20jar.jpeg"
+    ],
+    "raat-ki-rani/wax-melts": [
+      "assets/catalogue/raat-ki-rani/wax-melts/01_raat%20ki%20rani%20fragrance.jpeg"
+    ],
+    "raat-ki-rani/wide-jar-candle": [
+      "assets/catalogue/raat-ki-rani/wide-jar-candle/01_raat%20ki%20rani%20wide%20jar.jpeg"
+    ]
+  },
+  "fragrances": {
+    "dhoop-chandan": [
+      "assets/catalogue/fragrances/dhoop-chandan/01_dhoop%20and%20chandan%20fragrance.jpeg",
+      "assets/catalogue/fragrances/dhoop-chandan/02_dhoop%20and%20chandan%20sachets.jpeg",
+      "assets/catalogue/fragrances/dhoop-chandan/03_dhoop%20and%20chandan%20shot%20glass%202.jpeg",
+      "assets/catalogue/fragrances/dhoop-chandan/04_dhoop%20and%20chandan%20fragrance2.jpeg",
+      "assets/catalogue/fragrances/dhoop-chandan/05_dhoop%20and%20chandan%20shot%20glass.jpeg"
+    ],
+    "gajre-ka-shringar": [
+      "assets/catalogue/fragrances/gajre-ka-shringar/01_gajre%20ka%20shringar%20fragrance.jpeg",
+      "assets/catalogue/fragrances/gajre-ka-shringar/02_gajre%20ka%20shringar%20shot%20glass.jpeg",
+      "assets/catalogue/fragrances/gajre-ka-shringar/03_gajre%20ka%20shringar%20fragrance%202.jpeg"
+    ],
+    "gulab-ki-chitthi": [
+      "assets/catalogue/fragrances/gulab-ki-chitthi/01_gulab%20ki%20chitthi%20fragrance.jpeg"
+    ],
+    "madhuban": [
+      "assets/catalogue/fragrances/madhuban/01_madhuban%20fragrance.jpeg",
+      "assets/catalogue/fragrances/madhuban/02_madhuban%20wide%20jar.jpeg"
+    ],
+    "raat-ki-rani": [
+      "assets/catalogue/fragrances/raat-ki-rani/01_raat%20ki%20rani%20fragrance.jpeg",
+      "assets/catalogue/fragrances/raat-ki-rani/02_raat%20ki%20rani%20wide%20jar.jpeg"
+    ]
+  }
+}
