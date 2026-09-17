@@ -554,7 +554,7 @@ function HomePage({ data, nav, settings }) {
               Chat on WhatsApp
             </a>
           </div>
-          <Placeholder label="Hero product photograph" ratio="4 / 3" />
+          <ImageOrPlaceholder src="assets/hero.jpg" label="Hero product photograph" ratio="4 / 3" />
         </div>
       </section>
 
@@ -690,7 +690,7 @@ function HomePage({ data, nav, settings }) {
             </div>
             <Button variant="outline" onClick={() => nav("catalogue", "category", { value: "gift-hampers" })} style={{ marginTop: 26 }}>Explore Gifting</Button>
           </div>
-          <Placeholder label="Hand-packed Mysaa Rituals gift hamper" ratio="4 / 3" />
+          <ImageOrPlaceholder src="assets/gifting.jpg" label="Hand-packed Mysaa Rituals gift hamper" ratio="4 / 3" />
         </div>
       </section>
 
@@ -1040,7 +1040,7 @@ function AboutPage() {
         <p>Every piece is handcrafted with care, inspired by familiar Indian aromas, and designed to become part of someone's ritual — poured in small batches using a natural soy wax blend and cotton or wooden wicks.</p>
         <p>If nothing in the catalogue feels quite right, that's exactly what Custom Rituals are for. Tell us about your moment, and we'll create something made only for it.</p>
       </div>
-      <div style={{ marginTop: 40 }}><Placeholder label="Studio / process photograph" ratio="16 / 9" /></div>
+      <div style={{ marginTop: 40 }}><ImageOrPlaceholder src="assets/story.jpg" label="Studio / process photograph" ratio="16 / 9" /></div>
 
       <div style={{ marginTop: 64 }}>
         <SectionHeading eyebrow="Why Mysaa Rituals" title="Slow, deliberate, personal." />
