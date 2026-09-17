@@ -952,7 +952,7 @@ function ProductDetailPage({ data, nav, slug, settings }) {
   );
 }
 
-function CreateRitualPage({ settings }) {
+function CreateRitualPage({ settings, data }) {
   const [form, setForm] = useState({ name: "", fragrance: "", format: "", occasion: "", notes: "" });
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
@@ -970,9 +970,27 @@ function CreateRitualPage({ settings }) {
       <SectionHeading eyebrow="Made Just For You" title="Create Your Own Ritual" sub="Tell us a little about what you're looking for, and we'll get back to you on WhatsApp to design it together." />
       <div style={{ marginTop: 36, display: "grid", gap: 18 }}>
         <Field label="Your name" value={form.name} onChange={set("name")} />
-        <Field label="Preferred fragrance or mood" value={form.fragrance} onChange={set("fragrance")} placeholder="e.g. warm sandalwood, fresh florals…" />
-        <Field label="Format" value={form.format} onChange={set("format")} placeholder="e.g. hero jar, wide jar, shot glass, wax melts, hamper" />
-        <Field label="Occasion" value={form.occasion} onChange={set("occasion")} placeholder="e.g. Diwali, wedding favour, birthday" />
+        <SelectField
+          label="Preferred fragrance or mood"
+          value={form.fragrance}
+          onChange={set("fragrance")}
+          placeholder="Help me choose"
+          options={(data.fragrances || []).filter((f) => f.active !== false).map((f) => f.name)}
+        />
+        <SelectField
+          label="Format"
+          value={form.format}
+          onChange={set("format")}
+          placeholder="Not sure"
+          options={(data.categories || []).filter((c) => c.active !== false).map((c) => c.name)}
+        />
+        <SelectField
+          label="Occasion"
+          value={form.occasion}
+          onChange={set("occasion")}
+          placeholder="Not sure yet"
+          options={["Birthday", "Anniversary", "Wedding / Wedding Favour", "Festival", "Housewarming", "Corporate / Gifting", "Other"]}
+        />
         <FieldArea label="Anything else we should know?" value={form.notes} onChange={set("notes")} />
         <Button href={waLink(settings.whatsapp, message)} target="_blank" style={{ marginTop: 8, width: "fit-content" }}>Send via WhatsApp</Button>
       </div>
@@ -985,6 +1003,17 @@ function Field({ label: text, ...props }) {
       <span style={{ ...label, color: C.ink70, display: "block", marginBottom: 8 }}>{text}</span>
       <input {...props} style={{ ...sans, width: "100%", fontSize: 14, padding: "12px 14px", border: `1px solid ${C.line}`, background: "#FCFAF7" }} />
 
+    </label>
+  );
+}
+function SelectField({ label: text, options = [], placeholder = "Select", ...props }) {
+  return (
+    <label style={{ display: "block" }}>
+      <span style={{ ...label, color: C.ink70, display: "block", marginBottom: 8 }}>{text}</span>
+      <select {...props} style={{ ...sans, width: "100%", fontSize: 14, padding: "12px 14px", border: `1px solid ${C.line}`, background: "#FCFAF7", color: props.value ? C.ink : C.ink70, appearance: "auto" }}>
+        <option value="">{placeholder}</option>
+        {options.map((option) => <option key={option} value={option}>{option}</option>)}
+      </select>
     </label>
   );
 }
@@ -1091,7 +1120,7 @@ function App() {
   if (route.page === "home") page = <HomePage data={data} nav={nav} settings={settings} />;
   else if (route.page === "catalogue") page = <CataloguePage data={data} nav={nav} initialType={route.param} initialQuery={route.query} />;
   else if (route.page === "product") page = <ProductDetailPage data={data} nav={nav} slug={route.param} settings={settings} />;
-  else if (route.page === "create-ritual") page = <CreateRitualPage settings={settings} />;
+  else if (route.page === "create-ritual") page = <CreateRitualPage settings={settings} data={data} />;
   else if (route.page === "about") page = <AboutPage />;
   else if (route.page === "contact") page = <ContactPage settings={settings} />;
   else page = <HomePage data={data} nav={nav} settings={settings} />;

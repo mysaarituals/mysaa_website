@@ -612,7 +612,7 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             React.createElement("h2", { style: { ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 24 } }, "You May Also Like"),
             React.createElement("div", { className: "product-grid" }, related.map((p) => React.createElement(ProductCard, { key: p.slug, product: p, fragrance: data.fragrances.find((f) => f.slug === p.fragranceSlug), images: data.images, nav: nav })))))));
 }
-function CreateRitualPage({ settings }) {
+function CreateRitualPage({ settings, data }) {
     const [form, setForm] = useState({ name: "", fragrance: "", format: "", occasion: "", notes: "" });
     const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
     const message = [
@@ -627,9 +627,9 @@ function CreateRitualPage({ settings }) {
         React.createElement(SectionHeading, { eyebrow: "Made Just For You", title: "Create Your Own Ritual", sub: "Tell us a little about what you're looking for, and we'll get back to you on WhatsApp to design it together." }),
         React.createElement("div", { style: { marginTop: 36, display: "grid", gap: 18 } },
             React.createElement(Field, { label: "Your name", value: form.name, onChange: set("name") }),
-            React.createElement(Field, { label: "Preferred fragrance or mood", value: form.fragrance, onChange: set("fragrance"), placeholder: "e.g. warm sandalwood, fresh florals\u2026" }),
-            React.createElement(Field, { label: "Format", value: form.format, onChange: set("format"), placeholder: "e.g. hero jar, wide jar, shot glass, wax melts, hamper" }),
-            React.createElement(Field, { label: "Occasion", value: form.occasion, onChange: set("occasion"), placeholder: "e.g. Diwali, wedding favour, birthday" }),
+            React.createElement(SelectField, { label: "Preferred fragrance or mood", value: form.fragrance, onChange: set("fragrance"), placeholder: "Help me choose", options: (data.fragrances || []).filter((f) => f.active !== false).map((f) => f.name) }),
+            React.createElement(SelectField, { label: "Format", value: form.format, onChange: set("format"), placeholder: "Not sure", options: (data.categories || []).filter((c) => c.active !== false).map((c) => c.name) }),
+            React.createElement(SelectField, { label: "Occasion", value: form.occasion, onChange: set("occasion"), placeholder: "Not sure yet", options: ["Birthday", "Anniversary", "Wedding / Wedding Favour", "Festival", "Housewarming", "Corporate / Gifting", "Other"] }),
             React.createElement(FieldArea, { label: "Anything else we should know?", value: form.notes, onChange: set("notes") }),
             React.createElement(Button, { href: waLink(settings.whatsapp, message), target: "_blank", style: { marginTop: 8, width: "fit-content" } }, "Send via WhatsApp"))));
 }
@@ -637,6 +637,13 @@ function Field({ label: text, ...props }) {
     return (React.createElement("label", { style: { display: "block" } },
         React.createElement("span", { style: { ...label, color: C.ink70, display: "block", marginBottom: 8 } }, text),
         React.createElement("input", { ...props, style: { ...sans, width: "100%", fontSize: 14, padding: "12px 14px", border: `1px solid ${C.line}`, background: "#FCFAF7" } })));
+}
+function SelectField({ label: text, options = [], placeholder = "Select", ...props }) {
+    return (React.createElement("label", { style: { display: "block" } },
+        React.createElement("span", { style: { ...label, color: C.ink70, display: "block", marginBottom: 8 } }, text),
+        React.createElement("select", { ...props, style: { ...sans, width: "100%", fontSize: 14, padding: "12px 14px", border: `1px solid ${C.line}`, background: "#FCFAF7", color: props.value ? C.ink : C.ink70, appearance: "auto" } },
+            React.createElement("option", { value: "" }, placeholder),
+            options.map((option) => React.createElement("option", { key: option, value: option }, option)))));
 }
 function FieldArea({ label: text, ...props }) {
     return (React.createElement("label", { style: { display: "block" } },
@@ -715,7 +722,7 @@ function App() {
     else if (route.page === "product")
         page = React.createElement(ProductDetailPage, { data: data, nav: nav, slug: route.param, settings: settings });
     else if (route.page === "create-ritual")
-        page = React.createElement(CreateRitualPage, { settings: settings });
+        page = React.createElement(CreateRitualPage, { settings: settings, data: data });
     else if (route.page === "about")
         page = React.createElement(AboutPage, null);
     else if (route.page === "contact")
