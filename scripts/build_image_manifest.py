@@ -1,7 +1,8 @@
 """
-Scans the assets/catalogue folder and writes data/images.json — a map
-telling the website which photo files exist for each product and each
-fragrance. This is what lets the site show real photos.
+Scans the assets folders and writes data/images.json — a map telling
+the website which catalogue and editorial/site photo files exist.
+This is what lets the site show real photos in both the catalogue and
+its homepage/about placeholders.
 
 Run this any time you add, remove or rename photos:
 
@@ -26,6 +27,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CATALOGUE = os.path.join(ROOT, "assets", "catalogue")
 DATA = os.path.join(ROOT, "data")
 OUT = os.path.join(DATA, "images.json")
+ASSETS = os.path.join(ROOT, "assets")
 
 IMAGE_EXT = {".jpg", ".jpeg", ".png", ".webp"}
 
@@ -88,7 +90,21 @@ def main():
                         url_for("assets", "catalogue", fragrance_slug, category_slug, f) for f in files
                     ]
 
-    manifest = {"products": products, "fragrances": fragrances}
+    # Site/editorial images live directly under assets/ and are wired to
+    # named homepage/about placeholders as well as catalogue photos.
+    site_files = {
+        "hero": "hero.jpg",
+        "personalisation": "personalisation.jpeg",
+        "story": "story.jpg",
+        "gifting": "gifting.jpg",
+    }
+    site = {}
+    for key, filename in site_files.items():
+        path = os.path.join(ASSETS, filename)
+        if os.path.isfile(path) and os.path.splitext(filename)[1].lower() in IMAGE_EXT:
+            site[key] = url_for("assets", filename)
+
+    manifest = {"products": products, "fragrances": fragrances, "site": site}
     with open(OUT, "w", encoding="utf-8") as fh:
         json.dump(manifest, fh, indent=2, ensure_ascii=False)
 

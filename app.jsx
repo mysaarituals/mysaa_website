@@ -554,7 +554,7 @@ function HomePage({ data, nav, settings }) {
               Chat on WhatsApp
             </a>
           </div>
-          <ImageOrPlaceholder src="assets/hero.jpg" label="Hero product photograph" ratio="4 / 3" />
+          <ImageOrPlaceholder src={data.images?.site?.hero} label="Hero product photograph" ratio="4 / 3" />
         </div>
       </section>
 
@@ -690,7 +690,7 @@ function HomePage({ data, nav, settings }) {
             </div>
             <Button variant="outline" onClick={() => nav("catalogue", "category", { value: "gift-hampers" })} style={{ marginTop: 26 }}>Explore Gifting</Button>
           </div>
-          <ImageOrPlaceholder src="assets/gifting.jpg" label="Hand-packed Mysaa Rituals gift hamper" ratio="4 / 3" />
+          <ImageOrPlaceholder src={data.images?.site?.gifting} label="Hand-packed Mysaa Rituals gift hamper" ratio="4 / 3" />
         </div>
       </section>
 
@@ -704,6 +704,9 @@ function HomePage({ data, nav, settings }) {
           </div>
           <div style={{ marginTop: 26 }}>
             <Button variant="ghost" onClick={() => nav("about")}>Read Our Story →</Button>
+          </div>
+          <div style={{ marginTop: 32 }}>
+            <ImageOrPlaceholder src={data.images?.site?.story} label="Our Story" ratio="16 / 9" />
           </div>
         </div>
       </section>
@@ -1031,7 +1034,7 @@ function FieldArea({ label: text, ...props }) {
   );
 }
 
-function AboutPage() {
+function AboutPage({ data }) {
   return (
     <div className="container" style={{ padding: "48px 20px 80px", maxWidth: 760 }}>
       <SectionHeading eyebrow="Our Story" title="More than a candle." />
@@ -1040,7 +1043,7 @@ function AboutPage() {
         <p>Every piece is handcrafted with care, inspired by familiar Indian aromas, and designed to become part of someone's ritual — poured in small batches using a natural soy wax blend and cotton or wooden wicks.</p>
         <p>If nothing in the catalogue feels quite right, that's exactly what Custom Rituals are for. Tell us about your moment, and we'll create something made only for it.</p>
       </div>
-      <div style={{ marginTop: 40 }}><ImageOrPlaceholder src="assets/story.jpg" label="Studio / process photograph" ratio="16 / 9" /></div>
+      <div style={{ marginTop: 40 }}><ImageOrPlaceholder src={data.images?.site?.story} label="Studio / process photograph" ratio="16 / 9" /></div>
 
       <div style={{ marginTop: 64 }}>
         <SectionHeading eyebrow="Why Mysaa Rituals" title="Slow, deliberate, personal." />
@@ -1125,7 +1128,7 @@ function App() {
   else if (route.page === "catalogue") page = <CataloguePage data={data} nav={nav} initialType={route.param} initialQuery={route.query} />;
   else if (route.page === "product") page = <ProductDetailPage data={data} nav={nav} slug={route.param} settings={settings} />;
   else if (route.page === "create-ritual") page = <CreateRitualPage settings={settings} data={data} />;
-  else if (route.page === "about") page = <AboutPage />;
+  else if (route.page === "about") page = <AboutPage data={data} />;
   else if (route.page === "contact") page = <ContactPage settings={settings} />;
   else page = <HomePage data={data} nav={nav} settings={settings} />;
 

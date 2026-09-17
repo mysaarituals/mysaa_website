@@ -344,6 +344,7 @@ function HowToOrder({ steps, eyebrow = "How to Order", title = "Simple, personal
    Pages
    ============================================================ */
 function HomePage({ data, nav, settings }) {
+    var _a, _b, _c, _d, _e, _f;
     const fragranceById = Object.fromEntries(data.fragrances.map((f) => [f.slug, f]));
     const activeFragrances = data.fragrances.filter((f) => f.active);
     // The homepage's featured row intentionally uses one consistent format,
@@ -396,7 +397,7 @@ function HomePage({ data, nav, settings }) {
                         React.createElement(Button, { variant: "ghost", onClick: () => nav("catalogue", "all") }, "Explore the Collection"),
                         React.createElement(Button, { variant: "outline", onClick: () => nav("create-ritual") }, "Create Your Ritual")),
                     React.createElement("a", { href: waLink(settings.whatsapp, "Hello Mysaa Rituals!"), target: "_blank", rel: "noreferrer", style: { ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "4px" } }, "Chat on WhatsApp")),
-                React.createElement(ImageOrPlaceholder, { src: "assets/hero.jpg", label: "Hero product photograph", ratio: "4 / 3" }))),
+                React.createElement(ImageOrPlaceholder, { src: (_b = (_a = data.images) === null || _a === void 0 ? void 0 : _a.site) === null || _b === void 0 ? void 0 : _b.hero, label: "Hero product photograph", ratio: "4 / 3" }))),
         React.createElement("section", { className: "container", style: { padding: "72px 20px 24px" } },
             React.createElement(SectionHeading, { eyebrow: "The Fragrances", title: "Every fragrance holds a feeling.", sub: "From the warmth of sandalwood to the romance of jasmine and the mystery of night-blooming flowers, each Mysaa Ritual is created to evoke something personal." })),
         React.createElement("section", { className: "container", style: { padding: "24px 20px 72px" } },
@@ -442,7 +443,7 @@ function HomePage({ data, nav, settings }) {
                 React.createElement(Button, { variant: "ghost", onClick: () => nav("catalogue", "all") }, "View the full collection \u2192"))),
         React.createElement("section", { className: "container", style: { padding: "16px 20px 72px" } },
             React.createElement("div", { className: "personalize-grid" },
-                React.createElement(Placeholder, { label: "Personalization / stationery flat-lay", ratio: "4 / 3" }),
+                React.createElement(ImageOrPlaceholder, { src: "assets/personalisation.jpeg", label: "Personalization options", ratio: "4 / 3" }),
                 React.createElement("div", null,
                     React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 14 } }, "Personalization"),
                     React.createElement("h2", { style: { ...serif, fontSize: "clamp(28px,3.6vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 16 } }, "Made for your moment."),
@@ -462,7 +463,7 @@ function HomePage({ data, nav, settings }) {
                         React.createElement("span", { style: { ...sans, fontSize: 14, color: C.ink70 } }, "Housewarming"),
                         React.createElement("span", { style: { ...sans, fontSize: 14, color: C.ink70 } }, "Custom gifts")),
                     React.createElement(Button, { variant: "outline", onClick: () => nav("catalogue", "category", { value: "gift-hampers" }), style: { marginTop: 26 } }, "Explore Gifting")),
-                React.createElement(ImageOrPlaceholder, { src: "assets/gifting.jpg", label: "Hand-packed Mysaa Rituals gift hamper", ratio: "4 / 3" }))),
+                React.createElement(ImageOrPlaceholder, { src: (_d = (_c = data.images) === null || _c === void 0 ? void 0 : _c.site) === null || _d === void 0 ? void 0 : _d.gifting, label: "Hand-packed Mysaa Rituals gift hamper", ratio: "4 / 3" }))),
         React.createElement("section", { className: "container", style: { padding: "72px 20px" } },
             React.createElement("div", { className: "story-block" },
                 React.createElement(SectionHeading, { eyebrow: "Our Story", title: "More than a candle." }),
@@ -470,7 +471,9 @@ function HomePage({ data, nav, settings }) {
                     React.createElement("p", null, "Mysaa Rituals was created around a simple idea \u2014 that fragrance has the power to turn ordinary moments into memories."),
                     React.createElement("p", null, "Every piece is handcrafted with care, inspired by familiar Indian aromas and designed to become part of someone's ritual.")),
                 React.createElement("div", { style: { marginTop: 26 } },
-                    React.createElement(Button, { variant: "ghost", onClick: () => nav("about") }, "Read Our Story \u2192")))),
+                    React.createElement(Button, { variant: "ghost", onClick: () => nav("about") }, "Read Our Story \u2192")),
+                React.createElement("div", { style: { marginTop: 32 } },
+                    React.createElement(ImageOrPlaceholder, { src: (_f = (_e = data.images) === null || _e === void 0 ? void 0 : _e.site) === null || _f === void 0 ? void 0 : _f.story, label: "Our Story", ratio: "16 / 9" })))),
         React.createElement("section", { style: { borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}` } },
             React.createElement("div", { className: "container", style: { padding: "72px 20px" } },
                 React.createElement(SectionHeading, { eyebrow: "Why Mysaa Rituals", title: "Slow, deliberate, personal." }),
@@ -650,7 +653,8 @@ function FieldArea({ label: text, ...props }) {
         React.createElement("span", { style: { ...label, color: C.ink70, display: "block", marginBottom: 8 } }, text),
         React.createElement("textarea", { ...props, rows: 4, style: { ...sans, width: "100%", fontSize: 14, padding: "12px 14px", border: `1px solid ${C.line}`, background: "#FCFAF7", resize: "vertical" } })));
 }
-function AboutPage() {
+function AboutPage({ data }) {
+    var _a, _b;
     return (React.createElement("div", { className: "container", style: { padding: "48px 20px 80px", maxWidth: 760 } },
         React.createElement(SectionHeading, { eyebrow: "Our Story", title: "More than a candle." }),
         React.createElement("div", { style: { marginTop: 28, display: "grid", gap: 20, ...sans, fontSize: 16, color: C.ink70, lineHeight: 1.8 } },
@@ -658,7 +662,7 @@ function AboutPage() {
             React.createElement("p", null, "Every piece is handcrafted with care, inspired by familiar Indian aromas, and designed to become part of someone's ritual \u2014 poured in small batches using a natural soy wax blend and cotton or wooden wicks."),
             React.createElement("p", null, "If nothing in the catalogue feels quite right, that's exactly what Custom Rituals are for. Tell us about your moment, and we'll create something made only for it.")),
         React.createElement("div", { style: { marginTop: 40 } },
-            React.createElement(ImageOrPlaceholder, { src: "assets/story.jpg", label: "Studio / process photograph", ratio: "16 / 9" })),
+            React.createElement(ImageOrPlaceholder, { src: (_b = (_a = data.images) === null || _a === void 0 ? void 0 : _a.site) === null || _b === void 0 ? void 0 : _b.story, label: "Studio / process photograph", ratio: "16 / 9" })),
         React.createElement("div", { style: { marginTop: 64 } },
             React.createElement(SectionHeading, { eyebrow: "Why Mysaa Rituals", title: "Slow, deliberate, personal." }),
             React.createElement("div", { style: { marginTop: 32 } },
@@ -724,7 +728,7 @@ function App() {
     else if (route.page === "create-ritual")
         page = React.createElement(CreateRitualPage, { settings: settings, data: data });
     else if (route.page === "about")
-        page = React.createElement(AboutPage, null);
+        page = React.createElement(AboutPage, { data: data });
     else if (route.page === "contact")
         page = React.createElement(ContactPage, { settings: settings });
     else

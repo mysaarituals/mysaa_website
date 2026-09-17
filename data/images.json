@@ -79,5 +79,11 @@
     "saanjh": [
       "assets/catalogue/fragrances/saanjh/01_saanjh.jpeg"
     ]
+  },
+  "site": {
+    "hero": "assets/hero.jpg",
+    "personalisation": "assets/personalisation.jpeg",
+    "story": "assets/story.jpg",
+    "gifting": "assets/gifting.jpg"
   }
 }
