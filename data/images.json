@@ -49,27 +49,35 @@
   },
   "fragrances": {
     "dhoop-chandan": [
-      "assets/catalogue/fragrances/dhoop-chandan/01_dhoop%20and%20chandan%20fragrance.jpeg",
+      "assets/catalogue/fragrances/dhoop-chandan/01_dhoop%20and%20chandan.jpg",
       "assets/catalogue/fragrances/dhoop-chandan/02_dhoop%20and%20chandan%20sachets.jpeg",
       "assets/catalogue/fragrances/dhoop-chandan/03_dhoop%20and%20chandan%20shot%20glass%202.jpeg",
       "assets/catalogue/fragrances/dhoop-chandan/04_dhoop%20and%20chandan%20fragrance2.jpeg",
-      "assets/catalogue/fragrances/dhoop-chandan/05_dhoop%20and%20chandan%20shot%20glass.jpeg"
+      "assets/catalogue/fragrances/dhoop-chandan/05_dhoop%20and%20chandan%20shot%20glass.jpeg",
+      "assets/catalogue/fragrances/dhoop-chandan/011_dhoop%20and%20chandan%20fragrance.jpeg"
     ],
     "gajre-ka-shringar": [
-      "assets/catalogue/fragrances/gajre-ka-shringar/01_gajre%20ka%20shringar%20fragrance.jpeg",
+      "assets/catalogue/fragrances/gajre-ka-shringar/01_gajre%20ka%20shringar.jpg",
       "assets/catalogue/fragrances/gajre-ka-shringar/02_gajre%20ka%20shringar%20shot%20glass.jpeg",
-      "assets/catalogue/fragrances/gajre-ka-shringar/03_gajre%20ka%20shringar%20fragrance%202.jpeg"
+      "assets/catalogue/fragrances/gajre-ka-shringar/03_gajre%20ka%20shringar%20fragrance%202.jpeg",
+      "assets/catalogue/fragrances/gajre-ka-shringar/04_gajre%20ka%20shringar%20fragrance.jpeg"
     ],
     "gulab-ki-chitthi": [
-      "assets/catalogue/fragrances/gulab-ki-chitthi/01_gulab%20ki%20chitthi%20fragrance.jpeg"
+      "assets/catalogue/fragrances/gulab-ki-chitthi/01_gulab%20ki%20chitthi.jpg",
+      "assets/catalogue/fragrances/gulab-ki-chitthi/02_gulab%20ki%20chitthi%20fragrance.jpeg"
     ],
     "madhuban": [
-      "assets/catalogue/fragrances/madhuban/01_madhuban%20fragrance.jpeg",
-      "assets/catalogue/fragrances/madhuban/02_madhuban%20wide%20jar.jpeg"
+      "assets/catalogue/fragrances/madhuban/01_madhuban.jpg",
+      "assets/catalogue/fragrances/madhuban/02_madhuban%20wide%20jar.jpeg",
+      "assets/catalogue/fragrances/madhuban/03_madhuban%20fragrance.jpeg"
     ],
     "raat-ki-rani": [
-      "assets/catalogue/fragrances/raat-ki-rani/01_raat%20ki%20rani%20fragrance.jpeg",
-      "assets/catalogue/fragrances/raat-ki-rani/02_raat%20ki%20rani%20wide%20jar.jpeg"
+      "assets/catalogue/fragrances/raat-ki-rani/01_raat%20ki%20rani.jpg",
+      "assets/catalogue/fragrances/raat-ki-rani/02_raat%20ki%20rani%20wide%20jar.jpeg",
+      "assets/catalogue/fragrances/raat-ki-rani/03_raat%20ki%20rani%20fragrance.jpeg"
+    ],
+    "saanjh": [
+      "assets/catalogue/fragrances/saanjh/01_saanjh.jpeg"
     ]
   }
 }
