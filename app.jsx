@@ -655,7 +655,11 @@ function HomePage({ data, nav, settings }) {
       {/* Personalization */}
       <section className="container" style={{ padding: "16px 20px 72px" }}>
         <div className="personalize-grid">
-          <Placeholder label="Personalization / stationery flat-lay" ratio="4 / 3" />
+          <ImageOrPlaceholder
+  src="assets/personalisation.jpeg"
+  label="Personalization options"
+  ratio="4 / 3"
+/>
           <div>
             <p style={{ ...label, color: C.rust, marginBottom: 14 }}>Personalization</p>
             <h2 style={{ ...serif, fontSize: "clamp(28px,3.6vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 16 }}>Made for your moment.</h2>
