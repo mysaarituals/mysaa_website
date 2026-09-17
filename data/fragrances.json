@@ -38,5 +38,13 @@
     "description": "An evocative night-blooming floral fragrance inspired by the queen of the night.",
     "mood": "Night-blooming, Floral, Enveloping, Elegant",
     "active": true
+  },
+  {
+    "slug": "saanjh",
+    "name": "Saanjh",
+    "notes": "Sandalwood, creamy vanilla",
+    "description": "The warmth of an evening that lingers — creamy vanilla softens deep sandalwood.",
+    "mood": "Warm, Calm, Intimate, Reflective",
+    "active": true
   }
 ]

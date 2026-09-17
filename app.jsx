@@ -487,27 +487,70 @@ function HowToOrder({ steps, eyebrow = "How to Order", title = "Simple, personal
    Pages
    ============================================================ */
 function HomePage({ data, nav, settings }) {
-  const bestsellers = data.products.filter((p) => p.active && (p.bestseller || p.isNew)).slice(0, 6);
   const fragranceById = Object.fromEntries(data.fragrances.map((f) => [f.slug, f]));
+  const activeFragrances = data.fragrances.filter((f) => f.active);
+
+  // The homepage's featured row intentionally uses one consistent format,
+  // so the collection feels editorial rather than like a random product grid.
+  const featured = data.products
+    .filter((p) => p.active && p.categorySlug === "wide-jar-candle")
+    .slice(0, 6);
+
+  const feelingGroups = [
+    {
+      title: "Warm & Grounding",
+      body: "For quiet evenings, familiar rituals and comforting spaces.",
+      fragrances: ["dhoop-chandan", "saanjh"],
+    },
+    {
+      title: "Romantic & Nostalgic",
+      body: "Soft florals and memories that feel close to the heart.",
+      fragrances: ["gulab-ki-chitthi", "gajre-ka-shringar"],
+    },
+    {
+      title: "Dreamy & Evening",
+      body: "Night-blooming florals made for slower, more intimate moments.",
+      fragrances: ["madhuban", "raat-ki-rani"],
+    },
+  ];
+
+  const occasionGroups = [
+    {
+      title: "Festivals & Celebrations",
+      body: "Thoughtful candles, sachets and hampers for festive moments.",
+      action: () => nav("catalogue", "category", { value: "gift-hampers" }),
+    },
+    {
+      title: "Weddings & Return Gifts",
+      body: "Personalised pieces for wedding favours, events and guests.",
+      action: () => nav("create-ritual"),
+    },
+    {
+      title: "Birthdays & Just Because",
+      body: "Small, personal gifts for someone you want to make smile.",
+      action: () => nav("create-ritual"),
+    },
+  ];
 
   return (
     <div>
+      {/* Hero */}
       <section style={{ borderBottom: `1px solid ${C.line}` }}>
         <div className="container hero-grid" style={{ padding: "72px 20px 64px" }}>
           <div style={{ maxWidth: 540 }}>
             <p style={{ ...label, color: C.rust, marginBottom: 16 }}>Handcrafted in small batches</p>
-            <h1 style={{ ...serif, fontSize: "clamp(34px,6vw,54px)", color: C.ink, fontWeight: 500, lineHeight: 1.1, marginBottom: 20 }}>
-              Fragrance, made personal.
+            <h1 style={{ ...serif, fontSize: "clamp(38px,6vw,56px)", color: C.ink, fontWeight: 500, lineHeight: 1.02, marginBottom: 20 }}>
+              Fragrance, Made Personal.
             </h1>
-            <p style={{ ...sans, fontSize: 16, color: C.ink70, lineHeight: 1.75, marginBottom: 30, maxWidth: 460 }}>
+            <p style={{ ...sans, fontSize: 16, color: C.ink70, lineHeight: 1.75, marginBottom: 30, maxWidth: 470 }}>
               Handcrafted candles and gifts inspired by Indian fragrances, memories and everyday rituals.
             </p>
-            <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap", marginBottom: 18 }}>
-              <Button variant="rust" onClick={() => nav("catalogue", "all")}>Explore the Collection</Button>
+            <div style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap", marginBottom: 18 }}>
+              <Button variant="ghost" onClick={() => nav("catalogue", "all")}>Explore the Collection</Button>
               <Button variant="outline" onClick={() => nav("create-ritual")}>Create Your Ritual</Button>
             </div>
             <a href={waLink(settings.whatsapp, "Hello Mysaa Rituals!")} target="_blank" rel="noreferrer"
-              style={{ ...label, color: C.ink70, textDecoration: "underline", textUnderlineOffset: "3px" }}>
+              style={{ ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "4px" }}>
               Chat on WhatsApp
             </a>
           </div>
@@ -515,92 +558,189 @@ function HomePage({ data, nav, settings }) {
         </div>
       </section>
 
-      <section className="container" style={{ padding: "56px 20px 8px" }}>
-        <WhyGrid />
+      {/* Fragrance introduction */}
+      <section className="container" style={{ padding: "72px 20px 24px" }}>
+        <SectionHeading
+          eyebrow="The Fragrances"
+          title="Every fragrance holds a feeling."
+          sub="From the warmth of sandalwood to the romance of jasmine and the mystery of night-blooming flowers, each Mysaa Ritual is created to evoke something personal."
+        />
       </section>
 
-      <section className="container" style={{ padding: "72px 20px" }}>
-        <SectionHeading eyebrow="The Fragrances" title="Every fragrance holds a feeling." sub="From the warmth of sandalwood to the romance of jasmine and the mystery of night-blooming florals, each Mysaa ritual is created to evoke something personal." />
-        <div className="fragrance-grid" style={{ marginTop: 36 }}>
-          {data.fragrances.filter((f) => f.active).map((f) => <FragranceCard key={f.slug} fragrance={f} images={data.images} nav={nav} />)}
+      {/* Fragrance collection */}
+      <section className="container" style={{ padding: "24px 20px 72px" }}>
+        <div className="fragrance-grid">
+          {activeFragrances.map((f) => (
+            <FragranceCard key={f.slug} fragrance={f} images={data.images} nav={nav} />
+          ))}
         </div>
       </section>
 
+      {/* Discovery cards */}
       <section style={{ background: C.card, borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}` }}>
         <div className="container" style={{ padding: "72px 20px" }}>
-          <SectionHeading eyebrow="Two Ways In" title="Discover your ritual" align="center" />
-          <div className="two-ways-grid" style={{ marginTop: 40 }}>
-
-            <button onClick={() => nav("catalogue", "fragrance")} style={{ background: "#FCFAF7", border: `1px solid ${C.line}`, padding: "36px 28px", textAlign: "left" }}>
-
-              <h3 style={{ ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 10 }}>Shop by Fragrance</h3>
-              <p style={{ ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.6, marginBottom: 16 }}>Find the scent that feels like you.</p>
+          <SectionHeading eyebrow="Discover" title="Discover your ritual" align="center" />
+          <div className="discovery-grid" style={{ marginTop: 38 }}>
+            <button onClick={() => nav("catalogue", "fragrance")} className="editorial-card">
+              <p style={{ ...label, color: C.rust, marginBottom: 12 }}>01</p>
+              <h3 style={{ ...serif, fontSize: 24, color: C.ink, fontWeight: 500, marginBottom: 8 }}>Shop by Fragrance</h3>
+              <p style={{ ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.65, marginBottom: 16 }}>Find the scent that feels like you.</p>
               <span style={{ ...label, color: C.rust }}>Explore →</span>
             </button>
-
-            <button onClick={() => nav("catalogue", "candle")} style={{ background: "#FCFAF7", border: `1px solid ${C.line}`, padding: "36px 28px", textAlign: "left" }}>
-
-              <h3 style={{ ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 10 }}>Shop by Candle</h3>
-              <p style={{ ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.6, marginBottom: 16 }}>Hero jar, wide jar or shot glass — pick your size.</p>
+            <button onClick={() => nav("catalogue", "candle")} className="editorial-card">
+              <p style={{ ...label, color: C.rust, marginBottom: 12 }}>02</p>
+              <h3 style={{ ...serif, fontSize: 24, color: C.ink, fontWeight: 500, marginBottom: 8 }}>Shop by Candle</h3>
+              <p style={{ ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.65, marginBottom: 16 }}>Choose your format first — Hero Jar, Wide Jar or Shot Glass.</p>
               <span style={{ ...label, color: C.rust }}>Explore →</span>
             </button>
+          </div>
+
+          <div className="discovery-grid" style={{ marginTop: 16 }}>
+            <div className="editorial-card">
+              <p style={{ ...label, color: C.rust, marginBottom: 12 }}>03</p>
+              <h3 style={{ ...serif, fontSize: 24, color: C.ink, fontWeight: 500, marginBottom: 8 }}>Shop by Feeling</h3>
+              <p style={{ ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.65, marginBottom: 16 }}>Start with the mood you want to bring into your space.</p>
+              <div className="feeling-link-list">
+                {feelingGroups.map((group) => (
+                  <div key={group.title} style={{ padding: "10px 0", borderTop: `1px solid ${C.line}` }}>
+                    <p style={{ ...serif, color: C.ink, fontSize: 17, marginBottom: 4 }}>{group.title}</p>
+                    <p style={{ ...sans, color: C.ink70, fontSize: 12.5, lineHeight: 1.5 }}>{group.body}</p>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 6 }}>
+                      {group.fragrances.map((slug) => {
+                        const f = fragranceById[slug];
+                        return f ? (
+                          <button key={slug} onClick={(e) => { e.stopPropagation(); nav("catalogue", "fragrance", { value: slug }); }}
+                            style={{ ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px", fontSize: 10.5 }}>
+                            {f.name}
+                          </button>
+                        ) : null;
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="editorial-card">
+              <p style={{ ...label, color: C.rust, marginBottom: 12 }}>04</p>
+              <h3 style={{ ...serif, fontSize: 24, color: C.ink, fontWeight: 500, marginBottom: 8 }}>Shop by Occasion</h3>
+              <p style={{ ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.65, marginBottom: 16 }}>Choose something for the moment you're celebrating.</p>
+              <div className="feeling-link-list">
+                {occasionGroups.map((group) => (
+                  <button key={group.title} onClick={group.action} style={{ width: "100%", background: "transparent", textAlign: "left", padding: "12px 0", borderTop: `1px solid ${C.line}` }}>
+                    <p style={{ ...serif, color: C.ink, fontSize: 17, marginBottom: 4 }}>{group.title}</p>
+                    <p style={{ ...sans, color: C.ink70, fontSize: 12.5, lineHeight: 1.5, marginBottom: 4 }}>{group.body}</p>
+                    <span style={{ ...label, color: C.rust, fontSize: 10.5 }}>Explore →</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* Featured products */}
       <section className="container" style={{ padding: "72px 20px" }}>
-        <SectionHeading eyebrow="Curated" title="Made to be lit slowly." />
+        <SectionHeading eyebrow="The Collection" title="Made to be lit slowly." sub="A selection of Mysaa candles, chosen to give you an easy place to begin." />
         <div className="product-grid" style={{ marginTop: 36 }}>
-          {bestsellers.map((p) => <ProductCard key={p.slug} product={p} fragrance={fragranceById[p.fragranceSlug]} images={data.images} nav={nav} />)}
+          {featured.map((p) => (
+            <ProductCard key={p.slug} product={p} fragrance={fragranceById[p.fragranceSlug]} images={data.images} nav={nav} />
+          ))}
+        </div>
+        <div style={{ marginTop: 30 }}>
+          <Button variant="ghost" onClick={() => nav("catalogue", "all")}>View the full collection →</Button>
         </div>
       </section>
 
-      <section className="container" style={{ padding: "20px 20px 72px" }}>
+      {/* Personalization */}
+      <section className="container" style={{ padding: "16px 20px 72px" }}>
         <div className="personalize-grid">
           <Placeholder label="Personalization / stationery flat-lay" ratio="4 / 3" />
           <div>
             <p style={{ ...label, color: C.rust, marginBottom: 14 }}>Personalization</p>
-            <h2 style={{ ...serif, fontSize: "clamp(24px,3.6vw,32px)", color: C.ink, fontWeight: 500, marginBottom: 16 }}>Made for your moment.</h2>
-            <p style={{ ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, marginBottom: 24, maxWidth: 420 }}>
-              Have something specific in mind? Choose your fragrance, jar size, label or packaging and let us create something personal for you.
+            <h2 style={{ ...serif, fontSize: "clamp(28px,3.6vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 16 }}>Made for your moment.</h2>
+            <p style={{ ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, marginBottom: 24, maxWidth: 450 }}>
+              Have something specific in mind? Choose your fragrance, shape, label or packaging and let us create something personal for you.
             </p>
-            <Button variant="ghost" onClick={() => nav("create-ritual")}>Create Your Ritual</Button>
+            <Button variant="ghost" onClick={() => nav("create-ritual")}>Create Your Ritual →</Button>
           </div>
         </div>
       </section>
 
+      {/* Gifting */}
       <section style={{ background: C.card, borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}` }}>
         <div className="container gifting-grid" style={{ padding: "72px 20px" }}>
           <div>
             <p style={{ ...label, color: C.rust, marginBottom: 14 }}>Gifting</p>
-            <h2 style={{ ...serif, fontSize: "clamp(24px,3.6vw,32px)", color: C.ink, fontWeight: 500, marginBottom: 22 }}>Gifts that feel personal.</h2>
+            <h2 style={{ ...serif, fontSize: "clamp(28px,3.6vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 16 }}>Gifts that feel personal.</h2>
+            <p style={{ ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, maxWidth: 450, marginBottom: 22 }}>
+              Thoughtful pieces for festivals, birthdays, weddings, housewarmings, return gifts and moments that deserve a little more thought.
+            </p>
             <div className="gifting-list">
               <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Festival gifting</span>
               <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Birthday gifting</span>
               <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Wedding favours</span>
-              <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Rakhi</span>
+              <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Return gifts</span>
               <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Housewarming</span>
               <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Custom gifts</span>
             </div>
             <Button variant="outline" onClick={() => nav("catalogue", "category", { value: "gift-hampers" })} style={{ marginTop: 26 }}>Explore Gifting</Button>
           </div>
-          <Placeholder label="Gift hamper flat-lay" ratio="4 / 3" />
+          <Placeholder label="Hand-packed Mysaa Rituals gift hamper" ratio="4 / 3" />
         </div>
       </section>
 
+      {/* Brand story */}
       <section className="container" style={{ padding: "72px 20px" }}>
-        <HowToOrder steps={HOW_TO_ORDER_HOME} />
+        <div className="story-block">
+          <SectionHeading eyebrow="Our Story" title="More than a candle." />
+          <div style={{ marginTop: 24, display: "grid", gap: 16, ...sans, fontSize: 15.5, color: C.ink70, lineHeight: 1.8, maxWidth: 760 }}>
+            <p>Mysaa Rituals was created around a simple idea — that fragrance has the power to turn ordinary moments into memories.</p>
+            <p>Every piece is handcrafted with care, inspired by familiar Indian aromas and designed to become part of someone's ritual.</p>
+          </div>
+          <div style={{ marginTop: 26 }}>
+            <Button variant="ghost" onClick={() => nav("about")}>Read Our Story →</Button>
+          </div>
+        </div>
       </section>
 
+      {/* Why Mysaa */}
+      <section style={{ borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}` }}>
+        <div className="container" style={{ padding: "72px 20px" }}>
+          <SectionHeading eyebrow="Why Mysaa Rituals" title="Slow, deliberate, personal." />
+          <div style={{ marginTop: 34 }}><WhyGrid /></div>
+        </div>
+      </section>
+
+      {/* Order flow */}
+      <section className="container" style={{ padding: "72px 20px" }}>
+        <HowToOrder
+          steps={[
+            { title: "Choose", body: "Pick your fragrance, format or gift." },
+            { title: "Enquire", body: "Send us your order through WhatsApp." },
+            { title: "Personalize", body: "Share quantity, occasion and preferences." },
+            { title: "Confirm", body: "We confirm availability, final price and delivery details." },
+          ]}
+          title="Simple, personal, unhurried."
+        />
+      </section>
+
+      {/* Instagram / contact CTA */}
       <section style={{ background: C.ink, color: "#fff" }}>
         <div className="container" style={{ padding: "64px 20px", textAlign: "center" }}>
-          <h2 style={{ ...serif, fontSize: "clamp(22px,3.4vw,28px)", fontWeight: 500, marginBottom: 12 }}>Have something special in mind?</h2>
-          <p style={{ ...sans, fontSize: 14, color: "#D8CFC3", maxWidth: 420, margin: "0 auto 24px", lineHeight: 1.7 }}>
+          <p style={{ ...label, color: "#D8CFC3", marginBottom: 12 }}>Mysaa Rituals</p>
+          <h2 style={{ ...serif, fontSize: "clamp(26px,3.4vw,34px)", fontWeight: 500, marginBottom: 12 }}>Have something special in mind?</h2>
+          <p style={{ ...sans, fontSize: 14, color: "#D8CFC3", maxWidth: 460, margin: "0 auto 24px", lineHeight: 1.7 }}>
             Tell us what you're looking for and we'll help you create the right ritual.
           </p>
-          <a href={waLink(settings.whatsapp, "Hello Mysaa Rituals!")} target="_blank" rel="noreferrer" style={{ ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" }}>
-            Chat on WhatsApp
-          </a>
+          <div style={{ display: "flex", justifyContent: "center", gap: 22, flexWrap: "wrap" }}>
+            <a href={waLink(settings.whatsapp, "Hello Mysaa Rituals!")} target="_blank" rel="noreferrer" style={{ ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" }}>
+              Chat on WhatsApp
+            </a>
+            <a href={settings.instagram} target="_blank" rel="noreferrer" style={{ ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" }}>
+              Follow @mysaarituals
+            </a>
+          </div>
         </div>
       </section>
     </div>

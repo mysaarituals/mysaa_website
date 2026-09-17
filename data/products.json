@@ -548,5 +548,115 @@
       "assets/catalogue/raat-ki-rani/gift-hampers/02-detail.jpg",
       "assets/catalogue/raat-ki-rani/gift-hampers/03-lifestyle.jpg"
     ]
+  },
+  {
+    "slug": "saanjh-hero-jar-candle",
+    "name": "Saanjh Hero Jar Candle",
+    "categorySlug": "hero-jar-candle",
+    "fragranceSlug": "saanjh",
+    "price": 950,
+    "volume": "220 ml",
+    "weight": "",
+    "materials": "Natural soy wax, cotton wick, phthalate-free fragrance oils",
+    "packaging": "Mysaa Rituals signature packaging",
+    "shortDescription": "Saanjh in our hero jar candle.",
+    "about": "A Mysaa Rituals hero jar candle in the Saanjh fragrance — creamy vanilla softened by deep sandalwood, made for gifting, rituals and everyday moments.",
+    "bestseller": false,
+    "isNew": false,
+    "customizable": true,
+    "active": true,
+    "images": [
+      "assets/catalogue/saanjh/hero-jar-candle/01-cover.jpg",
+      "assets/catalogue/saanjh/hero-jar-candle/02-detail.jpg",
+      "assets/catalogue/saanjh/hero-jar-candle/03-lifestyle.jpg"
+    ]
+  },
+  {
+    "slug": "saanjh-wide-jar-candle",
+    "name": "Saanjh Wide Jar Candle",
+    "categorySlug": "wide-jar-candle",
+    "fragranceSlug": "saanjh",
+    "price": 650,
+    "volume": "120 ml",
+    "weight": "",
+    "materials": "Natural soy wax, cotton wick, phthalate-free fragrance oils",
+    "packaging": "Mysaa Rituals signature packaging",
+    "shortDescription": "Saanjh in our wide jar candle.",
+    "about": "A Mysaa Rituals wide jar candle in the Saanjh fragrance — creamy vanilla softened by deep sandalwood, made for gifting, rituals and everyday moments.",
+    "bestseller": false,
+    "isNew": true,
+    "customizable": true,
+    "active": true,
+    "images": [
+      "assets/catalogue/saanjh/wide-jar-candle/01-cover.jpg",
+      "assets/catalogue/saanjh/wide-jar-candle/02-detail.jpg",
+      "assets/catalogue/saanjh/wide-jar-candle/03-lifestyle.jpg"
+    ]
+  },
+  {
+    "slug": "saanjh-shot-glass-candle",
+    "name": "Saanjh Shot Glass Candle",
+    "categorySlug": "shot-glass-candle",
+    "fragranceSlug": "saanjh",
+    "price": 350,
+    "volume": "60 ml",
+    "weight": "",
+    "materials": "Natural soy wax, cotton wick, phthalate-free fragrance oils",
+    "packaging": "Mysaa Rituals signature packaging",
+    "shortDescription": "Saanjh in our shot glass candle.",
+    "about": "A Mysaa Rituals shot glass candle in the Saanjh fragrance — creamy vanilla softened by deep sandalwood, made for gifting, rituals and everyday moments.",
+    "bestseller": false,
+    "isNew": false,
+    "customizable": true,
+    "active": true,
+    "images": [
+      "assets/catalogue/saanjh/shot-glass-candle/01-cover.jpg",
+      "assets/catalogue/saanjh/shot-glass-candle/02-detail.jpg",
+      "assets/catalogue/saanjh/shot-glass-candle/03-lifestyle.jpg"
+    ]
+  },
+  {
+    "slug": "saanjh-wax-melts",
+    "name": "Saanjh Wax Sachet Combo",
+    "categorySlug": "wax-melts",
+    "fragranceSlug": "saanjh",
+    "price": 350,
+    "volume": "",
+    "weight": "",
+    "materials": "Natural soy wax, cotton wick, phthalate-free fragrance oils",
+    "packaging": "Mysaa Rituals signature packaging",
+    "shortDescription": "Saanjh in our wax sachet combo.",
+    "about": "A Mysaa Rituals wax sachet combo in the Saanjh fragrance — creamy vanilla softened by deep sandalwood, made for gifting, rituals and everyday moments.",
+    "bestseller": false,
+    "isNew": false,
+    "customizable": true,
+    "active": true,
+    "images": [
+      "assets/catalogue/saanjh/wax-melts/01-cover.jpg",
+      "assets/catalogue/saanjh/wax-melts/02-detail.jpg",
+      "assets/catalogue/saanjh/wax-melts/03-lifestyle.jpg"
+    ]
+  },
+  {
+    "slug": "saanjh-gift-hampers",
+    "name": "Saanjh Gift Hampers",
+    "categorySlug": "gift-hampers",
+    "fragranceSlug": "saanjh",
+    "price": 0,
+    "volume": "",
+    "weight": "",
+    "materials": "Natural soy wax, cotton wick, phthalate-free fragrance oils",
+    "packaging": "Mysaa Rituals signature packaging",
+    "shortDescription": "Saanjh in our gift hamper.",
+    "about": "A Mysaa Rituals gift hamper in the Saanjh fragrance — creamy vanilla softened by deep sandalwood, made for gifting, rituals and everyday moments.",
+    "bestseller": false,
+    "isNew": false,
+    "customizable": true,
+    "active": true,
+    "images": [
+      "assets/catalogue/saanjh/gift-hampers/01-cover.jpg",
+      "assets/catalogue/saanjh/gift-hampers/02-detail.jpg",
+      "assets/catalogue/saanjh/gift-hampers/03-lifestyle.jpg"
+    ]
   }
 ]
