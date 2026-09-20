@@ -658,5 +658,27 @@
       "assets/catalogue/saanjh/gift-hampers/02-detail.jpg",
       "assets/catalogue/saanjh/gift-hampers/03-lifestyle.jpg"
     ]
+  },
+  {
+    "slug": "discover-set-6-shot-glass-candles",
+    "name": "Mysaa Rituals Discover Set",
+    "categorySlug": "discovery-set",
+    "fragranceSlug": "all-fragrances",
+    "price": 2200,
+    "volume": "6 × 60 ml",
+    "weight": "",
+    "materials": "Natural soy wax, cotton wick, phthalate-free fragrance oils",
+    "packaging": "Discover Set presentation box",
+    "shortDescription": "All six Mysaa Rituals fragrances in six 60 ml shot glass jar candles.",
+    "about": "A discovery set featuring all six Mysaa Rituals fragrances — six 60 ml shot glass jar candles designed to let you experience the full fragrance collection in one beautiful set.",
+    "bestseller": false,
+    "isNew": true,
+    "customizable": false,
+    "active": true,
+    "images": [
+      "assets/catalogue/all-fragrances/discovery-set/01-discover-set.jpg",
+      "assets/catalogue/all-fragrances/discovery-set/02-gulab-ki-chitthi.jpg",
+      "assets/catalogue/all-fragrances/discovery-set/03-dhoop-chandan.jpg"
+    ]
   }
 ]

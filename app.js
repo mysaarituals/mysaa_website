@@ -26,6 +26,51 @@ const serif = { fontFamily: "'Cormorant Garamond', serif" };
 const sans = { fontFamily: "'Karla', sans-serif" };
 const label = { ...sans, fontSize: 11.5, letterSpacing: "0.11em", textTransform: "uppercase" };
 const inr = (n) => Number(n || 0) > 0 ? `₹${Number(n).toLocaleString("en-IN")}` : "Enquire";
+// Product customisation pricing. Standard packaging is included in the base price.
+// Premium packaging adds ₹200. Jar flower mould adds ₹100.
+const PACKAGING_OPTIONS = {
+    standard: {
+        label: "Standard Packaging",
+        shortLabel: "Standard",
+        priceDelta: 0,
+        description: "Our carefully packed everyday presentation, keeping the Mysaa Rituals experience simple and beautiful."
+    },
+    premium: {
+        label: "Premium Packaging",
+        shortLabel: "Premium (+₹200)",
+        priceDelta: 200,
+        description: "An elevated, fragrance-led presentation designed to let you experience the nostalgia or feeling carried by the underlying fragrance from the moment you open it."
+    }
+};
+const JAR_VARIANTS = {
+    plain: {
+        label: "Classic Top — No Flower",
+        shortLabel: "No Flower",
+        priceDelta: 0,
+        description: "A clean, minimal wax surface."
+    },
+    flower: {
+        label: "Flower Mould on Top",
+        shortLabel: "Flower Mould (+₹100)",
+        priceDelta: 100,
+        description: "Finished with a handcrafted flower mould on top for an extra decorative touch."
+    }
+};
+const DISCOVERY_SET_SLUG = "discover-set-6-shot-glass-candles";
+const DISCOVERY_SET_FRAGRANCES = [
+    "gulab-ki-chitthi",
+    "dhoop-chandan",
+    "gajre-ka-shringar",
+    "madhuban",
+    "raat-ki-rani",
+    "saanjh",
+];
+function isJarProduct(product) {
+    return product && ["hero-jar-candle", "wide-jar-candle"].includes(product.categorySlug);
+}
+function supportsPackaging(product) {
+    return product && ["hero-jar-candle", "wide-jar-candle", "wax-melts"].includes(product.categorySlug);
+}
 function productImage(product, images, index = 0) {
     const key = `${product.fragranceSlug}/${product.categorySlug}`;
     const list = (images && images.products && images.products[key]) || [];
@@ -305,7 +350,7 @@ function ProductCard({ product, fragrance, images, nav }) {
 }
 function FragranceCard({ fragrance, images, nav }) {
     return (React.createElement("button", { onClick: () => nav("catalogue", "fragrance", { value: fragrance.slug }), style: { textAlign: "left", display: "block" } },
-        React.createElement(ImageOrPlaceholder, { src: fragranceImage(fragrance, images, 0), label: fragrance.name, ratio: "1 / 1" }),
+        React.createElement(ImageOrPlaceholder, { src: fragranceImage(fragrance, images, 0), label: fragrance.name, ratio: "4 / 5" }),
         React.createElement("div", { style: { paddingTop: 14 } },
             React.createElement("h3", { style: { ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 6 } }, fragrance.name),
             React.createElement("p", { style: { ...sans, fontSize: 13, color: C.ink70, lineHeight: 1.6, marginBottom: 8 }, className: "line-clamp-2" }, fragrance.description),
@@ -352,6 +397,7 @@ function HomePage({ data, nav, settings }) {
     const featured = data.products
         .filter((p) => p.active && p.categorySlug === "wide-jar-candle")
         .slice(0, 6);
+    const discoverySet = data.products.find((p) => p.slug === DISCOVERY_SET_SLUG);
     const feelingGroups = [
         {
             title: "Warm & Grounding",
@@ -402,6 +448,15 @@ function HomePage({ data, nav, settings }) {
             React.createElement(SectionHeading, { eyebrow: "The Fragrances", title: "Every fragrance holds a feeling.", sub: "From the warmth of sandalwood to the romance of jasmine and the mystery of night-blooming flowers, each Mysaa Ritual is created to evoke something personal." })),
         React.createElement("section", { className: "container", style: { padding: "24px 20px 72px" } },
             React.createElement("div", { className: "fragrance-grid" }, activeFragrances.map((f) => (React.createElement(FragranceCard, { key: f.slug, fragrance: f, images: data.images, nav: nav }))))),
+        discoverySet && (React.createElement("section", { className: "container", style: { padding: "8px 20px 72px" } },
+            React.createElement("div", { className: "discovery-set-feature" },
+                React.createElement(ImageOrPlaceholder, { src: productImage(discoverySet, data.images, 0), label: discoverySet.name, ratio: "4 / 3" }),
+                React.createElement("div", null,
+                    React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 12 } }, "New \u00B7 Discover Set"),
+                    React.createElement("h2", { style: { ...serif, fontSize: "clamp(28px,3.6vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 12 } }, "Six fragrances. One beautiful beginning."),
+                    React.createElement("p", { style: { ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, maxWidth: 520, marginBottom: 18 } }, "Explore all six Mysaa Rituals fragrances in six 60 ml shot glass jar candles \u2014 a complete set for discovering the scent that becomes your ritual."),
+                    React.createElement("p", { style: { ...sans, fontSize: 18, color: C.ink, marginBottom: 20 } }, inr(discoverySet.price)),
+                    React.createElement(Button, { variant: "outline", onClick: () => nav("product", discoverySet.slug) }, "View Discover Set \u2192"))))),
         React.createElement("section", { style: { background: C.card, borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}` } },
             React.createElement("div", { className: "container", style: { padding: "72px 20px" } },
                 React.createElement(SectionHeading, { eyebrow: "Discover", title: "Discover your ritual", align: "center" }),
@@ -554,8 +609,35 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
                     " found"),
                 React.createElement("div", { className: "product-grid" }, filtered.map((p) => React.createElement(ProductCard, { key: p.slug, product: p, fragrance: fragranceById[p.fragranceSlug], images: data.images, nav: nav })))))))));
 }
+function ProductGallery({ product, images }) {
+    const gallery = (images && images.products && images.products[`${product.fragranceSlug}/${product.categorySlug}`]) || [];
+    const [activeIndex, setActiveIndex] = useState(0);
+    const total = gallery.length;
+    useEffect(() => {
+        setActiveIndex(0);
+    }, [product.slug]);
+    const move = (direction) => {
+        if (total < 2)
+            return;
+        setActiveIndex((current) => (current + direction + total) % total);
+    };
+    return (React.createElement("div", { className: "product-gallery" },
+        React.createElement("div", { style: { position: "relative" } },
+            React.createElement(ImageOrPlaceholder, { src: gallery[activeIndex], label: product.name, ratio: "4 / 5" }),
+            total > 1 && (React.createElement(React.Fragment, null,
+                React.createElement("button", { className: "gallery-arrow gallery-arrow-left", onClick: () => move(-1), "aria-label": "Previous product image" }, "\u2039"),
+                React.createElement("button", { className: "gallery-arrow gallery-arrow-right", onClick: () => move(1), "aria-label": "Next product image" }, "\u203A"),
+                React.createElement("div", { className: "gallery-counter" },
+                    activeIndex + 1,
+                    " / ",
+                    total)))),
+        total > 1 && (React.createElement("div", { className: "product-gallery-thumbs", "aria-label": "Product photographs" }, gallery.map((src, index) => (React.createElement("button", { key: src, className: `gallery-thumb${index === activeIndex ? " active" : ""}`, onClick: () => setActiveIndex(index), "aria-label": `View product image ${index + 1}`, "aria-current": index === activeIndex ? "true" : undefined },
+            React.createElement("img", { src: src, alt: `${product.name} photograph ${index + 1}` }))))))));
+}
 function ProductDetailPage({ data, nav, slug, settings }) {
     const [qty, setQty] = useState(1);
+    const [packaging, setPackaging] = useState("standard");
+    const [jarVariant, setJarVariant] = useState("plain");
     const product = data.products.find((p) => p.slug === slug);
     if (!product) {
         return (React.createElement("div", { className: "container", style: { padding: "80px 20px", textAlign: "center" } },
@@ -564,15 +646,23 @@ function ProductDetailPage({ data, nav, slug, settings }) {
     }
     const category = data.categories.find((c) => c.slug === product.categorySlug);
     const fragrance = data.fragrances.find((f) => f.slug === product.fragranceSlug);
+    const isDiscoverySet = product.slug === DISCOVERY_SET_SLUG;
     const related = data.products.filter((p) => p.active && p.categorySlug === product.categorySlug && p.slug !== product.slug).slice(0, 4);
-    const enquiryMsg = `Hello Mysaa Rituals! I'd like to order:\n\n${product.name}\nQuantity: ${qty}\nPrice: ${inr(product.price * qty)}\n\nCould you confirm availability and delivery details?`;
+    const hasPackagingOptions = supportsPackaging(product);
+    const hasJarVariants = isJarProduct(product);
+    const packagingChoice = hasPackagingOptions ? PACKAGING_OPTIONS[packaging] : PACKAGING_OPTIONS.standard;
+    const jarChoice = hasJarVariants ? JAR_VARIANTS[jarVariant] : JAR_VARIANTS.plain;
+    const unitPrice = Number(product.price || 0) + (hasPackagingOptions ? packagingChoice.priceDelta : 0) + (hasJarVariants ? jarChoice.priceDelta : 0);
+    const totalPrice = unitPrice * qty;
+    const enquiryMsg = `Hello Mysaa Rituals! I'd like to order:\n\n${product.name}\nQuantity: ${qty}\nPackaging: ${isDiscoverySet ? "Discover Set presentation" : (hasPackagingOptions ? packagingChoice.label : "Standard")}\n${hasJarVariants ? `Jar finish: ${jarChoice.label}\n` : ""}Unit price: ${inr(unitPrice)}\nTotal: ${inr(totalPrice)}\n\nCould you confirm availability and delivery details?`;
     const infoRows = [
         ["Size", product.volume],
         ["Weight", product.weight],
         ["Variant", fragrance ? fragrance.name : ""],
         ["Fragrance Notes", fragrance ? fragrance.notes : ""],
         ["Material / Ingredients", product.materials],
-        ["Packaging", product.packaging],
+        ["Packaging", hasPackagingOptions ? packagingChoice.label : product.packaging],
+        ["Jar Finish", hasJarVariants ? jarChoice.label : ""],
         ["Collection", category ? category.name : ""],
     ].filter(([, v]) => v);
     return (React.createElement("div", { className: "container", style: { padding: "32px 20px 80px" } },
@@ -583,14 +673,32 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             " / ",
             React.createElement("span", { style: { color: C.ink } }, product.name)),
         React.createElement("div", { className: "product-detail-grid" },
-            React.createElement(ImageOrPlaceholder, { src: productImage(product, data.images, 0), label: product.name, ratio: "4 / 5" }),
+            React.createElement(ProductGallery, { product: product, images: data.images }),
             React.createElement("div", null,
                 React.createElement("h1", { style: { ...serif, fontSize: "clamp(26px,4vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 14 } }, product.name),
-                React.createElement("p", { style: { ...sans, fontSize: 22, color: C.ink, marginBottom: 16 } }, inr(product.price)),
+                React.createElement("p", { style: { ...sans, fontSize: 22, color: C.ink, marginBottom: 6 } }, inr(unitPrice)),
+                (hasPackagingOptions || hasJarVariants) && (React.createElement("p", { style: { ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 } },
+                    "Base price ",
+                    inr(product.price),
+                    " \u00B7 final price updates with your selections")),
                 React.createElement("p", { style: { ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, marginBottom: 28 } }, product.shortDescription),
                 fragrance && (React.createElement("div", { style: { marginBottom: 24 } },
                     React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Variant"),
                     React.createElement("span", { style: { ...sans, fontSize: 13, padding: "9px 16px", border: `1px solid ${C.ink}`, display: "inline-block" } }, fragrance.name))),
+                hasJarVariants && (React.createElement("div", { style: { marginBottom: 24 } },
+                    React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Jar Finish"),
+                    React.createElement("div", { className: "option-grid" }, Object.entries(JAR_VARIANTS).map(([key, option]) => (React.createElement("button", { key: key, onClick: () => setJarVariant(key), className: `selection-card${jarVariant === key ? " selected" : ""}` },
+                        React.createElement("span", { style: { ...sans, fontSize: 13.5, color: C.ink, fontWeight: 500 } }, option.label),
+                        React.createElement("span", { style: { ...sans, fontSize: 12.5, color: C.ink70, marginTop: 5 } }, option.priceDelta ? `+${inr(option.priceDelta)}` : "Included"))))),
+                    React.createElement("p", { style: { ...sans, fontSize: 12.5, color: C.ink70, lineHeight: 1.6, marginTop: 10 } }, jarChoice.description))),
+                hasPackagingOptions && (React.createElement("div", { style: { marginBottom: 28 } },
+                    React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Packaging"),
+                    React.createElement("div", { className: "option-grid" }, Object.entries(PACKAGING_OPTIONS).map(([key, option]) => (React.createElement("button", { key: key, onClick: () => setPackaging(key), className: `selection-card${packaging === key ? " selected" : ""}` },
+                        React.createElement("span", { style: { ...sans, fontSize: 13.5, color: C.ink, fontWeight: 500 } }, option.label),
+                        React.createElement("span", { style: { ...sans, fontSize: 12.5, color: C.ink70, marginTop: 5 } }, option.priceDelta ? `+${inr(option.priceDelta)}` : "Included"))))),
+                    React.createElement("div", { className: "packaging-note" },
+                        React.createElement("strong", { style: { ...serif, fontSize: 17, fontWeight: 500, color: C.ink } }, packagingChoice.label),
+                        React.createElement("p", { style: { ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.7, marginTop: 6 } }, packagingChoice.description)))),
                 React.createElement("div", { style: { marginBottom: 28 } },
                     React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Quantity"),
                     React.createElement("div", { style: { display: "inline-flex", alignItems: "center", border: `1px solid ${C.line}` } },
@@ -603,7 +711,20 @@ function ProductDetailPage({ data, nav, slug, settings }) {
                 product.customizable && (React.createElement("button", { onClick: () => nav("create-ritual"), style: { ...label, color: C.rust, marginTop: 18, display: "block", textDecoration: "underline", textUnderlineOffset: "3px" } }, "Want this customized instead? \u2192")),
                 React.createElement("div", { className: "hairline-top", style: { marginTop: 32 } },
                     React.createElement("h2", { style: { ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 } }, "About this Product"),
-                    React.createElement("p", { style: { ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75 } }, product.about)))),
+                    React.createElement("p", { style: { ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75 } }, product.about)),
+                isDiscoverySet && (React.createElement("div", { className: "hairline-top", style: { marginTop: 32 } },
+                    React.createElement("h2", { style: { ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 } }, "What's Inside the Discover Set"),
+                    React.createElement("p", { style: { ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75, marginBottom: 14 } }, "Six 60 ml shot glass jar candles, one in each Mysaa Rituals fragrance, so you can experience the full collection and discover the scent that feels most personal to you."),
+                    React.createElement("div", { className: "discovery-fragrance-list" }, DISCOVERY_SET_FRAGRANCES.map((slug, index) => {
+                        const f = data.fragrances.find((item) => item.slug === slug);
+                        return f ? (React.createElement("div", { key: slug, className: "discovery-fragrance-item" },
+                            React.createElement("span", { style: { ...label, color: C.rust } }, String(index + 1).padStart(2, "0")),
+                            React.createElement("span", { style: { ...serif, fontSize: 17, color: C.ink } }, f.name))) : null;
+                    })))),
+                hasPackagingOptions && (React.createElement("div", { className: "hairline-top", style: { marginTop: 32 } },
+                    React.createElement("h2", { style: { ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 } }, "About the Packaging"),
+                    React.createElement("p", { style: { ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75, marginBottom: 10 } }, "Choose between our standard presentation or premium packaging. Premium packaging is designed as part of the fragrance ritual \u2014 helping the unboxing feel connected to the nostalgia, mood and feeling of the fragrance itself."),
+                    React.createElement("p", { style: { ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.7 } }, "Standard packaging is included in the product price. Premium packaging is an additional \u20B9200."))))),
         React.createElement("div", { style: { marginTop: 56 } },
             React.createElement("h2", { style: { ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 20 } }, "Product Information"),
             React.createElement("div", null, infoRows.map(([k, v]) => (React.createElement("div", { key: k, style: { display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "space-between", padding: "14px 0", borderBottom: `1px solid ${C.line}` } },

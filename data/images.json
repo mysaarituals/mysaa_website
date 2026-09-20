@@ -1,5 +1,14 @@
 {
   "products": {
+    "all-fragrances/discovery-set": [
+      "assets/catalogue/all-fragrances/discovery-set/01-discover-set.jpg",
+      "assets/catalogue/all-fragrances/discovery-set/02-gulab-ki-chitthi.jpg",
+      "assets/catalogue/all-fragrances/discovery-set/03-dhoop-chandan.jpg",
+      "assets/catalogue/all-fragrances/discovery-set/04-gajre-ka-shringar.jpg",
+      "assets/catalogue/all-fragrances/discovery-set/05-madhuban.jpg",
+      "assets/catalogue/all-fragrances/discovery-set/06-raat-ki-rani.jpg",
+      "assets/catalogue/all-fragrances/discovery-set/07-saanjh.jpg"
+    ],
     "dhoop-chandan/gift-hampers": [
       "assets/catalogue/dhoop-chandan/gift-hampers/01_dhoop%20and%20chandan%20gift%20hamper.jpeg",
       "assets/catalogue/dhoop-chandan/gift-hampers/02_dhoop%20and%20chandan%20shot%20glass.jpeg",

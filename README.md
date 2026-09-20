@@ -189,3 +189,18 @@ python3 scripts/xlsx_to_json.py
 Then push the updated `data/*.json` files to GitHub. This does not
 touch photos — run `build_image_manifest.py` separately if you've
 also changed photos.
+
+## Product options and galleries
+
+- Hero Jar Candle and Wide Jar Candle now have two finish options: Classic Top — No Flower (included) and Flower Mould on Top (+₹100).
+- Hero Jar Candle, Wide Jar Candle, and Wax Sachet Combo now have Standard Packaging (included) and Premium Packaging (+₹200).
+- Premium packaging is described on the product detail page as a fragrance-led, more immersive presentation intended to carry the nostalgia or feeling of the underlying fragrance into the unboxing experience.
+- Product detail pages now show every photograph found in the corresponding `assets/catalogue/<fragrance>/<category>/` folder, with previous/next controls, a counter, and scrollable thumbnails.
+- After adding or renaming catalogue photos, run `python3 scripts/build_image_manifest.py` and recompile `app.jsx` to `app.js` before publishing.
+
+## Recent catalogue updates
+
+- Added **Mysaa Rituals Discover Set**: 6 × 60 ml shot glass candles covering all six fragrances, priced at **₹2,200**.
+- Added a dedicated Discovery Set category and product-detail section listing all six fragrances.
+- The Discover Set uses existing Mysaa fragrance photography for its gallery; dedicated shot-glass photos can be added later to the same `assets/catalogue/all-fragrances/discovery-set/` folder and will automatically appear in the product gallery after rebuilding the image manifest.
+- Homepage fragrance cards now use a taller **4:5** image area for better portrait-image presentation.

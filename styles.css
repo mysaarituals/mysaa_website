@@ -210,3 +210,42 @@ button:hover, a:hover { opacity: .82; }
 @media (min-width:1200px) {
   .fragrance-grid { grid-template-columns:repeat(6,1fr); gap:18px; }
 }
+
+/* Product customisation + image gallery */
+.option-grid { display:grid; grid-template-columns:1fr; gap:10px; }
+@media (min-width:520px) { .option-grid { grid-template-columns:repeat(2,1fr); } }
+.selection-card {
+  display:flex; flex-direction:column; align-items:flex-start; text-align:left;
+  padding:14px 15px; border:1px solid var(--border); background:#fff;
+}
+.selection-card:hover { border-color:var(--clay); opacity:1; }
+.selection-card.selected { border-color:var(--ink); box-shadow:inset 0 0 0 1px var(--ink); background:var(--card); }
+.packaging-note { margin-top:12px; padding:15px 16px; background:var(--card); border:1px solid var(--border); }
+.product-gallery { min-width:0; }
+.gallery-arrow {
+  position:absolute; top:50%; transform:translateY(-50%); z-index:2;
+  width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:rgba(250,247,240,.92); border:1px solid var(--border); color:var(--ink);
+  font-family:Georgia,serif; font-size:28px; line-height:1; box-shadow:0 4px 14px rgba(68,55,47,.12);
+}
+.gallery-arrow:hover { opacity:1; background:#fff; }
+.gallery-arrow-left { left:14px; }
+.gallery-arrow-right { right:14px; }
+.gallery-counter {
+  position:absolute; right:14px; bottom:14px; padding:6px 9px;
+  background:rgba(68,55,47,.78); color:#fff; font:500 11px 'Karla',sans-serif; letter-spacing:.08em;
+}
+.product-gallery-thumbs {
+  display:flex; gap:10px; overflow-x:auto; padding:12px 2px 3px; scrollbar-width:thin;
+  -webkit-overflow-scrolling:touch;
+}
+.gallery-thumb { flex:0 0 76px; width:76px; height:92px; padding:0; border:1px solid var(--border); background:var(--card); overflow:hidden; }
+.gallery-thumb img { width:100%; height:100%; object-fit:cover; }
+.gallery-thumb.active { border-color:var(--ink); box-shadow:inset 0 0 0 1px var(--ink); }
+
+/* Discovery Set */
+.discovery-set-feature { display:grid; grid-template-columns:1fr; gap:34px; align-items:center; }
+@media (min-width:860px) { .discovery-set-feature { grid-template-columns:1.05fr .95fr; gap:64px; } }
+.discovery-fragrance-list { display:grid; grid-template-columns:1fr; border-top:1px solid var(--border); }
+@media (min-width:520px) { .discovery-fragrance-list { grid-template-columns:repeat(2,1fr); } }
+.discovery-fragrance-item { display:flex; align-items:center; gap:12px; padding:12px 8px; border-bottom:1px solid var(--border); }
