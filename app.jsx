@@ -37,14 +37,12 @@ const PACKAGING_OPTIONS = {
     shortLabel: "Standard",
     priceDelta: 0,
     description: "Our carefully packed everyday presentation, keeping the Mysaa Rituals experience simple and beautiful."
-  },
-  premium: {
-    label: "Premium Packaging — Coming Soon",
-    shortLabel: "Coming Soon",
-    priceDelta: 0,
-    comingSoon: true,
-    description: "Premium packaging is coming soon. We’ll introduce the elevated fragrance-led presentation once it is ready."
   }
+};
+
+const PREMIUM_PACKAGING = {
+  label: "Premium Packaging — Coming Soon",
+  description: "Premium packaging is coming soon. It is not currently available and does not change the product price."
 };
 
 const JAR_VARIANTS = {
@@ -945,7 +943,6 @@ function ProductGallery({ product, images }) {
 
 function ProductDetailPage({ data, nav, slug, settings }) {
   const [qty, setQty] = useState(1);
-  const [packaging, setPackaging] = useState("standard");
   const [jarVariant, setJarVariant] = useState("plain");
   const product = data.products.find((p) => p.slug === slug);
 
@@ -964,9 +961,9 @@ function ProductDetailPage({ data, nav, slug, settings }) {
   const related = data.products.filter((p) => p.active && p.categorySlug === product.categorySlug && p.slug !== product.slug).slice(0, 4);
   const hasPackagingOptions = supportsPackaging(product);
   const hasJarVariants = isJarProduct(product);
-  const packagingChoice = hasPackagingOptions ? PACKAGING_OPTIONS[packaging] : PACKAGING_OPTIONS.standard;
+  const packagingChoice = PACKAGING_OPTIONS.standard;
   const jarChoice = hasJarVariants ? JAR_VARIANTS[jarVariant] : JAR_VARIANTS.plain;
-  const unitPrice = Number(product.price || 0) + (hasPackagingOptions ? packagingChoice.priceDelta : 0) + (hasJarVariants ? jarChoice.priceDelta : 0);
+  const unitPrice = Number(product.price || 0) + (hasJarVariants ? jarChoice.priceDelta : 0);
   const totalPrice = unitPrice * qty;
 
   const enquiryMsg = `Hello Mysaa Rituals! I'd like to order:\n\n${product.name}\nQuantity: ${qty}\nPackaging: ${isDiscoverySet ? "Discover Set presentation" : (hasPackagingOptions ? packagingChoice.label : "Standard")}\n${hasJarVariants ? `Jar finish: ${jarChoice.label}\n` : ""}Unit price: ${inr(unitPrice)}\nTotal: ${inr(totalPrice)}\n\nCould you confirm availability and delivery details?`;
@@ -1029,16 +1026,19 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             <div style={{ marginBottom: 28 }}>
               <p style={{ ...label, color: C.ink70, marginBottom: 10 }}>Packaging</p>
               <div className="option-grid">
-                {Object.entries(PACKAGING_OPTIONS).map(([key, option]) => (
-                  <button key={key} disabled={option.comingSoon} onClick={() => !option.comingSoon && setPackaging(key)} className={`selection-card${packaging === key ? " selected" : ""}${option.comingSoon ? " coming-soon" : ""}`}>
-                    <span style={{ ...sans, fontSize: 13.5, color: option.comingSoon ? C.ink70 : C.ink, fontWeight: 500 }}>{option.label}</span>
-                    <span style={{ ...sans, fontSize: 12.5, color: option.comingSoon ? C.rust : C.ink70, marginTop: 5 }}>{option.comingSoon ? "Coming Soon" : "Included"}</span>
-                  </button>
-                ))}
+                <div className="selection-card selected" aria-current="true">
+                  <span style={{ ...sans, fontSize: 13.5, color: C.ink, fontWeight: 500 }}>Standard Packaging</span>
+                  <span style={{ ...sans, fontSize: 12.5, color: C.ink70, marginTop: 5 }}>Included</span>
+                </div>
+                <div className="selection-card coming-soon" aria-disabled="true">
+                  <span style={{ ...sans, fontSize: 13.5, color: C.ink70, fontWeight: 500 }}>{PREMIUM_PACKAGING.label}</span>
+                  <span style={{ ...sans, fontSize: 12.5, color: C.rust, marginTop: 5 }}>Coming Soon</span>
+                </div>
               </div>
               <div className="packaging-note">
                 <strong style={{ ...serif, fontSize: 17, fontWeight: 500, color: C.ink }}>{packagingChoice.label}</strong>
                 <p style={{ ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.7, marginTop: 6 }}>{packagingChoice.description}</p>
+                <p style={{ ...sans, fontSize: 12.5, color: C.rust, lineHeight: 1.6, marginTop: 8 }}>{PREMIUM_PACKAGING.description}</p>
               </div>
             </div>
           )}

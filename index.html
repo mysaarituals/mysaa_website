@@ -40,6 +40,20 @@
   "sameAs": ["https://instagram.com/mysaarituals"]
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Mysaa Rituals",
+  "url": "https://mysaarituals.github.io/mysaa_website/",
+  "description": "Handcrafted candles and gifts inspired by Indian fragrances, memories and everyday rituals.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Mysaa Rituals",
+    "url": "https://mysaarituals.github.io/mysaa_website/"
+  }
+}
+</script>
 
 
 <!-- React (pre-compiled app.js — no in-browser JSX transform needed) -->
@@ -47,7 +61,17 @@
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 </head>
 <body>
-<div id="root"></div>
+<div id="root">
+  <section class="seo-fallback" aria-label="Mysaa Rituals">
+    <h1>Mysaa Rituals — Handcrafted Fragrance &amp; Gifting</h1>
+    <p>Discover handcrafted soy wax candles, fragrance-led gifting and personalised rituals inspired by Indian memories and everyday moments.</p>
+    <nav aria-label="Mysaa Rituals">
+      <a href="https://mysaarituals.github.io/mysaa_website/">Home</a>
+      <a href="https://mysaarituals.github.io/mysaa_website/#/catalogue">Shop the catalogue</a>
+      <a href="https://mysaarituals.github.io/mysaa_website/#/create-ritual">Create your ritual</a>
+    </nav>
+  </section>
+</div>
 <script src="app.js"></script>
 </body>
 </html>
