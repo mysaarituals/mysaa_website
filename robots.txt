@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mysaarituals.github.io/mysaa_website/sitemap.xml

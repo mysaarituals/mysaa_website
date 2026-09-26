@@ -27,7 +27,7 @@ const sans = { fontFamily: "'Karla', sans-serif" };
 const label = { ...sans, fontSize: 11.5, letterSpacing: "0.11em", textTransform: "uppercase" };
 const inr = (n) => Number(n || 0) > 0 ? `₹${Number(n).toLocaleString("en-IN")}` : "Enquire";
 // Product customisation pricing. Standard packaging is included in the base price.
-// Premium packaging adds ₹200. Jar flower mould adds ₹100.
+// Premium packaging is currently marked Coming Soon. Jar flower mould adds ₹100.
 const PACKAGING_OPTIONS = {
     standard: {
         label: "Standard Packaging",
@@ -36,10 +36,11 @@ const PACKAGING_OPTIONS = {
         description: "Our carefully packed everyday presentation, keeping the Mysaa Rituals experience simple and beautiful."
     },
     premium: {
-        label: "Premium Packaging",
-        shortLabel: "Premium (+₹200)",
-        priceDelta: 200,
-        description: "An elevated, fragrance-led presentation designed to let you experience the nostalgia or feeling carried by the underlying fragrance from the moment you open it."
+        label: "Premium Packaging — Coming Soon",
+        shortLabel: "Coming Soon",
+        priceDelta: 0,
+        comingSoon: true,
+        description: "Premium packaging is coming soon. We’ll introduce the elevated fragrance-led presentation once it is ready."
     }
 };
 const JAR_VARIANTS = {
@@ -64,6 +65,16 @@ const DISCOVERY_SET_FRAGRANCES = [
     "madhuban",
     "raat-ki-rani",
     "saanjh",
+];
+const FEELING_FILTERS = [
+    { slug: "warm-grounding", title: "Warm & Grounding", description: "For quiet evenings, familiar rituals and comforting spaces.", fragrances: ["dhoop-chandan", "saanjh"] },
+    { slug: "romantic-nostalgic", title: "Romantic & Nostalgic", description: "Soft florals and memories that feel close to the heart.", fragrances: ["gulab-ki-chitthi", "gajre-ka-shringar"] },
+    { slug: "dreamy-evening", title: "Dreamy & Evening", description: "Night-blooming florals made for slower, intimate moments.", fragrances: ["madhuban", "raat-ki-rani"] },
+];
+const OCCASION_FILTERS = [
+    { slug: "festivals-celebrations", title: "Festivals & Celebrations", description: "Thoughtful candles, sachets and hampers for festive moments.", categories: ["gift-hampers", "discovery-set", "hero-jar-candle", "wide-jar-candle", "shot-glass-candle", "wax-melts"] },
+    { slug: "weddings-return-gifts", title: "Weddings & Return Gifts", description: "Personalised pieces for wedding favours, events and guests.", categories: ["gift-hampers", "wax-melts", "shot-glass-candle"] },
+    { slug: "birthdays-just-because", title: "Birthdays & Just Because", description: "Small, personal gifts for someone you want to make smile.", categories: ["gift-hampers", "discovery-set", "shot-glass-candle", "wide-jar-candle"] },
 ];
 function isJarProduct(product) {
     return product && ["hero-jar-candle", "wide-jar-candle"].includes(product.categorySlug);
@@ -398,40 +409,8 @@ function HomePage({ data, nav, settings }) {
         .filter((p) => p.active && p.categorySlug === "wide-jar-candle")
         .slice(0, 6);
     const discoverySet = data.products.find((p) => p.slug === DISCOVERY_SET_SLUG);
-    const feelingGroups = [
-        {
-            title: "Warm & Grounding",
-            body: "For quiet evenings, familiar rituals and comforting spaces.",
-            fragrances: ["dhoop-chandan", "saanjh"],
-        },
-        {
-            title: "Romantic & Nostalgic",
-            body: "Soft florals and memories that feel close to the heart.",
-            fragrances: ["gulab-ki-chitthi", "gajre-ka-shringar"],
-        },
-        {
-            title: "Dreamy & Evening",
-            body: "Night-blooming florals made for slower, more intimate moments.",
-            fragrances: ["madhuban", "raat-ki-rani"],
-        },
-    ];
-    const occasionGroups = [
-        {
-            title: "Festivals & Celebrations",
-            body: "Thoughtful candles, sachets and hampers for festive moments.",
-            action: () => nav("catalogue", "category", { value: "gift-hampers" }),
-        },
-        {
-            title: "Weddings & Return Gifts",
-            body: "Personalised pieces for wedding favours, events and guests.",
-            action: () => nav("create-ritual"),
-        },
-        {
-            title: "Birthdays & Just Because",
-            body: "Small, personal gifts for someone you want to make smile.",
-            action: () => nav("create-ritual"),
-        },
-    ];
+    const feelingGroups = FEELING_FILTERS;
+    const occasionGroups = OCCASION_FILTERS;
     return (React.createElement("div", null,
         React.createElement("section", { style: { borderBottom: `1px solid ${C.line}` } },
             React.createElement("div", { className: "container hero-grid", style: { padding: "72px 20px 64px" } },
@@ -439,10 +418,16 @@ function HomePage({ data, nav, settings }) {
                     React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 16 } }, "Handcrafted in small batches"),
                     React.createElement("h1", { style: { ...serif, fontSize: "clamp(38px,6vw,56px)", color: C.ink, fontWeight: 500, lineHeight: 1.02, marginBottom: 20 } }, "Fragrance, Made Personal."),
                     React.createElement("p", { style: { ...sans, fontSize: 16, color: C.ink70, lineHeight: 1.75, marginBottom: 30, maxWidth: 470 } }, "Handcrafted candles and gifts inspired by Indian fragrances, memories and everyday rituals."),
-                    React.createElement("div", { style: { display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap", marginBottom: 18 } },
-                        React.createElement(Button, { variant: "ghost", onClick: () => nav("catalogue", "all") }, "Explore the Collection"),
-                        React.createElement(Button, { variant: "outline", onClick: () => nav("create-ritual") }, "Create Your Ritual")),
-                    React.createElement("a", { href: waLink(settings.whatsapp, "Hello Mysaa Rituals!"), target: "_blank", rel: "noreferrer", style: { ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "4px" } }, "Chat on WhatsApp")),
+                    React.createElement("div", { className: "hero-actions" },
+                        React.createElement("button", { className: "hero-action hero-action-primary", onClick: () => nav("catalogue", "all") },
+                            React.createElement("span", null, "Explore the Catalogue"),
+                            React.createElement("span", { "aria-hidden": "true" }, "\u2192")),
+                        React.createElement("button", { className: "hero-action hero-action-secondary", onClick: () => nav("create-ritual") },
+                            React.createElement("span", null, "Create Your Ritual"),
+                            React.createElement("span", { "aria-hidden": "true" }, "\u2726")),
+                        React.createElement("a", { className: "hero-action hero-action-whatsapp", href: waLink(settings.whatsapp, "Hello Mysaa Rituals!"), target: "_blank", rel: "noreferrer" },
+                            React.createElement(ChatIcon, { size: 17 }),
+                            React.createElement("span", null, "Chat on WhatsApp")))),
                 React.createElement(ImageOrPlaceholder, { src: (_b = (_a = data.images) === null || _a === void 0 ? void 0 : _a.site) === null || _b === void 0 ? void 0 : _b.hero, label: "Hero product photograph", ratio: "4 / 3" }))),
         React.createElement("section", { className: "container", style: { padding: "72px 20px 24px" } },
             React.createElement(SectionHeading, { eyebrow: "The Fragrances", title: "Every fragrance holds a feeling.", sub: "From the warmth of sandalwood to the romance of jasmine and the mystery of night-blooming flowers, each Mysaa Ritual is created to evoke something personal." })),
@@ -471,26 +456,21 @@ function HomePage({ data, nav, settings }) {
                         React.createElement("h3", { style: { ...serif, fontSize: 24, color: C.ink, fontWeight: 500, marginBottom: 8 } }, "Shop by Candle"),
                         React.createElement("p", { style: { ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.65, marginBottom: 16 } }, "Choose your format first \u2014 Hero Jar, Wide Jar or Shot Glass."),
                         React.createElement("span", { style: { ...label, color: C.rust } }, "Explore \u2192"))),
-                React.createElement("div", { className: "discovery-grid", style: { marginTop: 16 } },
-                    React.createElement("div", { className: "editorial-card" },
-                        React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 12 } }, "03"),
+                React.createElement("div", { className: "discovery-grid compact-discovery-grid", style: { marginTop: 16 } },
+                    React.createElement("div", { className: "editorial-card compact-editorial-card" },
+                        React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 10 } }, "03"),
                         React.createElement("h3", { style: { ...serif, fontSize: 24, color: C.ink, fontWeight: 500, marginBottom: 8 } }, "Shop by Feeling"),
-                        React.createElement("p", { style: { ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.65, marginBottom: 16 } }, "Start with the mood you want to bring into your space."),
-                        React.createElement("div", { className: "feeling-link-list" }, feelingGroups.map((group) => (React.createElement("div", { key: group.title, style: { padding: "10px 0", borderTop: `1px solid ${C.line}` } },
-                            React.createElement("p", { style: { ...serif, color: C.ink, fontSize: 17, marginBottom: 4 } }, group.title),
-                            React.createElement("p", { style: { ...sans, color: C.ink70, fontSize: 12.5, lineHeight: 1.5 } }, group.body),
-                            React.createElement("div", { style: { display: "flex", gap: 8, flexWrap: "wrap", marginTop: 6 } }, group.fragrances.map((slug) => {
-                                const f = fragranceById[slug];
-                                return f ? (React.createElement("button", { key: slug, onClick: (e) => { e.stopPropagation(); nav("catalogue", "fragrance", { value: slug }); }, style: { ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px", fontSize: 10.5 } }, f.name)) : null;
-                            }))))))),
-                    React.createElement("div", { className: "editorial-card" },
-                        React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 12 } }, "04"),
+                        React.createElement("p", { style: { ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.55, marginBottom: 16 } }, "Start with the mood you want to bring into your space."),
+                        React.createElement("select", { className: "discovery-select", defaultValue: "", onChange: (e) => e.target.value && nav("catalogue", "feeling", { value: e.target.value }), "aria-label": "Shop by feeling" },
+                            React.createElement("option", { value: "", disabled: true }, "Choose a feeling"),
+                            feelingGroups.map((group) => React.createElement("option", { key: group.slug, value: group.slug }, group.title)))),
+                    React.createElement("div", { className: "editorial-card compact-editorial-card" },
+                        React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 10 } }, "04"),
                         React.createElement("h3", { style: { ...serif, fontSize: 24, color: C.ink, fontWeight: 500, marginBottom: 8 } }, "Shop by Occasion"),
-                        React.createElement("p", { style: { ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.65, marginBottom: 16 } }, "Choose something for the moment you're celebrating."),
-                        React.createElement("div", { className: "feeling-link-list" }, occasionGroups.map((group) => (React.createElement("button", { key: group.title, onClick: group.action, style: { width: "100%", background: "transparent", textAlign: "left", padding: "12px 0", borderTop: `1px solid ${C.line}` } },
-                            React.createElement("p", { style: { ...serif, color: C.ink, fontSize: 17, marginBottom: 4 } }, group.title),
-                            React.createElement("p", { style: { ...sans, color: C.ink70, fontSize: 12.5, lineHeight: 1.5, marginBottom: 4 } }, group.body),
-                            React.createElement("span", { style: { ...label, color: C.rust, fontSize: 10.5 } }, "Explore \u2192"))))))))),
+                        React.createElement("p", { style: { ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.55, marginBottom: 16 } }, "Choose something for the moment you're celebrating."),
+                        React.createElement("select", { className: "discovery-select", defaultValue: "", onChange: (e) => e.target.value && nav("catalogue", "occasion", { value: e.target.value }), "aria-label": "Shop by occasion" },
+                            React.createElement("option", { value: "", disabled: true }, "Choose an occasion"),
+                            occasionGroups.map((group) => React.createElement("option", { key: group.slug, value: group.slug }, group.title))))))),
         React.createElement("section", { className: "container", style: { padding: "72px 20px" } },
             React.createElement(SectionHeading, { eyebrow: "The Collection", title: "Made to be lit slowly.", sub: "A selection of Mysaa candles, chosen to give you an easy place to begin." }),
             React.createElement("div", { className: "product-grid", style: { marginTop: 36 } }, featured.map((p) => (React.createElement(ProductCard, { key: p.slug, product: p, fragrance: fragranceById[p.fragranceSlug], images: data.images, nav: nav })))),
@@ -554,6 +534,8 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
     const maxPrice = useMemo(() => Math.max(1000, ...data.products.map((p) => p.price || 0)), [data.products]);
     const [fragrance, setFragrance] = useState(initialType === "fragrance" ? (initialQuery.value || "all") : "all");
     const [category, setCategory] = useState(initialType === "category" ? (initialQuery.value || "all") : initialType === "candle" ? "hero-jar-candle" : "all");
+    const [feeling, setFeeling] = useState(initialType === "feeling" ? (initialQuery.value || "all") : "all");
+    const [occasion, setOccasion] = useState(initialType === "occasion" ? (initialQuery.value || "all") : "all");
     const [search, setSearch] = useState(initialQuery.q || "");
     const [priceCap, setPriceCap] = useState(maxPrice);
     const fragranceById = Object.fromEntries(data.fragrances.map((f) => [f.slug, f]));
@@ -565,6 +547,16 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
                 return false;
             if (fragrance !== "all" && p.fragranceSlug !== fragrance)
                 return false;
+            if (feeling !== "all") {
+                const group = FEELING_FILTERS.find((item) => item.slug === feeling);
+                if (!group || !group.fragrances.includes(p.fragranceSlug))
+                    return false;
+            }
+            if (occasion !== "all") {
+                const group = OCCASION_FILTERS.find((item) => item.slug === occasion);
+                if (!group || !group.categories.includes(p.categorySlug))
+                    return false;
+            }
             if ((p.price || 0) > priceCap)
                 return false;
             if (search) {
@@ -574,9 +566,9 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
             }
             return true;
         });
-    }, [data.products, category, fragrance, search, priceCap]);
-    const filtersActive = category !== "all" || fragrance !== "all" || !!search || priceCap < maxPrice;
-    const resetFilters = () => { setCategory("all"); setFragrance("all"); setSearch(""); setPriceCap(maxPrice); };
+    }, [data.products, category, fragrance, feeling, occasion, search, priceCap]);
+    const filtersActive = category !== "all" || fragrance !== "all" || feeling !== "all" || occasion !== "all" || !!search || priceCap < maxPrice;
+    const resetFilters = () => { setCategory("all"); setFragrance("all"); setFeeling("all"); setOccasion("all"); setSearch(""); setPriceCap(maxPrice); };
     return (React.createElement("div", { className: "container", style: { padding: "48px 20px 80px" } },
         React.createElement(SectionHeading, { eyebrow: "Catalogue", title: "The Collection", sub: "Explore fragrances, candles and gifts made for everyday rituals and meaningful moments." }),
         React.createElement("div", { className: "catalogue-layout", style: { marginTop: 36 } },
@@ -597,6 +589,16 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
                     React.createElement("div", { className: "chip-wrap" },
                         React.createElement(FilterChip, { active: fragrance === "all", onClick: () => setFragrance("all") }, "All"),
                         data.fragrances.filter((f) => f.active).map((f) => (React.createElement(FilterChip, { key: f.slug, active: fragrance === f.slug, onClick: () => setFragrance(f.slug) }, f.name))))),
+                React.createElement("div", { style: { marginBottom: 24 } },
+                    React.createElement("label", { style: { ...label, color: C.ink70, display: "block", marginBottom: 10 } }, "Shop by Feeling"),
+                    React.createElement("select", { value: feeling, onChange: (e) => setFeeling(e.target.value), className: "catalogue-select" },
+                        React.createElement("option", { value: "all" }, "All feelings"),
+                        FEELING_FILTERS.map((group) => React.createElement("option", { key: group.slug, value: group.slug }, group.title)))),
+                React.createElement("div", { style: { marginBottom: 32 } },
+                    React.createElement("label", { style: { ...label, color: C.ink70, display: "block", marginBottom: 10 } }, "Shop by Occasion"),
+                    React.createElement("select", { value: occasion, onChange: (e) => setOccasion(e.target.value), className: "catalogue-select" },
+                        React.createElement("option", { value: "all" }, "All occasions"),
+                        OCCASION_FILTERS.map((group) => React.createElement("option", { key: group.slug, value: group.slug }, group.title)))),
                 filtersActive && (React.createElement("button", { onClick: resetFilters, style: { ...label, color: C.rust, textAlign: "left", textDecoration: "underline", textUnderlineOffset: "3px" } }, "Clear filters"))),
             React.createElement("div", null, filtered.length === 0 ? (React.createElement("div", { style: { border: `1px solid ${C.line}`, background: C.card, padding: "80px 24px", textAlign: "center" } },
                 React.createElement("h3", { style: { ...serif, fontSize: 24, color: C.ink, fontWeight: 500, marginBottom: 14 } }, "Nothing here yet."),
@@ -693,9 +695,9 @@ function ProductDetailPage({ data, nav, slug, settings }) {
                     React.createElement("p", { style: { ...sans, fontSize: 12.5, color: C.ink70, lineHeight: 1.6, marginTop: 10 } }, jarChoice.description))),
                 hasPackagingOptions && (React.createElement("div", { style: { marginBottom: 28 } },
                     React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Packaging"),
-                    React.createElement("div", { className: "option-grid" }, Object.entries(PACKAGING_OPTIONS).map(([key, option]) => (React.createElement("button", { key: key, onClick: () => setPackaging(key), className: `selection-card${packaging === key ? " selected" : ""}` },
-                        React.createElement("span", { style: { ...sans, fontSize: 13.5, color: C.ink, fontWeight: 500 } }, option.label),
-                        React.createElement("span", { style: { ...sans, fontSize: 12.5, color: C.ink70, marginTop: 5 } }, option.priceDelta ? `+${inr(option.priceDelta)}` : "Included"))))),
+                    React.createElement("div", { className: "option-grid" }, Object.entries(PACKAGING_OPTIONS).map(([key, option]) => (React.createElement("button", { key: key, disabled: option.comingSoon, onClick: () => !option.comingSoon && setPackaging(key), className: `selection-card${packaging === key ? " selected" : ""}${option.comingSoon ? " coming-soon" : ""}` },
+                        React.createElement("span", { style: { ...sans, fontSize: 13.5, color: option.comingSoon ? C.ink70 : C.ink, fontWeight: 500 } }, option.label),
+                        React.createElement("span", { style: { ...sans, fontSize: 12.5, color: option.comingSoon ? C.rust : C.ink70, marginTop: 5 } }, option.comingSoon ? "Coming Soon" : "Included"))))),
                     React.createElement("div", { className: "packaging-note" },
                         React.createElement("strong", { style: { ...serif, fontSize: 17, fontWeight: 500, color: C.ink } }, packagingChoice.label),
                         React.createElement("p", { style: { ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.7, marginTop: 6 } }, packagingChoice.description)))),
@@ -723,8 +725,8 @@ function ProductDetailPage({ data, nav, slug, settings }) {
                     })))),
                 hasPackagingOptions && (React.createElement("div", { className: "hairline-top", style: { marginTop: 32 } },
                     React.createElement("h2", { style: { ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 } }, "About the Packaging"),
-                    React.createElement("p", { style: { ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75, marginBottom: 10 } }, "Choose between our standard presentation or premium packaging. Premium packaging is designed as part of the fragrance ritual \u2014 helping the unboxing feel connected to the nostalgia, mood and feeling of the fragrance itself."),
-                    React.createElement("p", { style: { ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.7 } }, "Standard packaging is included in the product price. Premium packaging is an additional \u20B9200."))))),
+                    React.createElement("p", { style: { ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75, marginBottom: 10 } }, "Standard packaging is currently available and included in the product price. Premium packaging is planned as a future option and is coming soon."),
+                    React.createElement("p", { style: { ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.7 } }, "Premium packaging will be introduced once the fragrance-led presentation is ready."))))),
         React.createElement("div", { style: { marginTop: 56 } },
             React.createElement("h2", { style: { ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 20 } }, "Product Information"),
             React.createElement("div", null, infoRows.map(([k, v]) => (React.createElement("div", { key: k, style: { display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "space-between", padding: "14px 0", borderBottom: `1px solid ${C.line}` } },
@@ -824,8 +826,25 @@ function App() {
     }, []);
     const nav = useCallback((page, param, query) => { window.location.hash = buildHash(page, param, query); }, []);
     useEffect(() => {
-        if (data && data.settings)
-            document.title = data.settings.seoTitle || "Mysaa Rituals";
+        if (!data || !data.settings)
+            return;
+        const settings = data.settings;
+        document.title = settings.seoTitle || "Mysaa Rituals";
+        const description = settings.seoDescription || "Handcrafted candles and gifts inspired by Indian fragrances, memories and everyday rituals.";
+        let meta = document.querySelector('meta[name="description"]');
+        if (!meta) {
+            meta = document.createElement("meta");
+            meta.name = "description";
+            document.head.appendChild(meta);
+        }
+        meta.setAttribute("content", description);
+        let canonical = document.querySelector('link[rel="canonical"]');
+        if (!canonical) {
+            canonical = document.createElement("link");
+            canonical.rel = "canonical";
+            document.head.appendChild(canonical);
+        }
+        canonical.href = window.location.href.split("#")[0];
     }, [data]);
     if (loading) {
         return (React.createElement("div", { style: { minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: C.cream } },

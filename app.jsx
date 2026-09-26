@@ -30,7 +30,7 @@ const label = { ...sans, fontSize: 11.5, letterSpacing: "0.11em", textTransform:
 const inr = (n) => Number(n || 0) > 0 ? `₹${Number(n).toLocaleString("en-IN")}` : "Enquire";
 
 // Product customisation pricing. Standard packaging is included in the base price.
-// Premium packaging adds ₹200. Jar flower mould adds ₹100.
+// Premium packaging is currently marked Coming Soon. Jar flower mould adds ₹100.
 const PACKAGING_OPTIONS = {
   standard: {
     label: "Standard Packaging",
@@ -39,10 +39,11 @@ const PACKAGING_OPTIONS = {
     description: "Our carefully packed everyday presentation, keeping the Mysaa Rituals experience simple and beautiful."
   },
   premium: {
-    label: "Premium Packaging",
-    shortLabel: "Premium (+₹200)",
-    priceDelta: 200,
-    description: "An elevated, fragrance-led presentation designed to let you experience the nostalgia or feeling carried by the underlying fragrance from the moment you open it."
+    label: "Premium Packaging — Coming Soon",
+    shortLabel: "Coming Soon",
+    priceDelta: 0,
+    comingSoon: true,
+    description: "Premium packaging is coming soon. We’ll introduce the elevated fragrance-led presentation once it is ready."
   }
 };
 
@@ -69,6 +70,17 @@ const DISCOVERY_SET_FRAGRANCES = [
   "madhuban",
   "raat-ki-rani",
   "saanjh",
+];
+
+const FEELING_FILTERS = [
+  { slug: "warm-grounding", title: "Warm & Grounding", description: "For quiet evenings, familiar rituals and comforting spaces.", fragrances: ["dhoop-chandan", "saanjh"] },
+  { slug: "romantic-nostalgic", title: "Romantic & Nostalgic", description: "Soft florals and memories that feel close to the heart.", fragrances: ["gulab-ki-chitthi", "gajre-ka-shringar"] },
+  { slug: "dreamy-evening", title: "Dreamy & Evening", description: "Night-blooming florals made for slower, intimate moments.", fragrances: ["madhuban", "raat-ki-rani"] },
+];
+const OCCASION_FILTERS = [
+  { slug: "festivals-celebrations", title: "Festivals & Celebrations", description: "Thoughtful candles, sachets and hampers for festive moments.", categories: ["gift-hampers", "discovery-set", "hero-jar-candle", "wide-jar-candle", "shot-glass-candle", "wax-melts"] },
+  { slug: "weddings-return-gifts", title: "Weddings & Return Gifts", description: "Personalised pieces for wedding favours, events and guests.", categories: ["gift-hampers", "wax-melts", "shot-glass-candle"] },
+  { slug: "birthdays-just-because", title: "Birthdays & Just Because", description: "Small, personal gifts for someone you want to make smile.", categories: ["gift-hampers", "discovery-set", "shot-glass-candle", "wide-jar-candle"] },
 ];
 
 function isJarProduct(product) {
@@ -547,41 +559,8 @@ function HomePage({ data, nav, settings }) {
 
   const discoverySet = data.products.find((p) => p.slug === DISCOVERY_SET_SLUG);
 
-  const feelingGroups = [
-    {
-      title: "Warm & Grounding",
-      body: "For quiet evenings, familiar rituals and comforting spaces.",
-      fragrances: ["dhoop-chandan", "saanjh"],
-    },
-    {
-      title: "Romantic & Nostalgic",
-      body: "Soft florals and memories that feel close to the heart.",
-      fragrances: ["gulab-ki-chitthi", "gajre-ka-shringar"],
-    },
-    {
-      title: "Dreamy & Evening",
-      body: "Night-blooming florals made for slower, more intimate moments.",
-      fragrances: ["madhuban", "raat-ki-rani"],
-    },
-  ];
-
-  const occasionGroups = [
-    {
-      title: "Festivals & Celebrations",
-      body: "Thoughtful candles, sachets and hampers for festive moments.",
-      action: () => nav("catalogue", "category", { value: "gift-hampers" }),
-    },
-    {
-      title: "Weddings & Return Gifts",
-      body: "Personalised pieces for wedding favours, events and guests.",
-      action: () => nav("create-ritual"),
-    },
-    {
-      title: "Birthdays & Just Because",
-      body: "Small, personal gifts for someone you want to make smile.",
-      action: () => nav("create-ritual"),
-    },
-  ];
+  const feelingGroups = FEELING_FILTERS;
+  const occasionGroups = OCCASION_FILTERS;
 
   return (
     <div>
@@ -596,14 +575,11 @@ function HomePage({ data, nav, settings }) {
             <p style={{ ...sans, fontSize: 16, color: C.ink70, lineHeight: 1.75, marginBottom: 30, maxWidth: 470 }}>
               Handcrafted candles and gifts inspired by Indian fragrances, memories and everyday rituals.
             </p>
-            <div style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap", marginBottom: 18 }}>
-              <Button variant="ghost" onClick={() => nav("catalogue", "all")}>Explore the Collection</Button>
-              <Button variant="outline" onClick={() => nav("create-ritual")}>Create Your Ritual</Button>
+            <div className="hero-actions">
+              <button className="hero-action hero-action-primary" onClick={() => nav("catalogue", "all")}><span>Explore the Catalogue</span><span aria-hidden="true">→</span></button>
+              <button className="hero-action hero-action-secondary" onClick={() => nav("create-ritual")}><span>Create Your Ritual</span><span aria-hidden="true">✦</span></button>
+              <a className="hero-action hero-action-whatsapp" href={waLink(settings.whatsapp, "Hello Mysaa Rituals!")} target="_blank" rel="noreferrer"><ChatIcon size={17} /><span>Chat on WhatsApp</span></a>
             </div>
-            <a href={waLink(settings.whatsapp, "Hello Mysaa Rituals!")} target="_blank" rel="noreferrer"
-              style={{ ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "4px" }}>
-              Chat on WhatsApp
-            </a>
           </div>
           <ImageOrPlaceholder src={data.images?.site?.hero} label="Hero product photograph" ratio="4 / 3" />
         </div>
@@ -664,45 +640,24 @@ function HomePage({ data, nav, settings }) {
             </button>
           </div>
 
-          <div className="discovery-grid" style={{ marginTop: 16 }}>
-            <div className="editorial-card">
-              <p style={{ ...label, color: C.rust, marginBottom: 12 }}>03</p>
+          <div className="discovery-grid compact-discovery-grid" style={{ marginTop: 16 }}>
+            <div className="editorial-card compact-editorial-card">
+              <p style={{ ...label, color: C.rust, marginBottom: 10 }}>03</p>
               <h3 style={{ ...serif, fontSize: 24, color: C.ink, fontWeight: 500, marginBottom: 8 }}>Shop by Feeling</h3>
-              <p style={{ ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.65, marginBottom: 16 }}>Start with the mood you want to bring into your space.</p>
-              <div className="feeling-link-list">
-                {feelingGroups.map((group) => (
-                  <div key={group.title} style={{ padding: "10px 0", borderTop: `1px solid ${C.line}` }}>
-                    <p style={{ ...serif, color: C.ink, fontSize: 17, marginBottom: 4 }}>{group.title}</p>
-                    <p style={{ ...sans, color: C.ink70, fontSize: 12.5, lineHeight: 1.5 }}>{group.body}</p>
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 6 }}>
-                      {group.fragrances.map((slug) => {
-                        const f = fragranceById[slug];
-                        return f ? (
-                          <button key={slug} onClick={(e) => { e.stopPropagation(); nav("catalogue", "fragrance", { value: slug }); }}
-                            style={{ ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px", fontSize: 10.5 }}>
-                            {f.name}
-                          </button>
-                        ) : null;
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <p style={{ ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.55, marginBottom: 16 }}>Start with the mood you want to bring into your space.</p>
+              <select className="discovery-select" defaultValue="" onChange={(e) => e.target.value && nav("catalogue", "feeling", { value: e.target.value })} aria-label="Shop by feeling">
+                <option value="" disabled>Choose a feeling</option>
+                {feelingGroups.map((group) => <option key={group.slug} value={group.slug}>{group.title}</option>)}
+              </select>
             </div>
-
-            <div className="editorial-card">
-              <p style={{ ...label, color: C.rust, marginBottom: 12 }}>04</p>
+            <div className="editorial-card compact-editorial-card">
+              <p style={{ ...label, color: C.rust, marginBottom: 10 }}>04</p>
               <h3 style={{ ...serif, fontSize: 24, color: C.ink, fontWeight: 500, marginBottom: 8 }}>Shop by Occasion</h3>
-              <p style={{ ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.65, marginBottom: 16 }}>Choose something for the moment you're celebrating.</p>
-              <div className="feeling-link-list">
-                {occasionGroups.map((group) => (
-                  <button key={group.title} onClick={group.action} style={{ width: "100%", background: "transparent", textAlign: "left", padding: "12px 0", borderTop: `1px solid ${C.line}` }}>
-                    <p style={{ ...serif, color: C.ink, fontSize: 17, marginBottom: 4 }}>{group.title}</p>
-                    <p style={{ ...sans, color: C.ink70, fontSize: 12.5, lineHeight: 1.5, marginBottom: 4 }}>{group.body}</p>
-                    <span style={{ ...label, color: C.rust, fontSize: 10.5 }}>Explore →</span>
-                  </button>
-                ))}
-              </div>
+              <p style={{ ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.55, marginBottom: 16 }}>Choose something for the moment you're celebrating.</p>
+              <select className="discovery-select" defaultValue="" onChange={(e) => e.target.value && nav("catalogue", "occasion", { value: e.target.value })} aria-label="Shop by occasion">
+                <option value="" disabled>Choose an occasion</option>
+                {occasionGroups.map((group) => <option key={group.slug} value={group.slug}>{group.title}</option>)}
+              </select>
             </div>
           </div>
         </div>
@@ -826,9 +781,9 @@ function HomePage({ data, nav, settings }) {
 function CataloguePage({ data, nav, initialType, initialQuery }) {
   const maxPrice = useMemo(() => Math.max(1000, ...data.products.map((p) => p.price || 0)), [data.products]);
   const [fragrance, setFragrance] = useState(initialType === "fragrance" ? (initialQuery.value || "all") : "all");
-  const [category, setCategory] = useState(
-    initialType === "category" ? (initialQuery.value || "all") : initialType === "candle" ? "hero-jar-candle" : "all"
-  );
+  const [category, setCategory] = useState(initialType === "category" ? (initialQuery.value || "all") : initialType === "candle" ? "hero-jar-candle" : "all");
+  const [feeling, setFeeling] = useState(initialType === "feeling" ? (initialQuery.value || "all") : "all");
+  const [occasion, setOccasion] = useState(initialType === "occasion" ? (initialQuery.value || "all") : "all");
   const [search, setSearch] = useState(initialQuery.q || "");
   const [priceCap, setPriceCap] = useState(maxPrice);
 
@@ -839,6 +794,14 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
       if (!p.active) return false;
       if (category !== "all" && p.categorySlug !== category) return false;
       if (fragrance !== "all" && p.fragranceSlug !== fragrance) return false;
+      if (feeling !== "all") {
+        const group = FEELING_FILTERS.find((item) => item.slug === feeling);
+        if (!group || !group.fragrances.includes(p.fragranceSlug)) return false;
+      }
+      if (occasion !== "all") {
+        const group = OCCASION_FILTERS.find((item) => item.slug === occasion);
+        if (!group || !group.categories.includes(p.categorySlug)) return false;
+      }
       if ((p.price || 0) > priceCap) return false;
       if (search) {
         const q = search.toLowerCase();
@@ -846,10 +809,10 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
       }
       return true;
     });
-  }, [data.products, category, fragrance, search, priceCap]);
+  }, [data.products, category, fragrance, feeling, occasion, search, priceCap]);
 
-  const filtersActive = category !== "all" || fragrance !== "all" || !!search || priceCap < maxPrice;
-  const resetFilters = () => { setCategory("all"); setFragrance("all"); setSearch(""); setPriceCap(maxPrice); };
+  const filtersActive = category !== "all" || fragrance !== "all" || feeling !== "all" || occasion !== "all" || !!search || priceCap < maxPrice;
+  const resetFilters = () => { setCategory("all"); setFragrance("all"); setFeeling("all"); setOccasion("all"); setSearch(""); setPriceCap(maxPrice); };
 
   return (
     <div className="container" style={{ padding: "48px 20px 80px" }}>
@@ -888,6 +851,20 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
                 <FilterChip key={f.slug} active={fragrance === f.slug} onClick={() => setFragrance(f.slug)}>{f.name}</FilterChip>
               ))}
             </div>
+          </div>
+          <div style={{ marginBottom: 24 }}>
+            <label style={{ ...label, color: C.ink70, display: "block", marginBottom: 10 }}>Shop by Feeling</label>
+            <select value={feeling} onChange={(e) => setFeeling(e.target.value)} className="catalogue-select">
+              <option value="all">All feelings</option>
+              {FEELING_FILTERS.map((group) => <option key={group.slug} value={group.slug}>{group.title}</option>)}
+            </select>
+          </div>
+          <div style={{ marginBottom: 32 }}>
+            <label style={{ ...label, color: C.ink70, display: "block", marginBottom: 10 }}>Shop by Occasion</label>
+            <select value={occasion} onChange={(e) => setOccasion(e.target.value)} className="catalogue-select">
+              <option value="all">All occasions</option>
+              {OCCASION_FILTERS.map((group) => <option key={group.slug} value={group.slug}>{group.title}</option>)}
+            </select>
           </div>
 
           {filtersActive && (
@@ -1053,9 +1030,9 @@ function ProductDetailPage({ data, nav, slug, settings }) {
               <p style={{ ...label, color: C.ink70, marginBottom: 10 }}>Packaging</p>
               <div className="option-grid">
                 {Object.entries(PACKAGING_OPTIONS).map(([key, option]) => (
-                  <button key={key} onClick={() => setPackaging(key)} className={`selection-card${packaging === key ? " selected" : ""}`}>
-                    <span style={{ ...sans, fontSize: 13.5, color: C.ink, fontWeight: 500 }}>{option.label}</span>
-                    <span style={{ ...sans, fontSize: 12.5, color: C.ink70, marginTop: 5 }}>{option.priceDelta ? `+${inr(option.priceDelta)}` : "Included"}</span>
+                  <button key={key} disabled={option.comingSoon} onClick={() => !option.comingSoon && setPackaging(key)} className={`selection-card${packaging === key ? " selected" : ""}${option.comingSoon ? " coming-soon" : ""}`}>
+                    <span style={{ ...sans, fontSize: 13.5, color: option.comingSoon ? C.ink70 : C.ink, fontWeight: 500 }}>{option.label}</span>
+                    <span style={{ ...sans, fontSize: 12.5, color: option.comingSoon ? C.rust : C.ink70, marginTop: 5 }}>{option.comingSoon ? "Coming Soon" : "Included"}</span>
                   </button>
                 ))}
               </div>
@@ -1114,10 +1091,10 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             <div className="hairline-top" style={{ marginTop: 32 }}>
               <h2 style={{ ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 }}>About the Packaging</h2>
               <p style={{ ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75, marginBottom: 10 }}>
-                Choose between our standard presentation or premium packaging. Premium packaging is designed as part of the fragrance ritual — helping the unboxing feel connected to the nostalgia, mood and feeling of the fragrance itself.
+                Standard packaging is currently available and included in the product price. Premium packaging is planned as a future option and is coming soon.
               </p>
               <p style={{ ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.7 }}>
-                Standard packaging is included in the product price. Premium packaging is an additional ₹200.
+                Premium packaging will be introduced once the fragrance-led presentation is ready.
               </p>
             </div>
           )}
@@ -1297,7 +1274,16 @@ function App() {
   const nav = useCallback((page, param, query) => { window.location.hash = buildHash(page, param, query); }, []);
 
   useEffect(() => {
-    if (data && data.settings) document.title = data.settings.seoTitle || "Mysaa Rituals";
+    if (!data || !data.settings) return;
+    const settings = data.settings;
+    document.title = settings.seoTitle || "Mysaa Rituals";
+    const description = settings.seoDescription || "Handcrafted candles and gifts inspired by Indian fragrances, memories and everyday rituals.";
+    let meta = document.querySelector('meta[name="description"]');
+    if (!meta) { meta = document.createElement("meta"); meta.name = "description"; document.head.appendChild(meta); }
+    meta.setAttribute("content", description);
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) { canonical = document.createElement("link"); canonical.rel = "canonical"; document.head.appendChild(canonical); }
+    canonical.href = window.location.href.split("#")[0];
   }, [data]);
 
   if (loading) {

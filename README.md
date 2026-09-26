@@ -193,8 +193,8 @@ also changed photos.
 ## Product options and galleries
 
 - Hero Jar Candle and Wide Jar Candle now have two finish options: Classic Top — No Flower (included) and Flower Mould on Top (+₹100).
-- Hero Jar Candle, Wide Jar Candle, and Wax Sachet Combo now have Standard Packaging (included) and Premium Packaging (+₹200).
-- Premium packaging is described on the product detail page as a fragrance-led, more immersive presentation intended to carry the nostalgia or feeling of the underlying fragrance into the unboxing experience.
+- Hero Jar Candle, Wide Jar Candle, and Wax Sachet Combo have Standard Packaging (included). Premium Packaging is displayed as Coming Soon across the site and cannot currently be selected.
+- Premium packaging is shown as Coming Soon across the website; the previous ₹200 premium option is not currently selectable or added to product pricing.
 - Product detail pages now show every photograph found in the corresponding `assets/catalogue/<fragrance>/<category>/` folder, with previous/next controls, a counter, and scrollable thumbnails.
 - After adding or renaming catalogue photos, run `python3 scripts/build_image_manifest.py` and recompile `app.jsx` to `app.js` before publishing.
 
@@ -204,3 +204,25 @@ also changed photos.
 - Added a dedicated Discovery Set category and product-detail section listing all six fragrances.
 - The Discover Set uses existing Mysaa fragrance photography for its gallery; dedicated shot-glass photos can be added later to the same `assets/catalogue/all-fragrances/discovery-set/` folder and will automatically appear in the product gallery after rebuilding the image manifest.
 - Homepage fragrance cards now use a taller **4:5** image area for better portrait-image presentation.
+- Homepage Shop by Feeling and Shop by Occasion cards are compact and use dropdown subcategories; the same feeling and occasion filters are available on the Catalogue page.
+- Homepage primary actions (Explore the Catalogue, Create Your Ritual, Chat on WhatsApp) have been redesigned as prominent themed CTAs.
+- Added basic search-engine metadata, Open Graph/Twitter metadata, canonical handling, structured Organization data, and a robots.txt allowing crawling.
+
+### SEO / Google indexing
+
+The live GitHub Pages site is:
+
+`https://mysaarituals.github.io/mysaa_website/`
+
+The repository includes:
+- `robots.txt` with the live sitemap URL
+- `sitemap.xml` for the canonical homepage
+- An absolute canonical URL and Open Graph URL for the GitHub Pages site
+- Absolute social-preview image URLs
+- Organization structured data using the live site URL
+
+After publishing, add the property to Google Search Console and request indexing for:
+`https://mysaarituals.github.io/mysaa_website/`
+
+The `#/home` URL is a client-side hash route; the canonical/indexable URL is the site root above.
+
