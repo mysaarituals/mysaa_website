@@ -840,7 +840,7 @@ function ContactPage({ settings }) {
                     React.createElement(ContactRow, { icon: React.createElement(InstagramIcon, { size: 25, color: C.rust }), label: "Instagram", value: settings.instagramHandle || "@mysaarituals", href: settings.instagram }),
                     settings.address && React.createElement(ContactRow, { icon: React.createElement("span", { style: { fontSize: 25, color: C.rust } }, "\u2316"), label: "Studio", value: settings.address }))),
             React.createElement("div", { className: "contact-hero-image" },
-                React.createElement(ImageOrPlaceholder, { src: "./assets/hero.jpg", label: "Mysaa Rituals candle", ratio: "1 / 1" }),
+                React.createElement(ImageOrPlaceholder, { src: "./assets/contact.jpg", label: "Mysaa Rituals candle", ratio: "1 / 1" }),
                 React.createElement("div", { className: "contact-hero-caption" },
                     React.createElement("p", { style: { ...serif, fontSize: 30, color: C.ink, lineHeight: 1.05, margin: 0 } },
                         "Carry",
