@@ -46,6 +46,7 @@ def main():
             "name": r.get("name", ""),
             "categorySlug": r.get("categorySlug", ""),
             "fragranceSlug": r.get("fragranceSlug", ""),
+            "mrp": r.get("mrp", 0) or 0,
             "price": r.get("price", 0) or 0,
             "volume": r.get("volume", "") or "",
             "weight": r.get("weight", "") or "",

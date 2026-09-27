@@ -28,6 +28,7 @@ const sans = { fontFamily: "'Karla', sans-serif" };
 const label = { ...sans, fontSize: 11.5, letterSpacing: "0.11em", textTransform: "uppercase" };
 
 const inr = (n) => Number(n || 0) > 0 ? `₹${Number(n).toLocaleString("en-IN")}` : "Enquire";
+const priceMarkup = (product) => Number(product?.mrp || 0) > Number(product?.price || 0);
 
 // Product customisation pricing. Standard packaging is included in the base price.
 // Premium packaging is currently marked Coming Soon. Jar flower mould adds ₹100.
@@ -42,7 +43,7 @@ const PACKAGING_OPTIONS = {
 
 const PREMIUM_PACKAGING = {
   label: "Premium Packaging — Coming Soon",
-  description: "Premium packaging is coming soon. It is not currently available and does not change the product price."
+  description: "Premium packaging is coming soon."
 };
 
 const JAR_VARIANTS = {
@@ -477,7 +478,10 @@ function ProductCard({ product, fragrance, images, nav }) {
         <h3 style={{ ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 }}>{product.name}</h3>
         <p style={{ ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }} className="line-clamp-2">{product.shortDescription}</p>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ ...sans, fontSize: 14, color: C.ink }}>{inr(product.price)}</span>
+          <span className="price-stack">
+            {priceMarkup(product) && <span className="price-mrp">MRP {inr(product.mrp)}</span>}
+            <span style={{ ...sans, fontSize: 15, color: C.ink, fontWeight: 500 }}>{inr(product.price)}</span>
+          </span>
           <span style={{ ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" }}>View Details</span>
         </div>
       </div>
@@ -549,10 +553,18 @@ function HomePage({ data, nav, settings }) {
   const fragranceById = Object.fromEntries(data.fragrances.map((f) => [f.slug, f]));
   const activeFragrances = data.fragrances.filter((f) => f.active);
 
-  // The homepage's featured row intentionally uses one consistent format,
-  // so the collection feels editorial rather than like a random product grid.
-  const featured = data.products
-    .filter((p) => p.active && p.categorySlug === "wide-jar-candle")
+  // Homepage collection: prioritize products explicitly marked as bestsellers
+  // across candle formats. If the data has no bestseller flags yet, fall back
+  // to a balanced mix of Hero Jar, Wide Jar and Shot Glass candles.
+  const candleProducts = data.products.filter((p) =>
+    p.active && ["hero-jar-candle", "wide-jar-candle", "shot-glass-candle"].includes(p.categorySlug)
+  );
+  const bestsellerProducts = candleProducts.filter((p) => p.bestseller);
+  const mixedFallback = activeFragrances.map((fragrance, index) => {
+    const preferredCategory = ["hero-jar-candle", "wide-jar-candle", "shot-glass-candle"][index % 3];
+    return candleProducts.find((p) => p.fragranceSlug === fragrance.slug && p.categorySlug === preferredCategory);
+  }).filter(Boolean);
+  const featured = (bestsellerProducts.length ? bestsellerProducts : mixedFallback)
     .slice(0, 6);
 
   const discoverySet = data.products.find((p) => p.slug === DISCOVERY_SET_SLUG);
@@ -612,7 +624,10 @@ function HomePage({ data, nav, settings }) {
               <p style={{ ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, maxWidth: 520, marginBottom: 18 }}>
                 Explore all six Mysaa Rituals fragrances in six 60 ml shot glass jar candles — a complete set for discovering the scent that becomes your ritual.
               </p>
-              <p style={{ ...sans, fontSize: 18, color: C.ink, marginBottom: 20 }}>{inr(discoverySet.price)}</p>
+              <div className="price-stack price-stack-large" style={{ marginBottom: 20 }}>
+                 {priceMarkup(discoverySet) && <span className="price-mrp">MRP {inr(discoverySet.mrp)}</span>}
+                 <span style={{ ...sans, fontSize: 20, color: C.ink, fontWeight: 500 }}>{inr(discoverySet.price)}</span>
+               </div>
               <Button variant="outline" onClick={() => nav("product", discoverySet.slug)}>View Discover Set →</Button>
             </div>
           </div>
@@ -663,7 +678,7 @@ function HomePage({ data, nav, settings }) {
 
       {/* Featured products */}
       <section className="container" style={{ padding: "72px 20px" }}>
-        <SectionHeading eyebrow="The Collection" title="Made to be lit slowly." sub="A selection of Mysaa candles, chosen to give you an easy place to begin." />
+        <SectionHeading eyebrow="Best Sellers" title="Made to be lit slowly." sub="A selection of Mysaa candles across our Hero Jar, Wide Jar and Shot Glass formats." />
         <div className="product-grid" style={{ marginTop: 36 }}>
           {featured.map((p) => (
             <ProductCard key={p.slug} product={p} fragrance={fragranceById[p.fragranceSlug]} images={data.images} nav={nav} />
@@ -994,7 +1009,10 @@ function ProductDetailPage({ data, nav, slug, settings }) {
 
         <div>
           <h1 style={{ ...serif, fontSize: "clamp(26px,4vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 14 }}>{product.name}</h1>
-          <p style={{ ...sans, fontSize: 22, color: C.ink, marginBottom: 6 }}>{inr(unitPrice)}</p>
+          <div className="product-detail-price" style={{ marginBottom: 6 }}>
+            {priceMarkup(product) && <span className="price-mrp">MRP {inr(product.mrp)}</span>}
+            <p style={{ ...sans, fontSize: 24, color: C.ink, fontWeight: 500 }}>{inr(unitPrice)}</p>
+          </div>
           {(hasPackagingOptions || hasJarVariants) && (
             <p style={{ ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 }}>Base price {inr(product.price)} · final price updates with your selections</p>
           )}

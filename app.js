@@ -26,6 +26,7 @@ const serif = { fontFamily: "'Cormorant Garamond', serif" };
 const sans = { fontFamily: "'Karla', sans-serif" };
 const label = { ...sans, fontSize: 11.5, letterSpacing: "0.11em", textTransform: "uppercase" };
 const inr = (n) => Number(n || 0) > 0 ? `₹${Number(n).toLocaleString("en-IN")}` : "Enquire";
+const priceMarkup = (product) => Number((product === null || product === void 0 ? void 0 : product.mrp) || 0) > Number((product === null || product === void 0 ? void 0 : product.price) || 0);
 // Product customisation pricing. Standard packaging is included in the base price.
 // Premium packaging is currently marked Coming Soon. Jar flower mould adds ₹100.
 const PACKAGING_OPTIONS = {
@@ -38,7 +39,7 @@ const PACKAGING_OPTIONS = {
 };
 const PREMIUM_PACKAGING = {
     label: "Premium Packaging — Coming Soon",
-    description: "Premium packaging is coming soon. It is not currently available and does not change the product price."
+    description: "Premium packaging is coming soon."
 };
 const JAR_VARIANTS = {
     plain: {
@@ -353,7 +354,11 @@ function ProductCard({ product, fragrance, images, nav }) {
             React.createElement("h3", { style: { ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 } }, product.name),
             React.createElement("p", { style: { ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }, className: "line-clamp-2" }, product.shortDescription),
             React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } },
-                React.createElement("span", { style: { ...sans, fontSize: 14, color: C.ink } }, inr(product.price)),
+                React.createElement("span", { className: "price-stack" },
+                    priceMarkup(product) && React.createElement("span", { className: "price-mrp" },
+                        "MRP ",
+                        inr(product.mrp)),
+                    React.createElement("span", { style: { ...sans, fontSize: 15, color: C.ink, fontWeight: 500 } }, inr(product.price))),
                 React.createElement("span", { style: { ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" } }, "View Details")))));
 }
 function FragranceCard({ fragrance, images, nav }) {
@@ -400,10 +405,16 @@ function HomePage({ data, nav, settings }) {
     var _a, _b, _c, _d, _e, _f;
     const fragranceById = Object.fromEntries(data.fragrances.map((f) => [f.slug, f]));
     const activeFragrances = data.fragrances.filter((f) => f.active);
-    // The homepage's featured row intentionally uses one consistent format,
-    // so the collection feels editorial rather than like a random product grid.
-    const featured = data.products
-        .filter((p) => p.active && p.categorySlug === "wide-jar-candle")
+    // Homepage collection: prioritize products explicitly marked as bestsellers
+    // across candle formats. If the data has no bestseller flags yet, fall back
+    // to a balanced mix of Hero Jar, Wide Jar and Shot Glass candles.
+    const candleProducts = data.products.filter((p) => p.active && ["hero-jar-candle", "wide-jar-candle", "shot-glass-candle"].includes(p.categorySlug));
+    const bestsellerProducts = candleProducts.filter((p) => p.bestseller);
+    const mixedFallback = activeFragrances.map((fragrance, index) => {
+        const preferredCategory = ["hero-jar-candle", "wide-jar-candle", "shot-glass-candle"][index % 3];
+        return candleProducts.find((p) => p.fragranceSlug === fragrance.slug && p.categorySlug === preferredCategory);
+    }).filter(Boolean);
+    const featured = (bestsellerProducts.length ? bestsellerProducts : mixedFallback)
         .slice(0, 6);
     const discoverySet = data.products.find((p) => p.slug === DISCOVERY_SET_SLUG);
     const feelingGroups = FEELING_FILTERS;
@@ -437,7 +448,11 @@ function HomePage({ data, nav, settings }) {
                     React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 12 } }, "New \u00B7 Discover Set"),
                     React.createElement("h2", { style: { ...serif, fontSize: "clamp(28px,3.6vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 12 } }, "Six fragrances. One beautiful beginning."),
                     React.createElement("p", { style: { ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, maxWidth: 520, marginBottom: 18 } }, "Explore all six Mysaa Rituals fragrances in six 60 ml shot glass jar candles \u2014 a complete set for discovering the scent that becomes your ritual."),
-                    React.createElement("p", { style: { ...sans, fontSize: 18, color: C.ink, marginBottom: 20 } }, inr(discoverySet.price)),
+                    React.createElement("div", { className: "price-stack price-stack-large", style: { marginBottom: 20 } },
+                        priceMarkup(discoverySet) && React.createElement("span", { className: "price-mrp" },
+                            "MRP ",
+                            inr(discoverySet.mrp)),
+                        React.createElement("span", { style: { ...sans, fontSize: 20, color: C.ink, fontWeight: 500 } }, inr(discoverySet.price))),
                     React.createElement(Button, { variant: "outline", onClick: () => nav("product", discoverySet.slug) }, "View Discover Set \u2192"))))),
         React.createElement("section", { style: { background: C.card, borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}` } },
             React.createElement("div", { className: "container", style: { padding: "72px 20px" } },
@@ -469,7 +484,7 @@ function HomePage({ data, nav, settings }) {
                             React.createElement("option", { value: "", disabled: true }, "Choose an occasion"),
                             occasionGroups.map((group) => React.createElement("option", { key: group.slug, value: group.slug }, group.title))))))),
         React.createElement("section", { className: "container", style: { padding: "72px 20px" } },
-            React.createElement(SectionHeading, { eyebrow: "The Collection", title: "Made to be lit slowly.", sub: "A selection of Mysaa candles, chosen to give you an easy place to begin." }),
+            React.createElement(SectionHeading, { eyebrow: "Best Sellers", title: "Made to be lit slowly.", sub: "A selection of Mysaa candles across our Hero Jar, Wide Jar and Shot Glass formats." }),
             React.createElement("div", { className: "product-grid", style: { marginTop: 36 } }, featured.map((p) => (React.createElement(ProductCard, { key: p.slug, product: p, fragrance: fragranceById[p.fragranceSlug], images: data.images, nav: nav })))),
             React.createElement("div", { style: { marginTop: 30 } },
                 React.createElement(Button, { variant: "ghost", onClick: () => nav("catalogue", "all") }, "View the full collection \u2192"))),
@@ -674,7 +689,11 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             React.createElement(ProductGallery, { product: product, images: data.images }),
             React.createElement("div", null,
                 React.createElement("h1", { style: { ...serif, fontSize: "clamp(26px,4vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 14 } }, product.name),
-                React.createElement("p", { style: { ...sans, fontSize: 22, color: C.ink, marginBottom: 6 } }, inr(unitPrice)),
+                React.createElement("div", { className: "product-detail-price", style: { marginBottom: 6 } },
+                    priceMarkup(product) && React.createElement("span", { className: "price-mrp" },
+                        "MRP ",
+                        inr(product.mrp)),
+                    React.createElement("p", { style: { ...sans, fontSize: 24, color: C.ink, fontWeight: 500 } }, inr(unitPrice))),
                 (hasPackagingOptions || hasJarVariants) && (React.createElement("p", { style: { ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 } },
                     "Base price ",
                     inr(product.price),

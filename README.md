@@ -48,7 +48,7 @@ The UI follows the supplied Mysaa Rituals reference CSS: warm ivory grounds, ink
 ## 2. Update your product details (no coding required)
 
 1. Open `data/mysaa_products.xlsx` and read the **"Read Me"** tab.
-2. Edit **Products**, **Fragrances**, **Categories** or **Settings**.
+2. Edit **Products**, **Fragrances**, **Categories** or **Settings**. In **Products**, `mrp` is the original MRP and `price` is the current selling/discounted price. Set `bestseller` to `TRUE` for products you want prioritized in the homepage Best Sellers section.
    Keep `slug` unique on each sheet — it's how a product links to its
    fragrance and category. A product's `categorySlug` must be one of:
    `hero-jar-candle`, `wide-jar-candle`, `shot-glass-candle`,
