@@ -7,8 +7,9 @@
   "instagram": "https://instagram.com/mysaarituals",
   "instagramHandle": "@mysaarituals",
   "address": "Noida, UP, India",
-  "seoTitle": "Mysaa Rituals — Handcrafted Fragrance & Gifting",
+  "seoTitle": "Mysaa Rituals \u2014 Handcrafted Fragrance & Gifting",
   "seoDescription": "Handcrafted candles and gifts inspired by Indian fragrances, memories and everyday rituals.",
   "feedbackUrl": "https://forms.cloud.microsoft/r/6S4JFC1WaX?origin=QRCode",
-  "feedbackQr": "./assets/feedback-qr.jpeg"
+  "feedbackQr": "./assets/feedback-qr.jpeg",
+  "connectQr": "./assets/connect-qr.jpeg"
 }

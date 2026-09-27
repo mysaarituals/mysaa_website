@@ -28,7 +28,6 @@ const sans = { fontFamily: "'Karla', sans-serif" };
 const label = { ...sans, fontSize: 11.5, letterSpacing: "0.11em", textTransform: "uppercase" };
 
 const inr = (n) => Number(n || 0) > 0 ? `₹${Number(n).toLocaleString("en-IN")}` : "Enquire";
-const priceMarkup = (product) => Number(product?.mrp || 0) > Number(product?.price || 0);
 
 // Product customisation pricing. Standard packaging is included in the base price.
 // Premium packaging is currently marked Coming Soon. Jar flower mould adds ₹100.
@@ -331,7 +330,7 @@ function Header({ nav, settings, route }) {
 
       <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 76 }}>
         <button onClick={() => nav("home")} aria-label="Mysaa Rituals home" style={{ display: "flex", alignItems: "center" }}>
-          <Logo size={64} />
+          <Logo size={78} />
         </button>
 
         <nav style={{ display: "flex", alignItems: "center", gap: 30 }} className="desktop-nav">
@@ -400,7 +399,7 @@ function Footer({ nav, settings }) {
       <div className="container" style={{ padding: "56px 20px 32px" }}>
         <div className="footer-grid">
           <div>
-            <div style={{ marginBottom: 16 }}><Logo size={56} /></div>
+            <div style={{ marginBottom: 16 }}><Logo size={66} /></div>
             <p style={{ ...sans, color: C.ink70, fontSize: 14, lineHeight: 1.7, maxWidth: 300, marginBottom: 16 }}>
               {settings.tagline || "Every flame remembers."} Small-batch candles, wax melts and gift hampers, made slowly and in limited quantity.
             </p>
@@ -471,7 +470,6 @@ function ProductCard({ product, fragrance, images, nav }) {
         <p style={{ ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }} className="line-clamp-2">{product.shortDescription}</p>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: "auto" }}>
           <span className="price-stack">
-            {priceMarkup(product) && <span className="price-mrp">MRP {inr(product.mrp)}</span>}
             <span style={{ ...sans, fontSize: 15, color: C.ink, fontWeight: 500 }}>{inr(product.price)}</span>
           </span>
           <span style={{ ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" }}>View Details</span>
@@ -580,7 +578,6 @@ function HomePage({ data, nav, settings }) {
             <div className="hero-actions">
               <button className="hero-action hero-action-primary" onClick={() => nav("catalogue", "all")}>Explore the Catalogue</button>
               <button className="hero-action hero-action-secondary" onClick={() => nav("create-ritual")}>Create Your Ritual</button>
-              <a className="hero-action hero-action-whatsapp" href={waLink(settings.whatsapp, "Hello Mysaa Rituals!")} target="_blank" rel="noreferrer"><ChatIcon size={17} /><span>Chat on WhatsApp</span></a>
             </div>
           </div>
           <ImageOrPlaceholder src={data.images?.site?.hero} label="Hero product photograph" ratio="4 / 3" />
@@ -617,7 +614,6 @@ function HomePage({ data, nav, settings }) {
                 Explore all six Mysaa Rituals fragrances in six 60 ml shot glass jar candles — a complete set for discovering the scent that becomes your ritual.
               </p>
               <div className="price-stack price-stack-large" style={{ marginBottom: 20 }}>
-                 {priceMarkup(discoverySet) && <span className="price-mrp">MRP {inr(discoverySet.mrp)}</span>}
                  <span style={{ ...sans, fontSize: 20, color: C.ink, fontWeight: 500 }}>{inr(discoverySet.price)}</span>
                </div>
               <Button variant="outline" onClick={() => nav("product", discoverySet.slug)}>View Discover Set →</Button>
@@ -727,7 +723,7 @@ function HomePage({ data, nav, settings }) {
       <section className="container" style={{ padding: "72px 20px" }}>
         <div className="story-block">
           <SectionHeading eyebrow="Our Story" title="More than a candle." />
-          <div style={{ marginTop: 24, display: "grid", gap: 8, ...sans, fontSize: 15.5, color: C.ink70, lineHeight: 1.8, maxWidth: 760 }}>
+          <div className="home-story-copy">
             <p>Mysaa Rituals was created around a simple idea — that fragrance has the power to turn ordinary moments into memories.</p>
             <p>Every piece is handcrafted with care, inspired by familiar Indian aromas and designed to become part of someone's ritual.</p>
           </div>
@@ -1013,7 +1009,6 @@ function ProductDetailPage({ data, nav, slug, settings }) {
         <div>
           <h1 style={{ ...serif, fontSize: "clamp(26px,4vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 14 }}>{product.name}</h1>
           <div className="product-detail-price" style={{ marginBottom: 6 }}>
-            {priceMarkup(product) && <span className="price-mrp">MRP {inr(product.mrp)}</span>}
             <p style={{ ...sans, fontSize: 24, color: C.ink, fontWeight: 500 }}>{inr(unitPrice)}</p>
           </div>
           {(hasPackagingOptions || hasJarVariants) && (
@@ -1245,6 +1240,31 @@ function AboutPage({ data }) {
         </div>
       </div>
 
+      <div className="about-section process-section">
+        <div className="process-layout">
+          <div>
+            <p style={{ ...label, color: C.rust, marginBottom: 10 }}>Our Process</p>
+            <h2 style={{ ...serif, color: C.ink, fontSize: "clamp(34px,5vw,50px)", fontWeight: 500, lineHeight: 1.02, maxWidth: 520, marginBottom: 20 }}>
+              Thoughtfully made,<br/>from start to finish.
+            </h2>
+            <div className="process-steps">
+              {[
+                ["01", "Curate familiar Indian fragrances."],
+                ["02", "Blend with a natural soy wax mix."],
+                ["03", "Hand-pour in small batches."],
+                ["04", "Finish and package with care."],
+              ].map(([num, text]) => (
+                <div className="process-step" key={num}>
+                  <span className="process-number">{num}</span>
+                  <span>{text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <ImageOrPlaceholder src="./assets/story.jpg" label="Mysaa Rituals making process" ratio="4 / 3" />
+        </div>
+      </div>
+
       <div className="about-section">
         <SectionHeading eyebrow="Candle Care" title="A little care goes a long way." />
         <ul style={{ marginTop: 20, paddingLeft: 20, ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.9 }}>
@@ -1260,44 +1280,112 @@ function AboutPage({ data }) {
 
 function ContactPage({ settings }) {
   const feedbackReady = !!(settings.feedbackUrl || settings.feedbackQr);
+  const connectQr = settings.connectQr || "./assets/connect-qr.jpeg";
   return (
-    <div className="container contact-page" style={{ padding: "48px 20px 80px", maxWidth: 760 }}>
-      <SectionHeading eyebrow="We'd Love To Hear From You" title="Get in touch" />
-      <div style={{ marginTop: 32, display: "grid", gap: 0 }}>
-        <ContactRow label="WhatsApp" value={settings.phone} href={waLink(settings.whatsapp, "Hello Mysaa Rituals!")} />
-        <ContactRow label="Email" value={settings.email} href={`mailto:${settings.email}`} />
-        <ContactRow label="Instagram" value={settings.instagramHandle || "@mysaarituals"} href={settings.instagram} />
-        {settings.address && <ContactRow label="Studio" value={settings.address} />}
-      </div>
+    <div className="contact-page">
+      <section className="contact-hero">
+        <div className="contact-hero-copy">
+          <p style={{ ...label, color: C.rust, marginBottom: 12 }}>We'd Love To Hear From You</p>
+          <h1 style={{ ...serif, color: C.ink, fontSize: "clamp(44px,6vw,64px)", fontWeight: 500, lineHeight: 1.02, marginBottom: 18 }}>Get in touch</h1>
+          <p style={{ ...sans, color: C.ink70, fontSize: 17, lineHeight: 1.65, maxWidth: 430, marginBottom: 28 }}>
+            Have a question, a custom request or just want to say hello? We're always happy to connect.
+          </p>
+          <div className="contact-details">
+            <ContactRow icon={<ChatIcon size={25} color={C.rust} />} label="WhatsApp" value={settings.phone} href={waLink(settings.whatsapp, "Hello Mysaa Rituals!")} />
+            <ContactRow icon={<span style={{fontSize:26,color:C.rust}}>✉</span>} label="Email" value={settings.email} href={`mailto:${settings.email}`} />
+            <ContactRow icon={<InstagramIcon size={25} color={C.rust} />} label="Instagram" value={settings.instagramHandle || "@mysaarituals"} href={settings.instagram} />
+            {settings.address && <ContactRow icon={<span style={{fontSize:25,color:C.rust}}>⌖</span>} label="Studio" value={settings.address} />}
+          </div>
+        </div>
+        <div className="contact-hero-image">
+          <ImageOrPlaceholder src="./assets/hero.jpg" label="Mysaa Rituals candle" ratio="1 / 1" />
+          <div className="contact-hero-caption">
+            <p style={{ ...serif, fontSize: 30, color: C.ink, lineHeight: 1.05, margin: 0 }}>Carry<br/>the ritual<br/>with you.</p>
+          </div>
+        </div>
+      </section>
 
-      <section className="feedback-section" aria-labelledby="feedback-title">
-        <div>
+      <section className="contact-connect-grid">
+        <div className="contact-connect-card">
           <p style={{ ...label, color: C.rust, marginBottom: 10 }}>Feedback</p>
-          <h2 id="feedback-title" style={{ ...serif, color: C.ink, fontSize: "clamp(28px,4vw,36px)", fontWeight: 500, marginBottom: 10 }}>Tell us about your Mysaa experience.</h2>
-          <p style={{ ...sans, color: C.ink70, fontSize: 15, lineHeight: 1.7, marginBottom: 20 }}>
+          <h2 style={{ ...serif, color: C.ink, fontSize: "clamp(30px,4vw,40px)", fontWeight: 500, lineHeight: 1.05, marginBottom: 12 }}>
+            Tell us about<br/>your Mysaa experience.
+          </h2>
+          <p style={{ ...sans, color: C.ink70, fontSize: 15, lineHeight: 1.65, maxWidth: 430 }}>
             Your feedback helps us improve our fragrances, products and overall experience.
           </p>
-          {feedbackReady ? (
-            <div className="feedback-actions">
-              {settings.feedbackQr && <img className="feedback-qr" src={settings.feedbackQr} alt="QR code for the Mysaa Rituals feedback form" />}
-              {settings.feedbackUrl && <Button variant="link" href={settings.feedbackUrl} target="_blank" style={{ color: C.rust, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "underline", textUnderlineOffset: "4px" }}>Open Feedback Form →</Button>}
+          {feedbackReady && (
+            <div className="qr-action-row">
+              {settings.feedbackQr && <img className="contact-qr" src={settings.feedbackQr} alt="QR code for the Mysaa Rituals feedback form" />}
+              <div>
+                {settings.feedbackUrl && (
+                  <a className="qr-link" href={settings.feedbackUrl} target="_blank" rel="noreferrer">
+                    Scan to open<br/>feedback form <span>→</span>
+                  </a>
+                )}
+              </div>
             </div>
-          ) : (
-            <p style={{ ...sans, color: C.ink70, fontSize: 13.5, fontStyle: "italic" }}>Feedback form QR code will be added here.</p>
           )}
+        </div>
+
+        <div className="contact-connect-card">
+          <p style={{ ...label, color: C.rust, marginBottom: 10 }}>Stay Connected</p>
+          <h2 style={{ ...serif, color: C.ink, fontSize: "clamp(30px,4vw,40px)", fontWeight: 500, lineHeight: 1.05, marginBottom: 12 }}>
+            Scan to connect<br/>with us.
+          </h2>
+          <p style={{ ...sans, color: C.ink70, fontSize: 15, lineHeight: 1.65, maxWidth: 430 }}>
+            Follow Mysaa Rituals and stay close to new drops, offers and little rituals.
+          </p>
+          <div className="qr-action-row">
+            <img className="contact-qr" src={connectQr} alt="Mysaa Rituals connection QR code" />
+            <div>
+              <a className="qr-link" href={settings.instagram} target="_blank" rel="noreferrer">
+                Visit @mysaarituals<br/>on Instagram <span>→</span>
+              </a>
+            </div>
+          </div>
         </div>
       </section>
     </div>
   );
 }
-function ContactRow({ label: text, value, href }) {
+function ContactRow({ icon, label: text, value, href }) {
   const content = (
-    <div style={{ padding: "20px 0", borderBottom: `1px solid ${C.line}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      <span style={{ ...label, color: C.ink70 }}>{text}</span>
-      <span style={{ ...sans, fontSize: 14, color: C.ink, fontWeight: 500 }}>{value}</span>
+    <div className="contact-row">
+      <div className="contact-row-icon">{icon}</div>
+      <div className="contact-row-copy">
+        <span>{text}</span>
+        <strong>{value}</strong>
+      </div>
     </div>
   );
   return href ? <a href={href} target="_blank" rel="noreferrer">{content}</a> : content;
+}
+
+function WelcomePopup() {
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    try {
+      if (!window.localStorage.getItem("mysaa-welcome-seen")) setOpen(true);
+    } catch (_) { setOpen(true); }
+  }, []);
+  const close = () => {
+    try { window.localStorage.setItem("mysaa-welcome-seen", "1"); } catch (_) {}
+    setOpen(false);
+  };
+  if (!open) return null;
+  return (
+    <div className="welcome-overlay" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+      <div className="welcome-card">
+        <button className="welcome-close" onClick={close} aria-label="Close welcome message">×</button>
+        <img src="assets/logo.png" alt="Mysaa Rituals" className="welcome-logo" />
+        <p className="welcome-eyebrow">A little welcome from Mysaa</p>
+        <h2 id="welcome-title">Goodies in every order.</h2>
+        <p>Every order comes with free goodies, and our launch discount is live. Discover your next little ritual with Mysaa.</p>
+        <button className="welcome-cta" onClick={close}>Start exploring →</button>
+      </div>
+    </div>
+  );
 }
 
 /* ============================================================
@@ -1363,6 +1451,7 @@ function App() {
 
   return (
     <React.Fragment>
+      <WelcomePopup />
       <Header nav={nav} settings={settings} route={route} />
       <main style={{ minHeight: "60vh" }}>{page}</main>
       <Footer nav={nav} settings={settings} />

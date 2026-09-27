@@ -26,7 +26,6 @@ const serif = { fontFamily: "'Cormorant Garamond', serif" };
 const sans = { fontFamily: "'Karla', sans-serif" };
 const label = { ...sans, fontSize: 11.5, letterSpacing: "0.11em", textTransform: "uppercase" };
 const inr = (n) => Number(n || 0) > 0 ? `₹${Number(n).toLocaleString("en-IN")}` : "Enquire";
-const priceMarkup = (product) => Number((product === null || product === void 0 ? void 0 : product.mrp) || 0) > Number((product === null || product === void 0 ? void 0 : product.price) || 0);
 // Product customisation pricing. Standard packaging is included in the base price.
 // Premium packaging is currently marked Coming Soon. Jar flower mould adds ₹100.
 const PACKAGING_OPTIONS = {
@@ -272,7 +271,7 @@ function Header({ nav, settings, route }) {
     return (React.createElement("header", { style: { position: "sticky", top: 0, zIndex: 40, background: "rgba(250,247,240,0.94)", borderBottom: `1px solid ${C.line}`, backdropFilter: "blur(6px)" } },
         React.createElement("div", { className: "container", style: { display: "flex", alignItems: "center", justifyContent: "space-between", height: 76 } },
             React.createElement("button", { onClick: () => nav("home"), "aria-label": "Mysaa Rituals home", style: { display: "flex", alignItems: "center" } },
-                React.createElement(Logo, { size: 64 })),
+                React.createElement(Logo, { size: 78 })),
             React.createElement("nav", { style: { display: "flex", alignItems: "center", gap: 30 }, className: "desktop-nav" },
                 links.map(([lbl, page, param]) => (React.createElement("button", { key: lbl, onClick: () => nav(page, param), style: linkStyle(page) }, lbl))),
                 React.createElement("div", { style: { position: "relative" }, onMouseEnter: () => setDiscoverOpen(true), onMouseLeave: () => setDiscoverOpen(false) },
@@ -300,7 +299,7 @@ function Footer({ nav, settings }) {
             React.createElement("div", { className: "footer-grid" },
                 React.createElement("div", null,
                     React.createElement("div", { style: { marginBottom: 16 } },
-                        React.createElement(Logo, { size: 56 })),
+                        React.createElement(Logo, { size: 66 })),
                     React.createElement("p", { style: { ...sans, color: C.ink70, fontSize: 14, lineHeight: 1.7, maxWidth: 300, marginBottom: 16 } },
                         settings.tagline || "Every flame remembers.",
                         " Small-batch candles, wax melts and gift hampers, made slowly and in limited quantity."),
@@ -351,9 +350,6 @@ function ProductCard({ product, fragrance, images, nav }) {
             React.createElement("p", { style: { ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }, className: "line-clamp-2" }, product.shortDescription),
             React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: "auto" } },
                 React.createElement("span", { className: "price-stack" },
-                    priceMarkup(product) && React.createElement("span", { className: "price-mrp" },
-                        "MRP ",
-                        inr(product.mrp)),
                     React.createElement("span", { style: { ...sans, fontSize: 15, color: C.ink, fontWeight: 500 } }, inr(product.price))),
                 React.createElement("span", { style: { ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" } }, "View Details")))));
 }
@@ -424,10 +420,7 @@ function HomePage({ data, nav, settings }) {
                     React.createElement("p", { style: { ...sans, fontSize: 16, color: C.ink70, lineHeight: 1.75, marginBottom: 30, maxWidth: 470 } }, "Handcrafted candles and gifts inspired by Indian fragrances, memories and everyday rituals."),
                     React.createElement("div", { className: "hero-actions" },
                         React.createElement("button", { className: "hero-action hero-action-primary", onClick: () => nav("catalogue", "all") }, "Explore the Catalogue"),
-                        React.createElement("button", { className: "hero-action hero-action-secondary", onClick: () => nav("create-ritual") }, "Create Your Ritual"),
-                        React.createElement("a", { className: "hero-action hero-action-whatsapp", href: waLink(settings.whatsapp, "Hello Mysaa Rituals!"), target: "_blank", rel: "noreferrer" },
-                            React.createElement(ChatIcon, { size: 17 }),
-                            React.createElement("span", null, "Chat on WhatsApp")))),
+                        React.createElement("button", { className: "hero-action hero-action-secondary", onClick: () => nav("create-ritual") }, "Create Your Ritual"))),
                 React.createElement(ImageOrPlaceholder, { src: (_b = (_a = data.images) === null || _a === void 0 ? void 0 : _a.site) === null || _b === void 0 ? void 0 : _b.hero, label: "Hero product photograph", ratio: "4 / 3" }))),
         React.createElement("section", { className: "container", style: { padding: "72px 20px 24px" } },
             React.createElement(SectionHeading, { eyebrow: "The Fragrances", title: "Every fragrance holds a feeling.", sub: "From the warmth of sandalwood to the romance of jasmine and the mystery of night-blooming flowers, each Mysaa Ritual is created to evoke something personal." })),
@@ -441,9 +434,6 @@ function HomePage({ data, nav, settings }) {
                     React.createElement("h2", { style: { ...serif, fontSize: "clamp(28px,3.6vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 12 } }, "Six fragrances. One beautiful beginning."),
                     React.createElement("p", { style: { ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, maxWidth: 520, marginBottom: 18 } }, "Explore all six Mysaa Rituals fragrances in six 60 ml shot glass jar candles \u2014 a complete set for discovering the scent that becomes your ritual."),
                     React.createElement("div", { className: "price-stack price-stack-large", style: { marginBottom: 20 } },
-                        priceMarkup(discoverySet) && React.createElement("span", { className: "price-mrp" },
-                            "MRP ",
-                            inr(discoverySet.mrp)),
                         React.createElement("span", { style: { ...sans, fontSize: 20, color: C.ink, fontWeight: 500 } }, inr(discoverySet.price))),
                     React.createElement(Button, { variant: "outline", onClick: () => nav("product", discoverySet.slug) }, "View Discover Set \u2192"))))),
         React.createElement("section", { style: { background: C.card, borderTop: `1px solid ${C.line}`, borderBottom: `1px solid ${C.line}` } },
@@ -506,7 +496,7 @@ function HomePage({ data, nav, settings }) {
         React.createElement("section", { className: "container", style: { padding: "72px 20px" } },
             React.createElement("div", { className: "story-block" },
                 React.createElement(SectionHeading, { eyebrow: "Our Story", title: "More than a candle." }),
-                React.createElement("div", { style: { marginTop: 24, display: "grid", gap: 8, ...sans, fontSize: 15.5, color: C.ink70, lineHeight: 1.8, maxWidth: 760 } },
+                React.createElement("div", { className: "home-story-copy" },
                     React.createElement("p", null, "Mysaa Rituals was created around a simple idea \u2014 that fragrance has the power to turn ordinary moments into memories."),
                     React.createElement("p", null, "Every piece is handcrafted with care, inspired by familiar Indian aromas and designed to become part of someone's ritual.")),
                 React.createElement("div", { style: { marginTop: 26 } },
@@ -692,9 +682,6 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             React.createElement("div", null,
                 React.createElement("h1", { style: { ...serif, fontSize: "clamp(26px,4vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 14 } }, product.name),
                 React.createElement("div", { className: "product-detail-price", style: { marginBottom: 6 } },
-                    priceMarkup(product) && React.createElement("span", { className: "price-mrp" },
-                        "MRP ",
-                        inr(product.mrp)),
                     React.createElement("p", { style: { ...sans, fontSize: 24, color: C.ink, fontWeight: 500 } }, inr(unitPrice))),
                 (hasPackagingOptions || hasJarVariants) && (React.createElement("p", { style: { ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 } },
                     "Base price ",
@@ -813,6 +800,23 @@ function AboutPage({ data }) {
             React.createElement(SectionHeading, { eyebrow: "Why Mysaa Rituals", title: "Slow, deliberate, personal." }),
             React.createElement("div", { style: { marginTop: 32 } },
                 React.createElement(WhyGrid, null))),
+        React.createElement("div", { className: "about-section process-section" },
+            React.createElement("div", { className: "process-layout" },
+                React.createElement("div", null,
+                    React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 10 } }, "Our Process"),
+                    React.createElement("h2", { style: { ...serif, color: C.ink, fontSize: "clamp(34px,5vw,50px)", fontWeight: 500, lineHeight: 1.02, maxWidth: 520, marginBottom: 20 } },
+                        "Thoughtfully made,",
+                        React.createElement("br", null),
+                        "from start to finish."),
+                    React.createElement("div", { className: "process-steps" }, [
+                        ["01", "Curate familiar Indian fragrances."],
+                        ["02", "Blend with a natural soy wax mix."],
+                        ["03", "Hand-pour in small batches."],
+                        ["04", "Finish and package with care."],
+                    ].map(([num, text]) => (React.createElement("div", { className: "process-step", key: num },
+                        React.createElement("span", { className: "process-number" }, num),
+                        React.createElement("span", null, text)))))),
+                React.createElement(ImageOrPlaceholder, { src: "./assets/story.jpg", label: "Mysaa Rituals making process", ratio: "4 / 3" }))),
         React.createElement("div", { className: "about-section" },
             React.createElement(SectionHeading, { eyebrow: "Candle Care", title: "A little care goes a long way." }),
             React.createElement("ul", { style: { marginTop: 20, paddingLeft: 20, ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.9 } },
@@ -823,27 +827,94 @@ function AboutPage({ data }) {
 }
 function ContactPage({ settings }) {
     const feedbackReady = !!(settings.feedbackUrl || settings.feedbackQr);
-    return (React.createElement("div", { className: "container contact-page", style: { padding: "48px 20px 80px", maxWidth: 760 } },
-        React.createElement(SectionHeading, { eyebrow: "We'd Love To Hear From You", title: "Get in touch" }),
-        React.createElement("div", { style: { marginTop: 32, display: "grid", gap: 0 } },
-            React.createElement(ContactRow, { label: "WhatsApp", value: settings.phone, href: waLink(settings.whatsapp, "Hello Mysaa Rituals!") }),
-            React.createElement(ContactRow, { label: "Email", value: settings.email, href: `mailto:${settings.email}` }),
-            React.createElement(ContactRow, { label: "Instagram", value: settings.instagramHandle || "@mysaarituals", href: settings.instagram }),
-            settings.address && React.createElement(ContactRow, { label: "Studio", value: settings.address })),
-        React.createElement("section", { className: "feedback-section", "aria-labelledby": "feedback-title" },
-            React.createElement("div", null,
+    const connectQr = settings.connectQr || "./assets/connect-qr.jpeg";
+    return (React.createElement("div", { className: "contact-page" },
+        React.createElement("section", { className: "contact-hero" },
+            React.createElement("div", { className: "contact-hero-copy" },
+                React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 12 } }, "We'd Love To Hear From You"),
+                React.createElement("h1", { style: { ...serif, color: C.ink, fontSize: "clamp(44px,6vw,64px)", fontWeight: 500, lineHeight: 1.02, marginBottom: 18 } }, "Get in touch"),
+                React.createElement("p", { style: { ...sans, color: C.ink70, fontSize: 17, lineHeight: 1.65, maxWidth: 430, marginBottom: 28 } }, "Have a question, a custom request or just want to say hello? We're always happy to connect."),
+                React.createElement("div", { className: "contact-details" },
+                    React.createElement(ContactRow, { icon: React.createElement(ChatIcon, { size: 25, color: C.rust }), label: "WhatsApp", value: settings.phone, href: waLink(settings.whatsapp, "Hello Mysaa Rituals!") }),
+                    React.createElement(ContactRow, { icon: React.createElement("span", { style: { fontSize: 26, color: C.rust } }, "\u2709"), label: "Email", value: settings.email, href: `mailto:${settings.email}` }),
+                    React.createElement(ContactRow, { icon: React.createElement(InstagramIcon, { size: 25, color: C.rust }), label: "Instagram", value: settings.instagramHandle || "@mysaarituals", href: settings.instagram }),
+                    settings.address && React.createElement(ContactRow, { icon: React.createElement("span", { style: { fontSize: 25, color: C.rust } }, "\u2316"), label: "Studio", value: settings.address }))),
+            React.createElement("div", { className: "contact-hero-image" },
+                React.createElement(ImageOrPlaceholder, { src: "./assets/hero.jpg", label: "Mysaa Rituals candle", ratio: "1 / 1" }),
+                React.createElement("div", { className: "contact-hero-caption" },
+                    React.createElement("p", { style: { ...serif, fontSize: 30, color: C.ink, lineHeight: 1.05, margin: 0 } },
+                        "Carry",
+                        React.createElement("br", null),
+                        "the ritual",
+                        React.createElement("br", null),
+                        "with you.")))),
+        React.createElement("section", { className: "contact-connect-grid" },
+            React.createElement("div", { className: "contact-connect-card" },
                 React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 10 } }, "Feedback"),
-                React.createElement("h2", { id: "feedback-title", style: { ...serif, color: C.ink, fontSize: "clamp(28px,4vw,36px)", fontWeight: 500, marginBottom: 10 } }, "Tell us about your Mysaa experience."),
-                React.createElement("p", { style: { ...sans, color: C.ink70, fontSize: 15, lineHeight: 1.7, marginBottom: 20 } }, "Your feedback helps us improve our fragrances, products and overall experience."),
-                feedbackReady ? (React.createElement("div", { className: "feedback-actions" },
-                    settings.feedbackQr && React.createElement("img", { className: "feedback-qr", src: settings.feedbackQr, alt: "QR code for the Mysaa Rituals feedback form" }),
-                    settings.feedbackUrl && React.createElement(Button, { variant: "link", href: settings.feedbackUrl, target: "_blank", style: { color: C.rust, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "underline", textUnderlineOffset: "4px" } }, "Open Feedback Form \u2192"))) : (React.createElement("p", { style: { ...sans, color: C.ink70, fontSize: 13.5, fontStyle: "italic" } }, "Feedback form QR code will be added here."))))));
+                React.createElement("h2", { style: { ...serif, color: C.ink, fontSize: "clamp(30px,4vw,40px)", fontWeight: 500, lineHeight: 1.05, marginBottom: 12 } },
+                    "Tell us about",
+                    React.createElement("br", null),
+                    "your Mysaa experience."),
+                React.createElement("p", { style: { ...sans, color: C.ink70, fontSize: 15, lineHeight: 1.65, maxWidth: 430 } }, "Your feedback helps us improve our fragrances, products and overall experience."),
+                feedbackReady && (React.createElement("div", { className: "qr-action-row" },
+                    settings.feedbackQr && React.createElement("img", { className: "contact-qr", src: settings.feedbackQr, alt: "QR code for the Mysaa Rituals feedback form" }),
+                    React.createElement("div", null, settings.feedbackUrl && (React.createElement("a", { className: "qr-link", href: settings.feedbackUrl, target: "_blank", rel: "noreferrer" },
+                        "Scan to open",
+                        React.createElement("br", null),
+                        "feedback form ",
+                        React.createElement("span", null, "\u2192"))))))),
+            React.createElement("div", { className: "contact-connect-card" },
+                React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 10 } }, "Stay Connected"),
+                React.createElement("h2", { style: { ...serif, color: C.ink, fontSize: "clamp(30px,4vw,40px)", fontWeight: 500, lineHeight: 1.05, marginBottom: 12 } },
+                    "Scan to connect",
+                    React.createElement("br", null),
+                    "with us."),
+                React.createElement("p", { style: { ...sans, color: C.ink70, fontSize: 15, lineHeight: 1.65, maxWidth: 430 } }, "Follow Mysaa Rituals and stay close to new drops, offers and little rituals."),
+                React.createElement("div", { className: "qr-action-row" },
+                    React.createElement("img", { className: "contact-qr", src: connectQr, alt: "Mysaa Rituals connection QR code" }),
+                    React.createElement("div", null,
+                        React.createElement("a", { className: "qr-link", href: settings.instagram, target: "_blank", rel: "noreferrer" },
+                            "Visit @mysaarituals",
+                            React.createElement("br", null),
+                            "on Instagram ",
+                            React.createElement("span", null, "\u2192"))))))));
 }
-function ContactRow({ label: text, value, href }) {
-    const content = (React.createElement("div", { style: { padding: "20px 0", borderBottom: `1px solid ${C.line}`, display: "flex", justifyContent: "space-between", alignItems: "center" } },
-        React.createElement("span", { style: { ...label, color: C.ink70 } }, text),
-        React.createElement("span", { style: { ...sans, fontSize: 14, color: C.ink, fontWeight: 500 } }, value)));
+function ContactRow({ icon, label: text, value, href }) {
+    const content = (React.createElement("div", { className: "contact-row" },
+        React.createElement("div", { className: "contact-row-icon" }, icon),
+        React.createElement("div", { className: "contact-row-copy" },
+            React.createElement("span", null, text),
+            React.createElement("strong", null, value))));
     return href ? React.createElement("a", { href: href, target: "_blank", rel: "noreferrer" }, content) : content;
+}
+function WelcomePopup() {
+    const [open, setOpen] = useState(false);
+    useEffect(() => {
+        try {
+            if (!window.localStorage.getItem("mysaa-welcome-seen"))
+                setOpen(true);
+        }
+        catch (_) {
+            setOpen(true);
+        }
+    }, []);
+    const close = () => {
+        try {
+            window.localStorage.setItem("mysaa-welcome-seen", "1");
+        }
+        catch (_) { }
+        setOpen(false);
+    };
+    if (!open)
+        return null;
+    return (React.createElement("div", { className: "welcome-overlay", role: "dialog", "aria-modal": "true", "aria-labelledby": "welcome-title" },
+        React.createElement("div", { className: "welcome-card" },
+            React.createElement("button", { className: "welcome-close", onClick: close, "aria-label": "Close welcome message" }, "\u00D7"),
+            React.createElement("img", { src: "assets/logo.png", alt: "Mysaa Rituals", className: "welcome-logo" }),
+            React.createElement("p", { className: "welcome-eyebrow" }, "A little welcome from Mysaa"),
+            React.createElement("h2", { id: "welcome-title" }, "Goodies in every order."),
+            React.createElement("p", null, "Every order comes with free goodies, and our launch discount is live. Discover your next little ritual with Mysaa."),
+            React.createElement("button", { className: "welcome-cta", onClick: close }, "Start exploring \u2192"))));
 }
 /* ============================================================
    App root
@@ -914,6 +985,7 @@ function App() {
     else
         page = React.createElement(HomePage, { data: data, nav: nav, settings: settings });
     return (React.createElement(React.Fragment, null,
+        React.createElement(WelcomePopup, null),
         React.createElement(Header, { nav: nav, settings: settings, route: route }),
         React.createElement("main", { style: { minHeight: "60vh" } }, page),
         React.createElement(Footer, { nav: nav, settings: settings }),

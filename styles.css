@@ -257,17 +257,12 @@ button:hover, a:hover { opacity: .82; }
 .hero-action-primary { background:var(--ink); color:#fff; border-color:var(--ink); }
 
 .hero-action-secondary { background:#FCFAF7; color:var(--ink); border-color:var(--brass); }
-.hero-action-whatsapp { grid-column:1 / -1; width:max-content; min-height:auto; margin-top:12px; padding:0 0 2px; background:transparent; color:var(--rust); border-color:transparent; box-shadow:none; justify-content:flex-start; }
-.hero-action-whatsapp::before { display:none; }
-.hero-action-whatsapp:hover { transform:none; box-shadow:none; background:transparent; color:var(--rust); }
-.hero-action-whatsapp svg { display:none; }
 
 @media (max-width:619px) { .hero-actions { grid-template-columns:1fr 1fr; gap:10px; max-width:100%; } .hero-action { min-height:56px; padding:13px 12px; } .hero-action-whatsapp { grid-column:1 / -1; } }
 
 
 .price-stack { display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
 .price-stack-large { gap:3px; }
-.price-mrp { font:500 14px 'Karla',sans-serif; color:var(--muted); text-decoration:line-through; text-decoration-thickness:1px; line-height:1.25; letter-spacing:.01em; }
 .product-detail-price { display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
 .compact-editorial-card { min-height:190px; }
 .discovery-select, .catalogue-select { width:100%; min-height:44px; padding:10px 38px 10px 13px; border:1px solid var(--border); background:#fff; color:var(--ink); font:400 13.5px 'Karla',sans-serif; border-radius:0; }
@@ -302,3 +297,72 @@ button:hover, a:hover { opacity: .82; }
   .feedback-section { padding:28px 20px; }
   .feedback-actions { align-items:flex-start; flex-direction:column; }
 }
+
+
+/* Homepage story spacing */
+.home-story-copy {
+  margin-top: 20px;
+  display: grid;
+  gap: 3px;
+  font: 400 15.5px/1.75 'Karla', sans-serif;
+  color: var(--muted);
+  max-width: 760px;
+}
+.home-story-copy p { margin: 0; }
+
+/* Contact page — editorial layout inspired by the supplied reference */
+.contact-page { max-width: 1180px; margin: 0 auto; padding: 48px 20px 80px; }
+.contact-hero {
+  display: grid; grid-template-columns: .9fr 1.1fr; min-height: 560px;
+  background: #FCFAF7; overflow: hidden;
+}
+.contact-hero-copy { padding: 70px 60px; display:flex; flex-direction:column; justify-content:center; }
+.contact-hero-image { position:relative; min-height:560px; }
+.contact-hero-image > div:first-child { height:100%; border:0; }
+.contact-hero-image > div:first-child img { object-position:center; }
+.contact-hero-caption { position:absolute; left:42px; top:42px; }
+.contact-details { max-width:430px; }
+.contact-row { display:flex; align-items:center; gap:22px; padding:18px 0; border-bottom:1px solid var(--border); }
+.contact-row-icon { width:30px; flex:0 0 30px; display:flex; justify-content:center; align-items:center; }
+.contact-row-copy { display:flex; flex-direction:column; gap:4px; }
+.contact-row-copy span { font:500 10px 'Karla',sans-serif; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
+.contact-row-copy strong { font:400 16px 'Cormorant Garamond',Georgia,serif; color:var(--ink); }
+.contact-connect-grid { display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:24px; border:1px solid var(--border); background:#FCFAF7; }
+.contact-connect-card { padding:48px 52px; min-height:370px; }
+.contact-connect-card + .contact-connect-card { border-left:1px solid var(--border); }
+.qr-action-row { display:flex; align-items:center; gap:24px; margin-top:28px; }
+.contact-qr { width:142px; height:142px; object-fit:contain; background:#fff; border:1px solid var(--border); padding:8px; }
+.qr-link { display:inline-block; color:var(--ink); font:400 16px/1.4 'Cormorant Garamond',Georgia,serif; }
+.qr-link span { display:block; margin-top:8px; color:var(--rust); font:20px/1 'Karla',sans-serif; }
+@media (max-width: 800px) {
+  .contact-hero { grid-template-columns:1fr; }
+  .contact-hero-copy { padding:48px 28px; }
+  .contact-hero-image { min-height:400px; }
+  .contact-connect-grid { grid-template-columns:1fr; }
+  .contact-connect-card + .contact-connect-card { border-left:0; border-top:1px solid var(--border); }
+}
+@media (max-width: 520px) {
+  .contact-page { padding-left:14px; padding-right:14px; }
+  .contact-hero-copy { padding:40px 22px; }
+  .contact-connect-card { padding:34px 24px; }
+  .qr-action-row { align-items:flex-start; }
+}
+
+/* About — Our Process */
+.process-layout { display:grid; grid-template-columns:1.05fr .95fr; gap:54px; align-items:center; }
+.process-steps { margin-top:28px; max-width:560px; }
+.process-step { display:grid; grid-template-columns:52px 1fr; align-items:center; gap:18px; min-height:58px; position:relative; font:400 15px/1.5 'Karla',sans-serif; color:var(--muted); }
+.process-step:not(:last-child)::after { content:""; position:absolute; left:25px; top:47px; width:1px; height:30px; background:var(--border); }
+.process-number { width:44px; height:44px; border-radius:50%; background:var(--card); display:flex; align-items:center; justify-content:center; font:500 12px 'Karla',sans-serif; color:var(--ink); }
+@media (max-width: 800px) { .process-layout { grid-template-columns:1fr; gap:30px; } }
+
+/* First-visit welcome banner */
+.welcome-overlay { position:fixed; inset:0; z-index:200; background:rgba(68,55,47,.46); display:flex; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(4px); }
+.welcome-card { position:relative; width:min(500px,100%); background:var(--cream); border:1px solid var(--border); box-shadow:0 22px 70px rgba(68,55,47,.24); padding:46px 42px 42px; text-align:center; }
+.welcome-logo { width:auto; height:78px; margin:0 auto 18px; object-fit:contain; }
+.welcome-eyebrow { font:500 10px 'Karla',sans-serif; letter-spacing:.2em; text-transform:uppercase; color:var(--rust); margin-bottom:10px; }
+.welcome-card h2 { font:500 clamp(32px,6vw,46px) 'Cormorant Garamond',Georgia,serif; color:var(--ink); line-height:1; margin:0 0 14px; }
+.welcome-card > p:not(.welcome-eyebrow) { font:400 15px/1.7 'Karla',sans-serif; color:var(--muted); max-width:380px; margin:0 auto 24px; }
+.welcome-cta { background:var(--ink); color:#fff; padding:13px 25px; font:600 11px 'Karla',sans-serif; letter-spacing:.13em; text-transform:uppercase; }
+.welcome-close { position:absolute; top:12px; right:14px; width:34px; height:34px; font:300 27px/1 'Cormorant Garamond',serif; color:var(--ink); }
+@media (max-width:520px) { .welcome-card { padding:38px 24px 30px; } .welcome-logo { height:66px; } }
