@@ -97,6 +97,7 @@ def main():
         "personalisation": "personalisation.jpeg",
         "story": "story.jpg",
         "gifting": "gifting.jpg",
+        "about2": "about 2.jpeg",
     }
     site = {}
     for key, filename in site_files.items():

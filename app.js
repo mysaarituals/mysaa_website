@@ -26,6 +26,31 @@ const serif = { fontFamily: "'Cormorant Garamond', serif" };
 const sans = { fontFamily: "'Karla', sans-serif" };
 const label = { ...sans, fontSize: 11.5, letterSpacing: "0.11em", textTransform: "uppercase" };
 const inr = (n) => Number(n || 0) > 0 ? `₹${Number(n).toLocaleString("en-IN")}` : "Enquire";
+// Current catalogue prices are launch-discounted. These are the regular prices
+// shown crossed out beside the discounted price.
+const REGULAR_CANDLE_PRICES = {
+    "hero-jar-candle": 849,
+    "wide-jar-candle": 599,
+    "shot-glass-candle": 349,
+};
+function regularPrice(product) {
+    if (!product)
+        return 0;
+    return Number(product.mrp || REGULAR_CANDLE_PRICES[product.categorySlug] || 0);
+}
+function DiscountedPrice({ product, currentPrice, large = false }) {
+    const regular = regularPrice(product);
+    const current = Number(currentPrice || (product === null || product === void 0 ? void 0 : product.price) || 0);
+    const discount = regular > current && current > 0 ? Math.round(((regular - current) / regular) * 100) : 0;
+    return (React.createElement("div", { className: large ? "price-stack price-stack-large" : "price-stack" },
+        regular > current && React.createElement("div", { className: "price-original-row" },
+            React.createElement("span", { className: "price-original" }, inr(regular)),
+            discount > 0 && React.createElement("span", { className: "price-discount" },
+                "-",
+                discount,
+                "%")),
+        React.createElement("span", { className: large ? "price-current price-current-large" : "price-current" }, inr(current))));
+}
 // Product customisation pricing. Standard packaging is included in the base price.
 // Premium packaging is currently marked Coming Soon. Jar flower mould adds ₹100.
 const PACKAGING_OPTIONS = {
@@ -349,8 +374,7 @@ function ProductCard({ product, fragrance, images, nav }) {
             React.createElement("h3", { style: { ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 } }, product.name),
             React.createElement("p", { style: { ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }, className: "line-clamp-2" }, product.shortDescription),
             React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: "auto" } },
-                React.createElement("span", { className: "price-stack" },
-                    React.createElement("span", { style: { ...sans, fontSize: 15, color: C.ink, fontWeight: 500 } }, inr(product.price))),
+                React.createElement(DiscountedPrice, { product: product, currentPrice: product.price }),
                 React.createElement("span", { style: { ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" } }, "View Details")))));
 }
 function FragranceCard({ fragrance, images, nav }) {
@@ -682,9 +706,9 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             React.createElement("div", null,
                 React.createElement("h1", { style: { ...serif, fontSize: "clamp(26px,4vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 14 } }, product.name),
                 React.createElement("div", { className: "product-detail-price", style: { marginBottom: 6 } },
-                    React.createElement("p", { style: { ...sans, fontSize: 24, color: C.ink, fontWeight: 500 } }, inr(unitPrice))),
+                    React.createElement(DiscountedPrice, { product: product, currentPrice: unitPrice, large: true })),
                 (hasPackagingOptions || hasJarVariants) && (React.createElement("p", { style: { ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 } },
-                    "Base price ",
+                    "Discounted base price ",
                     inr(product.price),
                     " \u00B7 final price updates with your selections")),
                 React.createElement("p", { style: { ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, marginBottom: 28 } }, product.shortDescription),
@@ -795,7 +819,7 @@ function AboutPage({ data }) {
                 React.createElement("p", null, "Every piece is handcrafted with care, inspired by familiar Indian aromas, and designed to become part of someone's ritual \u2014 poured in small batches using a natural soy wax blend and cotton or wooden wicks."),
                 React.createElement("p", null, "If nothing in the catalogue feels quite right, that's exactly what Custom Rituals are for. Tell us about your moment, and we'll create something made only for it.")),
             React.createElement("div", { style: { marginTop: 32 } },
-                React.createElement(ImageOrPlaceholder, { src: (_b = (_a = data.images) === null || _a === void 0 ? void 0 : _a.site) === null || _b === void 0 ? void 0 : _b.story, label: "Studio / process photograph", ratio: "16 / 9" }))),
+                React.createElement(ImageOrPlaceholder, { src: "./assets/story.jpg", label: "Studio / process photograph", ratio: "16 / 9" }))),
         React.createElement("div", { className: "about-section" },
             React.createElement(SectionHeading, { eyebrow: "Why Mysaa Rituals", title: "Slow, deliberate, personal." }),
             React.createElement("div", { style: { marginTop: 32 } },
@@ -816,7 +840,7 @@ function AboutPage({ data }) {
                     ].map(([num, text]) => (React.createElement("div", { className: "process-step", key: num },
                         React.createElement("span", { className: "process-number" }, num),
                         React.createElement("span", null, text)))))),
-                React.createElement(ImageOrPlaceholder, { src: "./assets/story.jpg", label: "Mysaa Rituals making process", ratio: "4 / 3" }))),
+                React.createElement(ImageOrPlaceholder, { src: ((_b = (_a = data.images) === null || _a === void 0 ? void 0 : _a.site) === null || _b === void 0 ? void 0 : _b.about2) || "./assets/about 2.jpeg", label: "Mysaa Rituals making process", ratio: "4 / 3" }))),
         React.createElement("div", { className: "about-section" },
             React.createElement(SectionHeading, { eyebrow: "Candle Care", title: "A little care goes a long way." }),
             React.createElement("ul", { style: { marginTop: 20, paddingLeft: 20, ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.9 } },
@@ -891,7 +915,7 @@ function WelcomePopup() {
     const [open, setOpen] = useState(false);
     useEffect(() => {
         try {
-            if (!window.localStorage.getItem("mysaa-welcome-seen"))
+            if (!window.localStorage.getItem("mysaa-welcome-seen-v2"))
                 setOpen(true);
         }
         catch (_) {
@@ -900,7 +924,7 @@ function WelcomePopup() {
     }, []);
     const close = () => {
         try {
-            window.localStorage.setItem("mysaa-welcome-seen", "1");
+            window.localStorage.setItem("mysaa-welcome-seen-v2", "1");
         }
         catch (_) { }
         setOpen(false);

@@ -29,6 +29,34 @@ const label = { ...sans, fontSize: 11.5, letterSpacing: "0.11em", textTransform:
 
 const inr = (n) => Number(n || 0) > 0 ? `₹${Number(n).toLocaleString("en-IN")}` : "Enquire";
 
+// Current catalogue prices are launch-discounted. These are the regular prices
+// shown crossed out beside the discounted price.
+const REGULAR_CANDLE_PRICES = {
+  "hero-jar-candle": 849,
+  "wide-jar-candle": 599,
+  "shot-glass-candle": 349,
+};
+
+function regularPrice(product) {
+  if (!product) return 0;
+  return Number(product.mrp || REGULAR_CANDLE_PRICES[product.categorySlug] || 0);
+}
+
+function DiscountedPrice({ product, currentPrice, large = false }) {
+  const regular = regularPrice(product);
+  const current = Number(currentPrice || product?.price || 0);
+  const discount = regular > current && current > 0 ? Math.round(((regular - current) / regular) * 100) : 0;
+  return (
+    <div className={large ? "price-stack price-stack-large" : "price-stack"}>
+      {regular > current && <div className="price-original-row">
+        <span className="price-original">{inr(regular)}</span>
+        {discount > 0 && <span className="price-discount">-{discount}%</span>}
+      </div>}
+      <span className={large ? "price-current price-current-large" : "price-current"}>{inr(current)}</span>
+    </div>
+  );
+}
+
 // Product customisation pricing. Standard packaging is included in the base price.
 // Premium packaging is currently marked Coming Soon. Jar flower mould adds ₹100.
 const PACKAGING_OPTIONS = {
@@ -469,9 +497,7 @@ function ProductCard({ product, fragrance, images, nav }) {
         <h3 style={{ ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 }}>{product.name}</h3>
         <p style={{ ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }} className="line-clamp-2">{product.shortDescription}</p>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: "auto" }}>
-          <span className="price-stack">
-            <span style={{ ...sans, fontSize: 15, color: C.ink, fontWeight: 500 }}>{inr(product.price)}</span>
-          </span>
+          <DiscountedPrice product={product} currentPrice={product.price} />
           <span style={{ ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" }}>View Details</span>
         </div>
       </div>
@@ -1009,10 +1035,10 @@ function ProductDetailPage({ data, nav, slug, settings }) {
         <div>
           <h1 style={{ ...serif, fontSize: "clamp(26px,4vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 14 }}>{product.name}</h1>
           <div className="product-detail-price" style={{ marginBottom: 6 }}>
-            <p style={{ ...sans, fontSize: 24, color: C.ink, fontWeight: 500 }}>{inr(unitPrice)}</p>
+            <DiscountedPrice product={product} currentPrice={unitPrice} large />
           </div>
           {(hasPackagingOptions || hasJarVariants) && (
-            <p style={{ ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 }}>Base price {inr(product.price)} · final price updates with your selections</p>
+            <p style={{ ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 }}>Discounted base price {inr(product.price)} · final price updates with your selections</p>
           )}
           <p style={{ ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, marginBottom: 28 }}>{product.shortDescription}</p>
 
@@ -1261,7 +1287,7 @@ function AboutPage({ data }) {
               ))}
             </div>
           </div>
-          <ImageOrPlaceholder src="./assets/about 2.jpeg" label="Mysaa Rituals making process" ratio="4 / 3" />
+          <ImageOrPlaceholder src={data.images?.site?.about2 || "./assets/about 2.jpeg"} label="Mysaa Rituals making process" ratio="4 / 3" />
         </div>
       </div>
 
@@ -1366,11 +1392,11 @@ function WelcomePopup() {
   const [open, setOpen] = useState(false);
   useEffect(() => {
     try {
-      if (!window.localStorage.getItem("mysaa-welcome-seen")) setOpen(true);
+      if (!window.localStorage.getItem("mysaa-welcome-seen-v2")) setOpen(true);
     } catch (_) { setOpen(true); }
   }, []);
   const close = () => {
-    try { window.localStorage.setItem("mysaa-welcome-seen", "1"); } catch (_) {}
+    try { window.localStorage.setItem("mysaa-welcome-seen-v2", "1"); } catch (_) {}
     setOpen(false);
   };
   if (!open) return null;
