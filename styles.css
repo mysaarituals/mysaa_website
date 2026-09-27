@@ -266,7 +266,7 @@ button:hover, a:hover { opacity: .82; }
 .product-detail-price { display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
 .price-original-row { display:flex; align-items:center; gap:10px; min-height:24px; }
 .price-original { position:relative; display:inline-block; color:var(--muted); font:400 14px/1 'Karla',sans-serif; }
-.price-original::after { content:""; position:absolute; left:-2px; right:-2px; top:50%; height:1.5px; background:var(--rust); transform:rotate(-7deg); transform-origin:center; }
+.price-original::after { content:""; position:absolute; left:-3px; right:-3px; top:50%; height:2px; background:var(--rust); transform:rotate(-12deg); transform-origin:center; }
 .price-discount { display:inline-flex; align-items:center; justify-content:center; min-height:28px; padding:4px 10px; border:1px solid #CFCFCF; color:var(--ink); font:400 14px/1 'Karla',sans-serif; }
 .price-current { color:var(--rust); font:500 17px/1.05 'Karla',sans-serif; }
 .price-current-large { font-size:24px; }
@@ -323,9 +323,9 @@ button:hover, a:hover { opacity: .82; }
   background: #FCFAF7; overflow: hidden;
 }
 .contact-hero-copy { padding: 70px 60px; display:flex; flex-direction:column; justify-content:center; }
-.contact-hero-image { position:relative; min-height:0; display:flex; align-items:stretch; }
-.contact-hero-image > div:first-child { height:auto; width:100%; min-height:100%; border:0; }
-.contact-hero-image > div:first-child img { object-position:center; }
+.contact-hero-image { position:relative; min-height:0; display:flex; align-items:center; justify-content:center; }
+.contact-hero-image > div:first-child { height:auto; width:70%; min-height:0; border:0; }
+.contact-hero-image > div:first-child img { object-position:center; display:block; }
 .contact-hero-caption { position:absolute; left:42px; top:42px; }
 .contact-details { max-width:430px; }
 .contact-row { display:flex; align-items:center; gap:22px; padding:18px 0; border-bottom:1px solid var(--border); }
@@ -356,11 +356,13 @@ button:hover, a:hover { opacity: .82; }
 
 /* About — Our Process */
 .process-layout { display:grid; grid-template-columns:1.05fr .95fr; gap:54px; align-items:center; }
+.process-layout > .image-placeholder { transform:translateY(28px); }
+.process-layout > div:last-child { transform:translateY(28px); }
 .process-steps { margin-top:28px; max-width:560px; }
 .process-step { display:grid; grid-template-columns:52px 1fr; align-items:center; gap:18px; min-height:58px; position:relative; font:400 15px/1.5 'Karla',sans-serif; color:var(--muted); }
 .process-step:not(:last-child)::after { content:""; position:absolute; left:25px; top:47px; width:1px; height:30px; background:var(--border); }
 .process-number { width:44px; height:44px; border-radius:50%; background:var(--card); display:flex; align-items:center; justify-content:center; font:500 12px 'Karla',sans-serif; color:var(--ink); }
-@media (max-width: 800px) { .process-layout { grid-template-columns:1fr; gap:30px; } }
+@media (max-width: 800px) { .process-layout { grid-template-columns:1fr; gap:30px; } .process-layout > div:last-child { transform:none; } }
 
 /* First-visit welcome banner */
 .welcome-overlay { position:fixed; inset:0; z-index:200; background:rgba(68,55,47,.46); display:flex; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(4px); }
