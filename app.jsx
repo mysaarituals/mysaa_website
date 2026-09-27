@@ -1230,7 +1230,7 @@ function AboutPage({ data }) {
           <p>Every piece is handcrafted with care, inspired by familiar Indian aromas, and designed to become part of someone's ritual — poured in small batches using a natural soy wax blend and cotton or wooden wicks.</p>
           <p>If nothing in the catalogue feels quite right, that's exactly what Custom Rituals are for. Tell us about your moment, and we'll create something made only for it.</p>
         </div>
-        <div style={{ marginTop: 32 }}><ImageOrPlaceholder src={data.images?.site?.story} label="Studio / process photograph" ratio="16 / 9" /></div>
+        <div style={{ marginTop: 32 }}><ImageOrPlaceholder src="./assets/story.jpg" label="Studio / process photograph" ratio="16 / 9" /></div>
       </div>
 
       <div className="about-section">
@@ -1261,7 +1261,7 @@ function AboutPage({ data }) {
               ))}
             </div>
           </div>
-          <ImageOrPlaceholder src="./assets/story.jpg" label="Mysaa Rituals making process" ratio="4 / 3" />
+          <ImageOrPlaceholder src="./assets/about 2.jpeg" label="Mysaa Rituals making process" ratio="4 / 3" />
         </div>
       </div>
 
