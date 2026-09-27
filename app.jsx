@@ -331,7 +331,7 @@ function Header({ nav, settings, route }) {
 
       <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 76 }}>
         <button onClick={() => nav("home")} aria-label="Mysaa Rituals home" style={{ display: "flex", alignItems: "center" }}>
-          <Logo size={50} />
+          <Logo size={64} />
         </button>
 
         <nav style={{ display: "flex", alignItems: "center", gap: 30 }} className="desktop-nav">
@@ -371,11 +371,6 @@ function Header({ nav, settings, route }) {
               <button onClick={() => setSearchOpen(true)} aria-label="Search" style={{ color: C.ink, display: "flex" }}><SearchIcon /></button>
             )}
           </div>
-          <a href={waLink(settings.whatsapp, "Hello Mysaa Rituals, I would like to know more about your products.")}
-            target="_blank" rel="noreferrer" className="desktop-nav"
-            style={{ ...sans, fontSize: 12.5, letterSpacing: "0.08em", textTransform: "uppercase", display: "inline-flex", alignItems: "center", gap: 8, padding: "10px 18px", border: `1px solid ${C.ink}`, color: C.ink, borderRadius: 2 }}>
-            <ChatIcon /> WhatsApp
-          </a>
           <button className="mobile-only" onClick={() => setOpen(!open)} aria-label="Menu" style={{ padding: 8 }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.ink} strokeWidth="1.6">
               <path d="M3 6h18M3 12h18M3 18h18" />
@@ -392,10 +387,6 @@ function Header({ nav, settings, route }) {
               {lbl}
             </button>
           ))}
-          <a href={waLink(settings.whatsapp, "Hello Mysaa Rituals, I would like to know more about your products.")}
-            target="_blank" rel="noreferrer" style={{ ...sans, marginTop: 12, textAlign: "center", padding: "12px 4px", fontSize: 14, color: "#fff", background: C.ink }}>
-            Chat on WhatsApp
-          </a>
         </div>
       )}
     </header>
@@ -409,7 +400,7 @@ function Footer({ nav, settings }) {
       <div className="container" style={{ padding: "56px 20px 32px" }}>
         <div className="footer-grid">
           <div>
-            <div style={{ marginBottom: 16 }}><Logo size={44} /></div>
+            <div style={{ marginBottom: 16 }}><Logo size={56} /></div>
             <p style={{ ...sans, color: C.ink70, fontSize: 14, lineHeight: 1.7, maxWidth: 300, marginBottom: 16 }}>
               {settings.tagline || "Every flame remembers."} Small-batch candles, wax melts and gift hampers, made slowly and in limited quantity.
             </p>
@@ -431,6 +422,7 @@ function Footer({ nav, settings }) {
               <button onClick={() => nav("catalogue", "fragrance")} style={{ ...sans, fontSize: 14, color: C.ink, textAlign: "left" }}>Shop by Fragrance</button>
               <button onClick={() => nav("catalogue", "candle")} style={{ ...sans, fontSize: 14, color: C.ink, textAlign: "left" }}>Shop by Candle</button>
               <button onClick={() => nav("catalogue", "category", { value: "gift-hampers" })} style={{ ...sans, fontSize: 14, color: C.ink, textAlign: "left" }}>Gift Hampers</button>
+              {settings.feedbackUrl && <a href={settings.feedbackUrl} target="_blank" rel="noreferrer" style={{ ...sans, fontSize: 14, color: C.rust }}>Share Feedback ↗</a>}
             </div>
           </div>
           <div>
@@ -467,17 +459,17 @@ function WhatsAppFloat({ settings }) {
    ============================================================ */
 function ProductCard({ product, fragrance, images, nav }) {
   return (
-    <button onClick={() => nav("product", product.slug)} style={{ textAlign: "left", display: "block" }}>
+    <button className="product-card" onClick={() => nav("product", product.slug)} style={{ textAlign: "left", display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
       <div className="hairline-top" style={{ paddingTop: 0 }}>
         <p style={{ ...label, color: C.ink70, marginBottom: 8, minHeight: 14 }}>
           {product.bestseller ? "Bestseller" : product.isNew ? "New" : product.customizable ? "Customizable" : "\u00A0"}
         </p>
         <ImageOrPlaceholder src={productImage(product, images, 0)} label={product.name} />
       </div>
-      <div style={{ paddingTop: 14 }}>
+      <div className="product-card-body" style={{ paddingTop: 14 }}>
         <h3 style={{ ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 }}>{product.name}</h3>
         <p style={{ ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }} className="line-clamp-2">{product.shortDescription}</p>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: "auto" }}>
           <span className="price-stack">
             {priceMarkup(product) && <span className="price-mrp">MRP {inr(product.mrp)}</span>}
             <span style={{ ...sans, fontSize: 15, color: C.ink, fontWeight: 500 }}>{inr(product.price)}</span>
@@ -586,8 +578,8 @@ function HomePage({ data, nav, settings }) {
               Handcrafted candles and gifts inspired by Indian fragrances, memories and everyday rituals.
             </p>
             <div className="hero-actions">
-              <button className="hero-action hero-action-primary" onClick={() => nav("catalogue", "all")}><span>Explore the Catalogue</span><span aria-hidden="true">→</span></button>
-              <button className="hero-action hero-action-secondary" onClick={() => nav("create-ritual")}><span>Create Your Ritual</span><span aria-hidden="true">✦</span></button>
+              <button className="hero-action hero-action-primary" onClick={() => nav("catalogue", "all")}>Explore the Catalogue</button>
+              <button className="hero-action hero-action-secondary" onClick={() => nav("create-ritual")}>Create Your Ritual</button>
               <a className="hero-action hero-action-whatsapp" href={waLink(settings.whatsapp, "Hello Mysaa Rituals!")} target="_blank" rel="noreferrer"><ChatIcon size={17} /><span>Chat on WhatsApp</span></a>
             </div>
           </div>
@@ -725,7 +717,7 @@ function HomePage({ data, nav, settings }) {
               <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Housewarming</span>
               <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Custom gifts</span>
             </div>
-            <Button variant="outline" onClick={() => nav("catalogue", "category", { value: "gift-hampers" })} style={{ marginTop: 26 }}>Explore Gifting</Button>
+            <Button variant="link" onClick={() => nav("catalogue", "category", { value: "gift-hampers" })} style={{ marginTop: 26, color: C.rust, fontWeight: 600, letterSpacing: "0.11em", textTransform: "uppercase", textDecoration: "underline", textUnderlineOffset: "4px" }}>Explore Gifting →</Button>
           </div>
           <ImageOrPlaceholder src={data.images?.site?.gifting} label="Hand-packed Mysaa Rituals gift hamper" ratio="4 / 3" />
         </div>
@@ -735,7 +727,7 @@ function HomePage({ data, nav, settings }) {
       <section className="container" style={{ padding: "72px 20px" }}>
         <div className="story-block">
           <SectionHeading eyebrow="Our Story" title="More than a candle." />
-          <div style={{ marginTop: 24, display: "grid", gap: 16, ...sans, fontSize: 15.5, color: C.ink70, lineHeight: 1.8, maxWidth: 760 }}>
+          <div style={{ marginTop: 24, display: "grid", gap: 8, ...sans, fontSize: 15.5, color: C.ink70, lineHeight: 1.8, maxWidth: 760 }}>
             <p>Mysaa Rituals was created around a simple idea — that fragrance has the power to turn ordinary moments into memories.</p>
             <p>Every piece is handcrafted with care, inspired by familiar Indian aromas and designed to become part of someone's ritual.</p>
           </div>
@@ -799,6 +791,17 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
   const [occasion, setOccasion] = useState(initialType === "occasion" ? (initialQuery.value || "all") : "all");
   const [search, setSearch] = useState(initialQuery.q || "");
   const [priceCap, setPriceCap] = useState(maxPrice);
+
+  // Keep catalogue filters in sync when navigation changes the hash while
+  // this page component remains mounted (for example via Discover).
+  useEffect(() => {
+    setFragrance(initialType === "fragrance" ? (initialQuery.value || "all") : "all");
+    setCategory(initialType === "category" ? (initialQuery.value || "all") : initialType === "candle" ? "hero-jar-candle" : "all");
+    setFeeling(initialType === "feeling" ? (initialQuery.value || "all") : "all");
+    setOccasion(initialType === "occasion" ? (initialQuery.value || "all") : "all");
+    setSearch(initialQuery.q || "");
+    setPriceCap(maxPrice);
+  }, [initialType, initialQuery.value, initialQuery.q, maxPrice]);
 
   const fragranceById = Object.fromEntries(data.fragrances.map((f) => [f.slug, f]));
 
@@ -1224,23 +1227,25 @@ function FieldArea({ label: text, ...props }) {
 
 function AboutPage({ data }) {
   return (
-    <div className="container" style={{ padding: "48px 20px 80px", maxWidth: 760 }}>
-      <SectionHeading eyebrow="Our Story" title="More than a candle." />
-      <div style={{ marginTop: 28, display: "grid", gap: 20, ...sans, fontSize: 16, color: C.ink70, lineHeight: 1.8 }}>
-        <p>Mysaa Rituals was created around a simple idea — that fragrance has the power to turn ordinary moments into memories. The smell of dhoop in a childhood home, jasmine gajras on a festival morning, roses pressed into an old letter — these are the moments we try to bottle into every candle, melt and sachet we make.</p>
-        <p>Every piece is handcrafted with care, inspired by familiar Indian aromas, and designed to become part of someone's ritual — poured in small batches using a natural soy wax blend and cotton or wooden wicks.</p>
-        <p>If nothing in the catalogue feels quite right, that's exactly what Custom Rituals are for. Tell us about your moment, and we'll create something made only for it.</p>
+    <div className="container about-page" style={{ padding: "48px 20px 80px", maxWidth: 820 }}>
+      <div className="about-section about-intro">
+        <SectionHeading eyebrow="Our Story" title="More than a candle." />
+        <div className="about-copy">
+          <p>Mysaa Rituals was created around a simple idea — that fragrance has the power to turn ordinary moments into memories. The smell of dhoop in a childhood home, jasmine gajras on a festival morning, roses pressed into an old letter — these are the moments we try to bottle into every candle, melt and sachet we make.</p>
+          <p>Every piece is handcrafted with care, inspired by familiar Indian aromas, and designed to become part of someone's ritual — poured in small batches using a natural soy wax blend and cotton or wooden wicks.</p>
+          <p>If nothing in the catalogue feels quite right, that's exactly what Custom Rituals are for. Tell us about your moment, and we'll create something made only for it.</p>
+        </div>
+        <div style={{ marginTop: 32 }}><ImageOrPlaceholder src={data.images?.site?.story} label="Studio / process photograph" ratio="16 / 9" /></div>
       </div>
-      <div style={{ marginTop: 40 }}><ImageOrPlaceholder src={data.images?.site?.story} label="Studio / process photograph" ratio="16 / 9" /></div>
 
-      <div style={{ marginTop: 64 }}>
+      <div className="about-section">
         <SectionHeading eyebrow="Why Mysaa Rituals" title="Slow, deliberate, personal." />
         <div style={{ marginTop: 32 }}>
           <WhyGrid />
         </div>
       </div>
 
-      <div style={{ marginTop: 64 }}>
+      <div className="about-section">
         <SectionHeading eyebrow="Candle Care" title="A little care goes a long way." />
         <ul style={{ marginTop: 20, paddingLeft: 20, ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.9 }}>
           <li>Trim the wick to 5mm before every burn.</li>
@@ -1254,8 +1259,9 @@ function AboutPage({ data }) {
 }
 
 function ContactPage({ settings }) {
+  const feedbackReady = !!(settings.feedbackUrl || settings.feedbackQr);
   return (
-    <div className="container" style={{ padding: "48px 20px 80px", maxWidth: 640 }}>
+    <div className="container contact-page" style={{ padding: "48px 20px 80px", maxWidth: 760 }}>
       <SectionHeading eyebrow="We'd Love To Hear From You" title="Get in touch" />
       <div style={{ marginTop: 32, display: "grid", gap: 0 }}>
         <ContactRow label="WhatsApp" value={settings.phone} href={waLink(settings.whatsapp, "Hello Mysaa Rituals!")} />
@@ -1263,6 +1269,24 @@ function ContactPage({ settings }) {
         <ContactRow label="Instagram" value={settings.instagramHandle || "@mysaarituals"} href={settings.instagram} />
         {settings.address && <ContactRow label="Studio" value={settings.address} />}
       </div>
+
+      <section className="feedback-section" aria-labelledby="feedback-title">
+        <div>
+          <p style={{ ...label, color: C.rust, marginBottom: 10 }}>Feedback</p>
+          <h2 id="feedback-title" style={{ ...serif, color: C.ink, fontSize: "clamp(28px,4vw,36px)", fontWeight: 500, marginBottom: 10 }}>Tell us about your Mysaa experience.</h2>
+          <p style={{ ...sans, color: C.ink70, fontSize: 15, lineHeight: 1.7, marginBottom: 20 }}>
+            Your feedback helps us improve our fragrances, products and overall experience.
+          </p>
+          {feedbackReady ? (
+            <div className="feedback-actions">
+              {settings.feedbackQr && <img className="feedback-qr" src={settings.feedbackQr} alt="QR code for the Mysaa Rituals feedback form" />}
+              {settings.feedbackUrl && <Button variant="link" href={settings.feedbackUrl} target="_blank" style={{ color: C.rust, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "underline", textUnderlineOffset: "4px" }}>Open Feedback Form →</Button>}
+            </div>
+          ) : (
+            <p style={{ ...sans, color: C.ink70, fontSize: 13.5, fontStyle: "italic" }}>Feedback form QR code will be added here.</p>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
@@ -1289,7 +1313,15 @@ function App() {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
-  const nav = useCallback((page, param, query) => { window.location.hash = buildHash(page, param, query); }, []);
+  const nav = useCallback((page, param, query) => {
+    const nextHash = buildHash(page, param, query);
+    if (window.location.hash === nextHash) {
+      setRoute(parseHash());
+      window.scrollTo(0, 0);
+      return;
+    }
+    window.location.hash = nextHash;
+  }, []);
 
   useEffect(() => {
     if (!data || !data.settings) return;
