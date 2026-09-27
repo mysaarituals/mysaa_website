@@ -1298,7 +1298,7 @@ function ContactPage({ settings }) {
           </div>
         </div>
         <div className="contact-hero-image">
-          <ImageOrPlaceholder src="./assets/hero.jpg" label="Mysaa Rituals candle" ratio="1 / 1" />
+          <ImageOrPlaceholder src="./assets/contact.jpg" label="Mysaa Rituals candle" ratio="1 / 1" />
           <div className="contact-hero-caption">
             <p style={{ ...serif, fontSize: 30, color: C.ink, lineHeight: 1.05, margin: 0 }}>Carry<br/>the ritual<br/>with you.</p>
           </div>
