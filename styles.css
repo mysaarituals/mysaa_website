@@ -257,13 +257,17 @@ button:hover, a:hover { opacity: .82; }
 .hero-action-primary { background:var(--ink); color:#fff; border-color:var(--ink); }
 .hero-action-primary::before { background:rgba(250,247,240,.45); }
 .hero-action-secondary { background:#FCFAF7; color:var(--ink); border-color:var(--brass); }
-.hero-action-whatsapp { background:var(--clay); color:#fff; border-color:var(--clay); justify-content:flex-start; }
-.hero-action-whatsapp span { flex:1; }
-@media (min-width:620px) { .hero-actions { grid-template-columns:repeat(3,1fr); gap:12px; } .hero-action { justify-content:center; text-align:center; } .hero-action span:last-child { display:none; } .hero-action-whatsapp { justify-content:center; } .hero-action-whatsapp span { flex:initial; } }
+.hero-action-whatsapp { background:transparent; color:var(--rust); border-color:transparent; box-shadow:none; justify-content:flex-start; padding-left:0; padding-right:0; }
+.hero-action-whatsapp::before { display:none; }
+.hero-action-whatsapp span { flex:initial; }
+.hero-action-whatsapp svg { display:none; }
+.hero-action-whatsapp:hover { transform:none; box-shadow:none; background:transparent; }
+@media (min-width:620px) { .hero-actions { grid-template-columns:repeat(3,1fr); gap:16px; } .hero-action { justify-content:center; text-align:center; } .hero-action span:last-child { display:none; } .hero-action-whatsapp { justify-content:flex-start; padding-left:0; padding-right:0; } .hero-action-whatsapp span { flex:initial; } }
+
 
 .price-stack { display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
 .price-stack-large { gap:3px; }
-.price-mrp { font:400 11px 'Karla',sans-serif; color:var(--muted); text-decoration:line-through; text-decoration-thickness:1px; }
+.price-mrp { font:500 14px 'Karla',sans-serif; color:var(--muted); text-decoration:line-through; text-decoration-thickness:1px; line-height:1.25; letter-spacing:.01em; }
 .product-detail-price { display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
 .compact-editorial-card { min-height:190px; }
 .discovery-select, .catalogue-select { width:100%; min-height:44px; padding:10px 38px 10px 13px; border:1px solid var(--border); background:#fff; color:var(--ink); font:400 13.5px 'Karla',sans-serif; border-radius:0; }
