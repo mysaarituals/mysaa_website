@@ -33,6 +33,7 @@ const DISCOUNT_RATES = {
     "wide-jar-candle": 15,
     "shot-glass-candle": 10,
     "discovery-set": 20,
+    "grand-ritual": 25,
 };
 const GIFT_WRAP_CHARGE = 50;
 function regularPrice(product) {
@@ -107,9 +108,9 @@ const FEELING_FILTERS = [
     { slug: "dreamy-evening", title: "Dreamy & Evening", description: "Night-blooming florals made for slower, intimate moments.", fragrances: ["madhuban", "raat-ki-rani"] },
 ];
 const OCCASION_FILTERS = [
-    { slug: "festivals-celebrations", title: "Festivals & Celebrations", description: "Recommended festive hampers: Dhoop & Chandan and Madhuban.", categories: ["gift-hampers", "discovery-set", "hero-jar-candle", "wide-jar-candle", "shot-glass-candle", "grand-ritual", "mold-candles", "wax-melts"], hamperFragrances: ["dhoop-chandan", "madhuban"] },
-    { slug: "weddings-return-gifts", title: "Weddings & Return Gifts", description: "Recommended wedding hampers: Gajre Ka Shringar and Gulab Ki Chitthi.", categories: ["gift-hampers", "wax-melts", "shot-glass-candle"], hamperFragrances: ["gajre-ka-shringar", "gulab-ki-chitthi"] },
-    { slug: "birthdays-just-because", title: "Birthdays & Just Because", description: "Recommended everyday gifting: Raat Ki Rani and Saanjh.", categories: ["gift-hampers", "discovery-set", "shot-glass-candle", "wide-jar-candle"], hamperFragrances: ["raat-ki-rani", "saanjh"] },
+    { slug: "festivals-celebrations", title: "Festivals & Celebrations", description: "Recommended fragrances: Dhoop & Chandan and Madhuban." },
+    { slug: "weddings-return-gifts", title: "Weddings & Return Gifts", description: "Recommended fragrances: Gajre Ka Shringar and Gulab Ki Chitthi." },
+    { slug: "birthdays-just-because", title: "Birthdays & Just Because", description: "Recommended fragrances: Raat Ki Rani and Saanjh." },
 ];
 function isJarProduct(product) {
     return product && ["hero-jar-candle", "wide-jar-candle"].includes(product.categorySlug);
@@ -673,13 +674,9 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
             }
             if (occasion !== "all") {
                 const group = OCCASION_FILTERS.find((item) => item.slug === occasion);
-                if (!group || !group.categories.includes(p.categorySlug))
+                const assigned = Array.isArray(p.occasionSlugs) ? p.occasionSlugs : [];
+                if (!group || !assigned.includes(occasion))
                     return false;
-                if (p.categorySlug === "gift-hampers") {
-                    const assigned = Array.isArray(p.occasionSlugs) ? p.occasionSlugs : [];
-                    if (!assigned.includes(occasion))
-                        return false;
-                }
             }
             if ((p.price || 0) > priceCap)
                 return false;
@@ -806,7 +803,6 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
             shape, fragranceSlug, fragranceName: fragrance ? fragrance.name : fragranceSlug, color, giftWrap, giftWrapCharge,
             details: `Mould: ${shape}; Fragrance: ${fragrance ? fragrance.name : fragranceSlug}; Primary colour: ${color}`,
         });
-        nav("cart");
     };
     return (React.createElement("div", { className: "container mold-page", style: { padding: "32px 20px 80px" } },
         React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 24 } },
@@ -935,7 +931,6 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             fragranceName: fragrance ? fragrance.name : "",
             details: isJarProduct(product) ? "Flower mould included by default" : "",
         });
-        nav("cart");
     };
     const infoRows = [
         ["Size", product.volume],
@@ -1199,7 +1194,7 @@ function WelcomePopup() {
 }
 function CartPage({ nav, settings }) {
     const [items, setItems] = useState(() => readCart());
-    const [customer, setCustomer] = useState({ name: "", email: "", phone: "", note: "" });
+    const [customer, setCustomer] = useState({ name: "", email: "", address: "", city: "", state: "", pincode: "", landmark: "", note: "" });
     useEffect(() => {
         const refresh = () => setItems(readCart());
         window.addEventListener("mysaa-cart-updated", refresh);
@@ -1216,7 +1211,11 @@ function CartPage({ nav, settings }) {
         "",
         `Name: ${customer.name || ""}`,
         `Email: ${customer.email || ""}`,
-        `Phone: ${customer.phone || ""}`,
+        `Address: ${customer.address || ""}`,
+        `City: ${customer.city || ""}`,
+        `State: ${customer.state || ""}`,
+        `PIN / Postal Code: ${customer.pincode || ""}`,
+        customer.landmark ? `Landmark: ${customer.landmark}` : "",
         customer.note ? `Notes: ${customer.note}` : "",
         "",
         "Please confirm availability, delivery charges and final delivery details."
@@ -1270,8 +1269,22 @@ function CartPage({ nav, settings }) {
                         React.createElement("span", null, "Email"),
                         React.createElement("input", { type: "email", value: customer.email, onChange: setCustomerField("email"), placeholder: "your@email.com" })),
                     React.createElement("label", null,
-                        React.createElement("span", null, "Phone"),
-                        React.createElement("input", { value: customer.phone, onChange: setCustomerField("phone"), placeholder: "Phone number" })),
+                        React.createElement("span", null, "Full Address"),
+                        React.createElement("textarea", { value: customer.address, onChange: setCustomerField("address"), placeholder: "House / flat, street, area" })),
+                    React.createElement("div", { className: "cart-address-row" },
+                        React.createElement("label", null,
+                            React.createElement("span", null, "City"),
+                            React.createElement("input", { value: customer.city, onChange: setCustomerField("city"), placeholder: "City" })),
+                        React.createElement("label", null,
+                            React.createElement("span", null, "State"),
+                            React.createElement("input", { value: customer.state, onChange: setCustomerField("state"), placeholder: "State" }))),
+                    React.createElement("div", { className: "cart-address-row" },
+                        React.createElement("label", null,
+                            React.createElement("span", null, "PIN / Postal Code"),
+                            React.createElement("input", { value: customer.pincode, onChange: setCustomerField("pincode"), placeholder: "PIN code" })),
+                        React.createElement("label", null,
+                            React.createElement("span", null, "Landmark"),
+                            React.createElement("input", { value: customer.landmark, onChange: setCustomerField("landmark"), placeholder: "Nearby landmark (optional)" }))),
                     React.createElement("label", null,
                         React.createElement("span", null, "Order notes"),
                         React.createElement("textarea", { value: customer.note, onChange: setCustomerField("note"), placeholder: "Occasion, delivery notes, gifting details\u2026" }))),

@@ -36,6 +36,7 @@ const DISCOUNT_RATES = {
   "wide-jar-candle": 15,
   "shot-glass-candle": 10,
   "discovery-set": 20,
+  "grand-ritual": 25,
 };
 
 const GIFT_WRAP_CHARGE = 50;
@@ -118,9 +119,9 @@ const FEELING_FILTERS = [
   { slug: "dreamy-evening", title: "Dreamy & Evening", description: "Night-blooming florals made for slower, intimate moments.", fragrances: ["madhuban", "raat-ki-rani"] },
 ];
 const OCCASION_FILTERS = [
-  { slug: "festivals-celebrations", title: "Festivals & Celebrations", description: "Recommended festive hampers: Dhoop & Chandan and Madhuban.", categories: ["gift-hampers", "discovery-set", "hero-jar-candle", "wide-jar-candle", "shot-glass-candle", "grand-ritual", "mold-candles", "wax-melts"], hamperFragrances: ["dhoop-chandan", "madhuban"] },
-  { slug: "weddings-return-gifts", title: "Weddings & Return Gifts", description: "Recommended wedding hampers: Gajre Ka Shringar and Gulab Ki Chitthi.", categories: ["gift-hampers", "wax-melts", "shot-glass-candle"], hamperFragrances: ["gajre-ka-shringar", "gulab-ki-chitthi"] },
-  { slug: "birthdays-just-because", title: "Birthdays & Just Because", description: "Recommended everyday gifting: Raat Ki Rani and Saanjh.", categories: ["gift-hampers", "discovery-set", "shot-glass-candle", "wide-jar-candle"], hamperFragrances: ["raat-ki-rani", "saanjh"] },
+  { slug: "festivals-celebrations", title: "Festivals & Celebrations", description: "Recommended fragrances: Dhoop & Chandan and Madhuban." },
+  { slug: "weddings-return-gifts", title: "Weddings & Return Gifts", description: "Recommended fragrances: Gajre Ka Shringar and Gulab Ki Chitthi." },
+  { slug: "birthdays-just-because", title: "Birthdays & Just Because", description: "Recommended fragrances: Raat Ki Rani and Saanjh." },
 ];
 
 function isJarProduct(product) {
@@ -920,11 +921,8 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
       }
       if (occasion !== "all") {
         const group = OCCASION_FILTERS.find((item) => item.slug === occasion);
-        if (!group || !group.categories.includes(p.categorySlug)) return false;
-        if (p.categorySlug === "gift-hampers") {
-          const assigned = Array.isArray(p.occasionSlugs) ? p.occasionSlugs : [];
-          if (!assigned.includes(occasion)) return false;
-        }
+        const assigned = Array.isArray(p.occasionSlugs) ? p.occasionSlugs : [];
+        if (!group || !assigned.includes(occasion)) return false;
       }
       if ((p.price || 0) > priceCap) return false;
       if (search) {
@@ -1113,7 +1111,6 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
       shape, fragranceSlug, fragranceName: fragrance ? fragrance.name : fragranceSlug, color, giftWrap, giftWrapCharge,
       details: `Mould: ${shape}; Fragrance: ${fragrance ? fragrance.name : fragranceSlug}; Primary colour: ${color}`,
     });
-    nav("cart");
   };
 
   return (
@@ -1247,7 +1244,6 @@ function ProductDetailPage({ data, nav, slug, settings }) {
       fragranceName: fragrance ? fragrance.name : "",
       details: isJarProduct(product) ? "Flower mould included by default" : "",
     });
-    nav("cart");
   };
 
   const infoRows = [
@@ -1681,7 +1677,7 @@ function WelcomePopup() {
 
 function CartPage({ nav, settings }) {
   const [items, setItems] = useState(() => readCart());
-  const [customer, setCustomer] = useState({ name: "", email: "", phone: "", note: "" });
+  const [customer, setCustomer] = useState({ name: "", email: "", address: "", city: "", state: "", pincode: "", landmark: "", note: "" });
   useEffect(() => {
     const refresh = () => setItems(readCart());
     window.addEventListener("mysaa-cart-updated", refresh);
@@ -1698,7 +1694,11 @@ function CartPage({ nav, settings }) {
     "",
     `Name: ${customer.name || ""}`,
     `Email: ${customer.email || ""}`,
-    `Phone: ${customer.phone || ""}`,
+    `Address: ${customer.address || ""}`,
+    `City: ${customer.city || ""}`,
+    `State: ${customer.state || ""}`,
+    `PIN / Postal Code: ${customer.pincode || ""}`,
+    customer.landmark ? `Landmark: ${customer.landmark}` : "",
     customer.note ? `Notes: ${customer.note}` : "",
     "",
     "Please confirm availability, delivery charges and final delivery details."
@@ -1750,7 +1750,15 @@ function CartPage({ nav, settings }) {
             <div className="cart-customer-fields">
               <label><span>Name</span><input value={customer.name} onChange={setCustomerField("name")} placeholder="Your name" /></label>
               <label><span>Email</span><input type="email" value={customer.email} onChange={setCustomerField("email")} placeholder="your@email.com" /></label>
-              <label><span>Phone</span><input value={customer.phone} onChange={setCustomerField("phone")} placeholder="Phone number" /></label>
+              <label><span>Full Address</span><textarea value={customer.address} onChange={setCustomerField("address")} placeholder="House / flat, street, area" /></label>
+              <div className="cart-address-row">
+                <label><span>City</span><input value={customer.city} onChange={setCustomerField("city")} placeholder="City" /></label>
+                <label><span>State</span><input value={customer.state} onChange={setCustomerField("state")} placeholder="State" /></label>
+              </div>
+              <div className="cart-address-row">
+                <label><span>PIN / Postal Code</span><input value={customer.pincode} onChange={setCustomerField("pincode")} placeholder="PIN code" /></label>
+                <label><span>Landmark</span><input value={customer.landmark} onChange={setCustomerField("landmark")} placeholder="Nearby landmark (optional)" /></label>
+              </div>
               <label><span>Order notes</span><textarea value={customer.note} onChange={setCustomerField("note")} placeholder="Occasion, delivery notes, gifting details…" /></label>
             </div>
             <a className="cart-email-button" href={emailHref}>Send Order by Email →</a>

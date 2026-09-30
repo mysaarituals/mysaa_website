@@ -9,7 +9,9 @@
     "discountPercent": 20,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "weddings-return-gifts"
+    ],
     "optionValues": [],
     "volume": "220 ml",
     "weight": "",
@@ -37,7 +39,9 @@
     "discountPercent": 15,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "weddings-return-gifts"
+    ],
     "optionValues": [],
     "volume": "120 ml",
     "weight": "",
@@ -65,7 +69,9 @@
     "discountPercent": 10,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "weddings-return-gifts"
+    ],
     "optionValues": [],
     "volume": "60 ml",
     "weight": "",
@@ -93,7 +99,9 @@
     "discountPercent": 0,
     "moq": 1,
     "availability": "out-of-stock",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "weddings-return-gifts"
+    ],
     "optionValues": [],
     "volume": "Combo",
     "weight": "",
@@ -151,7 +159,9 @@
     "discountPercent": 20,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "festivals-celebrations"
+    ],
     "optionValues": [],
     "volume": "220 ml",
     "weight": "",
@@ -179,7 +189,9 @@
     "discountPercent": 15,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "festivals-celebrations"
+    ],
     "optionValues": [],
     "volume": "120 ml",
     "weight": "",
@@ -207,7 +219,9 @@
     "discountPercent": 10,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "festivals-celebrations"
+    ],
     "optionValues": [],
     "volume": "60 ml",
     "weight": "",
@@ -235,7 +249,9 @@
     "discountPercent": 0,
     "moq": 1,
     "availability": "out-of-stock",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "festivals-celebrations"
+    ],
     "optionValues": [],
     "volume": "Combo",
     "weight": "",
@@ -293,7 +309,9 @@
     "discountPercent": 20,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "weddings-return-gifts"
+    ],
     "optionValues": [],
     "volume": "220 ml",
     "weight": "",
@@ -321,7 +339,9 @@
     "discountPercent": 15,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "weddings-return-gifts"
+    ],
     "optionValues": [],
     "volume": "120 ml",
     "weight": "",
@@ -349,7 +369,9 @@
     "discountPercent": 10,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "weddings-return-gifts"
+    ],
     "optionValues": [],
     "volume": "60 ml",
     "weight": "",
@@ -377,7 +399,9 @@
     "discountPercent": 0,
     "moq": 1,
     "availability": "out-of-stock",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "weddings-return-gifts"
+    ],
     "optionValues": [],
     "volume": "Combo",
     "weight": "",
@@ -435,7 +459,9 @@
     "discountPercent": 20,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "festivals-celebrations"
+    ],
     "optionValues": [],
     "volume": "220 ml",
     "weight": "",
@@ -463,7 +489,9 @@
     "discountPercent": 15,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "festivals-celebrations"
+    ],
     "optionValues": [],
     "volume": "120 ml",
     "weight": "",
@@ -491,7 +519,9 @@
     "discountPercent": 10,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "festivals-celebrations"
+    ],
     "optionValues": [],
     "volume": "60 ml",
     "weight": "",
@@ -519,7 +549,9 @@
     "discountPercent": 0,
     "moq": 1,
     "availability": "out-of-stock",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "festivals-celebrations"
+    ],
     "optionValues": [],
     "volume": "Combo",
     "weight": "",
@@ -577,7 +609,9 @@
     "discountPercent": 20,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "birthdays-just-because"
+    ],
     "optionValues": [],
     "volume": "220 ml",
     "weight": "",
@@ -605,7 +639,9 @@
     "discountPercent": 15,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "birthdays-just-because"
+    ],
     "optionValues": [],
     "volume": "120 ml",
     "weight": "",
@@ -633,7 +669,9 @@
     "discountPercent": 10,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "birthdays-just-because"
+    ],
     "optionValues": [],
     "volume": "60 ml",
     "weight": "",
@@ -661,7 +699,9 @@
     "discountPercent": 0,
     "moq": 1,
     "availability": "out-of-stock",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "birthdays-just-because"
+    ],
     "optionValues": [],
     "volume": "Combo",
     "weight": "",
@@ -719,7 +759,9 @@
     "discountPercent": 20,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "birthdays-just-because"
+    ],
     "optionValues": [],
     "volume": "220 ml",
     "weight": "",
@@ -747,7 +789,9 @@
     "discountPercent": 15,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "birthdays-just-because"
+    ],
     "optionValues": [],
     "volume": "120 ml",
     "weight": "",
@@ -775,7 +819,9 @@
     "discountPercent": 10,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "birthdays-just-because"
+    ],
     "optionValues": [],
     "volume": "60 ml",
     "weight": "",
@@ -803,7 +849,9 @@
     "discountPercent": 0,
     "moq": 1,
     "availability": "out-of-stock",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "birthdays-just-because"
+    ],
     "optionValues": [],
     "volume": "",
     "weight": "",
@@ -861,7 +909,11 @@
     "discountPercent": 20,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "festivals-celebrations",
+      "weddings-return-gifts",
+      "birthdays-just-because"
+    ],
     "optionValues": [],
     "volume": "6 × 60 ml",
     "weight": "",
@@ -884,12 +936,14 @@
     "name": "Gulab Ki Chitthi Grand Ritual",
     "categorySlug": "grand-ritual",
     "fragranceSlug": "gulab-ki-chitthi",
-    "mrp": 0,
-    "price": 0,
-    "discountPercent": 0,
+    "mrp": 1999,
+    "price": 1499,
+    "discountPercent": 25,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "weddings-return-gifts"
+    ],
     "optionValues": [],
     "volume": "450 ml · 3 wick",
     "weight": "",
@@ -912,12 +966,14 @@
     "name": "Dhoop & Chandan Grand Ritual",
     "categorySlug": "grand-ritual",
     "fragranceSlug": "dhoop-chandan",
-    "mrp": 0,
-    "price": 0,
-    "discountPercent": 0,
+    "mrp": 1999,
+    "price": 1499,
+    "discountPercent": 25,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "festivals-celebrations"
+    ],
     "optionValues": [],
     "volume": "450 ml · 3 wick",
     "weight": "",
@@ -940,12 +996,14 @@
     "name": "Gajre Ka Shringar Grand Ritual",
     "categorySlug": "grand-ritual",
     "fragranceSlug": "gajre-ka-shringar",
-    "mrp": 0,
-    "price": 0,
-    "discountPercent": 0,
+    "mrp": 1999,
+    "price": 1499,
+    "discountPercent": 25,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "weddings-return-gifts"
+    ],
     "optionValues": [],
     "volume": "450 ml · 3 wick",
     "weight": "",
@@ -968,12 +1026,14 @@
     "name": "Madhuban Grand Ritual",
     "categorySlug": "grand-ritual",
     "fragranceSlug": "madhuban",
-    "mrp": 0,
-    "price": 0,
-    "discountPercent": 0,
+    "mrp": 1999,
+    "price": 1499,
+    "discountPercent": 25,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "festivals-celebrations"
+    ],
     "optionValues": [],
     "volume": "450 ml · 3 wick",
     "weight": "",
@@ -996,12 +1056,14 @@
     "name": "Raat Ki Rani Grand Ritual",
     "categorySlug": "grand-ritual",
     "fragranceSlug": "raat-ki-rani",
-    "mrp": 0,
-    "price": 0,
-    "discountPercent": 0,
+    "mrp": 1999,
+    "price": 1499,
+    "discountPercent": 25,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "birthdays-just-because"
+    ],
     "optionValues": [],
     "volume": "450 ml · 3 wick",
     "weight": "",
@@ -1024,12 +1086,14 @@
     "name": "Saanjh Grand Ritual",
     "categorySlug": "grand-ritual",
     "fragranceSlug": "saanjh",
-    "mrp": 0,
-    "price": 0,
-    "discountPercent": 0,
+    "mrp": 1999,
+    "price": 1499,
+    "discountPercent": 25,
     "moq": 1,
     "availability": "",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "birthdays-just-because"
+    ],
     "optionValues": [],
     "volume": "450 ml · 3 wick",
     "weight": "",
@@ -1057,7 +1121,11 @@
     "discountPercent": 0,
     "moq": 6,
     "availability": "in-stock",
-    "occasionSlugs": [],
+    "occasionSlugs": [
+      "festivals-celebrations",
+      "weddings-return-gifts",
+      "birthdays-just-because"
+    ],
     "optionValues": [
       "Daisy",
       "Rose",
