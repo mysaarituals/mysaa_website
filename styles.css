@@ -374,3 +374,25 @@ button:hover, a:hover { opacity: .82; }
 .welcome-cta { background:var(--ink); color:#fff; padding:13px 25px; font:600 11px 'Karla',sans-serif; letter-spacing:.13em; text-transform:uppercase; }
 .welcome-close { position:absolute; top:12px; right:14px; width:34px; height:34px; font:300 27px/1 'Cormorant Garamond',serif; color:var(--ink); }
 @media (max-width:520px) { .welcome-card { padding:38px 24px 30px; } .welcome-logo { height:66px; } }
+
+
+/* Festival campaign banner */
+.festival-banner {
+  border-bottom: 1px solid var(--line, #DED4C5);
+  background: #F3EDE2;
+}
+.festival-banner-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  gap: 42px;
+  align-items: center;
+  padding: 56px 20px;
+}
+.festival-banner-copy { min-width: 0; }
+@media (max-width: 760px) {
+  .festival-banner-inner {
+    grid-template-columns: 1fr;
+    gap: 26px;
+    padding: 42px 20px;
+  }
+}

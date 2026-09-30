@@ -1,19 +1,19 @@
 [
   {
     "slug": "hero-jar-candle",
-    "name": "Hero Jar Candle",
+    "name": "Signature",
     "subtitle": "220 ml",
     "active": true
   },
   {
     "slug": "wide-jar-candle",
-    "name": "Wide Jar Candle",
+    "name": "Everyday Ritual",
     "subtitle": "120 ml",
     "active": true
   },
   {
     "slug": "shot-glass-candle",
-    "name": "Shot Glass Candle",
+    "name": "Mini Ritual",
     "subtitle": "60 ml",
     "active": true
   },
@@ -32,7 +32,19 @@
   {
     "slug": "discovery-set",
     "name": "Discovery Set",
-    "subtitle": "6 × 60 ml shot glass candles",
+    "subtitle": "6 × 60 ml Mini Ritual candles",
+    "active": true
+  },
+  {
+    "slug": "grand-ritual",
+    "name": "Grand Ritual",
+    "subtitle": "450 ml · 3-wick luxury appearance",
+    "active": true
+  },
+  {
+    "slug": "mold-candles",
+    "name": "Mold Candles",
+    "subtitle": "MOQ 6 pieces · choose your shape",
     "active": true
   }
 ]

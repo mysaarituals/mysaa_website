@@ -27,28 +27,39 @@ const serif = { fontFamily: "'Cormorant Garamond', serif" };
 const sans = { fontFamily: "'Karla', sans-serif" };
 const label = { ...sans, fontSize: 11.5, letterSpacing: "0.11em", textTransform: "uppercase" };
 
-const inr = (n) => Number(n || 0) > 0 ? `₹${Number(n).toLocaleString("en-IN")}` : "Enquire";
+const inr = (n) => Number(n || 0) > 0 ? `₹${Number(n).toLocaleString("en-IN", { maximumFractionDigits: 2 })}` : "Enquire";
 
-// Current catalogue prices are launch-discounted. These are the regular prices
-// shown crossed out beside the discounted price.
-const REGULAR_CANDLE_PRICES = {
-  "hero-jar-candle": 849,
-  "wide-jar-candle": 599,
-  "shot-glass-candle": 349,
+// Launch discount structure: the final selling prices remain unchanged,
+// while each core candle format carries its own advertised discount.
+const DISCOUNT_RATES = {
+  "hero-jar-candle": 20,
+  "wide-jar-candle": 15,
+  "shot-glass-candle": 10,
+  "discovery-set": 20,
 };
+
+const GIFT_WRAP_CHARGE = 50;
 
 function regularPrice(product) {
   if (!product) return 0;
-  return Number(product.mrp || REGULAR_CANDLE_PRICES[product.categorySlug] || 0);
+  if (Number(product.mrp || 0) > 0) return Number(product.mrp);
+  const rate = Number(product.discountPercent || DISCOUNT_RATES[product.categorySlug] || 0);
+  const current = Number(product.price || 0);
+  return rate > 0 && current > 0 ? current / (1 - rate / 100) : 0;
+}
+
+function discountPercent(product) {
+  if (!product) return 0;
+  return Number(product.discountPercent || DISCOUNT_RATES[product.categorySlug] || 0);
 }
 
 function DiscountedPrice({ product, currentPrice, large = false }) {
   const regular = regularPrice(product);
   const current = Number(currentPrice || product?.price || 0);
-  const discount = regular > current && current > 0 ? Math.round(((regular - current) / regular) * 100) : 0;
+  const discount = discountPercent(product);
   return (
     <div className={large ? "price-stack price-stack-large" : "price-stack"}>
-      {regular > current && <div className="price-original-row">
+      {regular > current && current > 0 && <div className="price-original-row">
         <span className="price-original">{inr(regular)}</span>
         {discount > 0 && <span className="price-discount">-{discount}%</span>}
       </div>}
@@ -88,6 +99,17 @@ const JAR_VARIANTS = {
   }
 };
 
+const MOLD_CANDLE_SHAPES = [
+  "Daisy",
+  "Rose",
+  "Carnation",
+  "Cactus",
+  "Tortoise",
+  "Laddu",
+  "Chakli",
+];
+const MOLD_CANDLE_MOQ = 6;
+
 const DISCOVERY_SET_SLUG = "discover-set-6-shot-glass-candles";
 const DISCOVERY_SET_FRAGRANCES = [
   "gulab-ki-chitthi",
@@ -104,13 +126,16 @@ const FEELING_FILTERS = [
   { slug: "dreamy-evening", title: "Dreamy & Evening", description: "Night-blooming florals made for slower, intimate moments.", fragrances: ["madhuban", "raat-ki-rani"] },
 ];
 const OCCASION_FILTERS = [
-  { slug: "festivals-celebrations", title: "Festivals & Celebrations", description: "Thoughtful candles, sachets and hampers for festive moments.", categories: ["gift-hampers", "discovery-set", "hero-jar-candle", "wide-jar-candle", "shot-glass-candle", "wax-melts"] },
+  { slug: "festivals-celebrations", title: "Festivals & Celebrations", description: "Thoughtful candles, sachets and hampers for festive moments.", categories: ["gift-hampers", "discovery-set", "hero-jar-candle", "wide-jar-candle", "shot-glass-candle", "grand-ritual", "mold-candles", "wax-melts"] },
   { slug: "weddings-return-gifts", title: "Weddings & Return Gifts", description: "Personalised pieces for wedding favours, events and guests.", categories: ["gift-hampers", "wax-melts", "shot-glass-candle"] },
   { slug: "birthdays-just-because", title: "Birthdays & Just Because", description: "Small, personal gifts for someone you want to make smile.", categories: ["gift-hampers", "discovery-set", "shot-glass-candle", "wide-jar-candle"] },
 ];
 
 function isJarProduct(product) {
   return product && ["hero-jar-candle", "wide-jar-candle"].includes(product.categorySlug);
+}
+function isMoldCandle(product) {
+  return product && product.categorySlug === "mold-candles";
 }
 function supportsPackaging(product) {
   return product && ["hero-jar-candle", "wide-jar-candle", "wax-melts"].includes(product.categorySlug);
@@ -565,13 +590,40 @@ function HowToOrder({ steps, eyebrow = "How to Order", title = "Simple, personal
 /* ============================================================
    Pages
    ============================================================ */
+function FestivalBanner({ nav, settings }) {
+  const enabled = String(settings.festivalBannerEnabled ?? "true").toLowerCase() !== "false";
+  if (!enabled) return null;
+  const eyebrow = settings.festivalBannerEyebrow || "Festive Collection";
+  const title = settings.festivalBannerTitle || "Light up the season. Gift a little warmth.";
+  const text = settings.festivalBannerText || "Our festive edit brings together candles and thoughtful gifts for Navratri, Dussehra and the celebrations ahead.";
+  const buttonText = settings.festivalBannerButtonText || "Shop the Festive Collection";
+  const image = settings.festivalBannerImage || "";
+  const action = () => {
+    const category = settings.festivalBannerCategory || "festivals-celebrations";
+    nav("catalogue", "occasion", { value: category });
+  };
+  return (
+    <section className="festival-banner" aria-label={eyebrow}>
+      <div className="container festival-banner-inner">
+        <div className="festival-banner-copy">
+          <p style={{ ...label, color: C.rust, marginBottom: 12 }}>{eyebrow}</p>
+          <h2 style={{ ...serif, fontSize: "clamp(28px,4vw,42px)", color: C.ink, fontWeight: 500, lineHeight: 1.05, marginBottom: 12 }}>{title}</h2>
+          <p style={{ ...sans, color: C.ink70, fontSize: 15, lineHeight: 1.7, maxWidth: 560, marginBottom: 22 }}>{text}</p>
+          <Button variant="rust" onClick={action}>{buttonText} →</Button>
+        </div>
+        {image && <ImageOrPlaceholder src={image} label={eyebrow} ratio="4 / 3" />}
+      </div>
+    </section>
+  );
+}
+
 function HomePage({ data, nav, settings }) {
   const fragranceById = Object.fromEntries(data.fragrances.map((f) => [f.slug, f]));
   const activeFragrances = data.fragrances.filter((f) => f.active);
 
   // Homepage collection: prioritize products explicitly marked as bestsellers
   // across candle formats. If the data has no bestseller flags yet, fall back
-  // to a balanced mix of Hero Jar, Wide Jar and Shot Glass candles.
+  // to a balanced mix of Signature, Everyday Ritual and Mini Ritual candles.
   const candleProducts = data.products.filter((p) =>
     p.active && ["hero-jar-candle", "wide-jar-candle", "shot-glass-candle"].includes(p.categorySlug)
   );
@@ -610,6 +662,8 @@ function HomePage({ data, nav, settings }) {
         </div>
       </section>
 
+      <FestivalBanner nav={nav} settings={settings} />
+
       {/* Fragrance introduction */}
       <section className="container" style={{ padding: "72px 20px 24px" }}>
         <SectionHeading
@@ -634,15 +688,15 @@ function HomePage({ data, nav, settings }) {
           <div className="discovery-set-feature">
             <ImageOrPlaceholder src={productImage(discoverySet, data.images, 0)} label={discoverySet.name} ratio="4 / 3" />
             <div>
-              <p style={{ ...label, color: C.rust, marginBottom: 12 }}>New · Discover Set</p>
+              <p style={{ ...label, color: C.rust, marginBottom: 12 }}>New · Discovery Set</p>
               <h2 style={{ ...serif, fontSize: "clamp(28px,3.6vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 12 }}>Six fragrances. One beautiful beginning.</h2>
               <p style={{ ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, maxWidth: 520, marginBottom: 18 }}>
-                Explore all six Mysaa Rituals fragrances in six 60 ml shot glass jar candles — a complete set for discovering the scent that becomes your ritual.
+                Explore all six Mysaa Rituals fragrances in six 60 ml Mini Ritual candles — a complete set for discovering the scent that becomes your ritual.
               </p>
               <div className="price-stack price-stack-large" style={{ marginBottom: 20 }}>
                  <span style={{ ...sans, fontSize: 20, color: C.ink, fontWeight: 500 }}>{inr(discoverySet.price)}</span>
                </div>
-              <Button variant="outline" onClick={() => nav("product", discoverySet.slug)}>View Discover Set →</Button>
+              <Button variant="outline" onClick={() => nav("product", discoverySet.slug)}>View Discovery Set →</Button>
             </div>
           </div>
         </section>
@@ -662,7 +716,7 @@ function HomePage({ data, nav, settings }) {
             <button onClick={() => nav("catalogue", "candle")} className="editorial-card">
               <p style={{ ...label, color: C.rust, marginBottom: 12 }}>02</p>
               <h3 style={{ ...serif, fontSize: 24, color: C.ink, fontWeight: 500, marginBottom: 8 }}>Shop by Candle</h3>
-              <p style={{ ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.65, marginBottom: 16 }}>Choose your format first — Hero Jar, Wide Jar or Shot Glass.</p>
+              <p style={{ ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.65, marginBottom: 16 }}>Choose your format first — Signature, Everyday Ritual, Mini Ritual or Grand Ritual.</p>
               <span style={{ ...label, color: C.rust }}>Explore →</span>
             </button>
           </div>
@@ -692,7 +746,7 @@ function HomePage({ data, nav, settings }) {
 
       {/* Featured products */}
       <section className="container" style={{ padding: "72px 20px" }}>
-        <SectionHeading eyebrow="Best Sellers" title="Made to be lit slowly." sub="A selection of Mysaa candles across our Hero Jar, Wide Jar and Shot Glass formats." />
+        <SectionHeading eyebrow="Best Sellers" title="Made to be lit slowly." sub="A selection of Mysaa candles across our Signature, Everyday Ritual and Mini Ritual formats." />
         <div className="product-grid" style={{ marginTop: 36 }}>
           {featured.map((p) => (
             <ProductCard key={p.slug} product={p} fragrance={fragranceById[p.fragranceSlug]} images={data.images} nav={nav} />
@@ -982,9 +1036,21 @@ function ProductGallery({ product, images }) {
 }
 
 function ProductDetailPage({ data, nav, slug, settings }) {
-  const [qty, setQty] = useState(1);
+  const productForState = data.products.find((p) => p.slug === slug);
+  const isMoldForState = isMoldCandle(productForState);
+  const [qty, setQty] = useState(isMoldForState ? MOLD_CANDLE_MOQ : 1);
   const [jarVariant, setJarVariant] = useState("plain");
+  const [giftWrap, setGiftWrap] = useState(false);
+  const [moldShape, setMoldShape] = useState(MOLD_CANDLE_SHAPES[0]);
   const product = data.products.find((p) => p.slug === slug);
+
+  useEffect(() => {
+    const mold = isMoldCandle(product);
+    setQty(mold ? MOLD_CANDLE_MOQ : 1);
+    setGiftWrap(false);
+    setJarVariant("plain");
+    setMoldShape(MOLD_CANDLE_SHAPES[0]);
+  }, [slug]);
 
   if (!product) {
     return (
@@ -998,15 +1064,21 @@ function ProductDetailPage({ data, nav, slug, settings }) {
   const category = data.categories.find((c) => c.slug === product.categorySlug);
   const fragrance = data.fragrances.find((f) => f.slug === product.fragranceSlug);
   const isDiscoverySet = product.slug === DISCOVERY_SET_SLUG;
+  const isMold = isMoldCandle(product);
+  const giftWrapAvailable = settings.giftWrapEnabled !== false && String(settings.giftWrapEnabled).toLowerCase() !== "false";
+  const giftWrapCharge = Number(settings.giftWrapCharge || GIFT_WRAP_CHARGE);
   const related = data.products.filter((p) => p.active && p.categorySlug === product.categorySlug && p.slug !== product.slug).slice(0, 4);
   const hasPackagingOptions = supportsPackaging(product);
   const hasJarVariants = isJarProduct(product);
   const packagingChoice = PACKAGING_OPTIONS.standard;
   const jarChoice = hasJarVariants ? JAR_VARIANTS[jarVariant] : JAR_VARIANTS.plain;
+  const minQty = isMold ? MOLD_CANDLE_MOQ : 1;
   const unitPrice = Number(product.price || 0) + (hasJarVariants ? jarChoice.priceDelta : 0);
-  const totalPrice = unitPrice * qty;
+  const subtotal = unitPrice * qty;
+  const giftWrapTotal = giftWrap ? giftWrapCharge : 0;
+  const totalPrice = subtotal + giftWrapTotal;
 
-  const enquiryMsg = `Hello Mysaa Rituals! I'd like to order:\n\n${product.name}\nQuantity: ${qty}\nPackaging: ${isDiscoverySet ? "Discover Set presentation" : (hasPackagingOptions ? packagingChoice.label : "Standard")}\n${hasJarVariants ? `Jar finish: ${jarChoice.label}\n` : ""}Unit price: ${inr(unitPrice)}\nTotal: ${inr(totalPrice)}\n\nCould you confirm availability and delivery details?`;
+  const enquiryMsg = `Hello Mysaa Rituals! I'd like to order:\n\n${product.name}\n${isMold ? `Mould shape: ${moldShape}\n` : ""}Quantity: ${qty}${isMold ? ` (MOQ ${MOLD_CANDLE_MOQ})` : ""}\nPackaging: ${isDiscoverySet ? "Discovery Set presentation" : (hasPackagingOptions ? packagingChoice.label : "Standard")}\n${hasJarVariants ? `Jar finish: ${jarChoice.label}\n` : ""}Gift wrapping: ${giftWrap ? `Yes (+${inr(giftWrapCharge)})` : "No"}\nUnit price: ${unitPrice > 0 ? inr(unitPrice) : "Enquire"}\nSubtotal: ${subtotal > 0 ? inr(subtotal) : "Enquire"}\n${giftWrap ? `Gift wrapping: ${inr(giftWrapCharge)}\n` : ""}Total: ${totalPrice > 0 ? inr(totalPrice) : "Enquire"}\n\nCould you confirm availability and delivery details?`;
 
   const infoRows = [
     ["Size", product.volume],
@@ -1037,10 +1109,28 @@ function ProductDetailPage({ data, nav, slug, settings }) {
           <div className="product-detail-price" style={{ marginBottom: 6 }}>
             <DiscountedPrice product={product} currentPrice={unitPrice} large />
           </div>
-          {(hasPackagingOptions || hasJarVariants) && (
-            <p style={{ ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 }}>Discounted base price {inr(product.price)} · final price updates with your selections</p>
+          {(hasPackagingOptions || hasJarVariants || isMold) && (
+            <p style={{ ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 }}>
+              {isMold ? `Minimum order ${MOLD_CANDLE_MOQ} pieces · price shared on enquiry` : `Discounted base price ${inr(product.price)} · final price updates with your selections`}
+            </p>
           )}
           <p style={{ ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, marginBottom: 28 }}>{product.shortDescription}</p>
+
+          {isMold && (
+            <div style={{ marginBottom: 28 }}>
+              <p style={{ ...label, color: C.ink70, marginBottom: 10 }}>Choose Your Mould</p>
+              <div className="option-grid">
+                {MOLD_CANDLE_SHAPES.map((shape) => (
+                  <button key={shape} onClick={() => setMoldShape(shape)} className={`selection-card${moldShape === shape ? " selected" : ""}`}>
+                    <span style={{ ...sans, fontSize: 13.5, color: C.ink, fontWeight: 500 }}>{shape}</span>
+                  </button>
+                ))}
+              </div>
+              <p style={{ ...sans, fontSize: 12.5, color: C.rust, lineHeight: 1.6, marginTop: 10 }}>
+                Minimum order: {MOLD_CANDLE_MOQ} pieces. Select one mould style for your batch.
+              </p>
+            </div>
+          )}
 
           {fragrance && (
             <div style={{ marginBottom: 24 }}>
@@ -1085,10 +1175,29 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             </div>
           )}
 
+          {giftWrapAvailable && (
+          <div style={{ marginBottom: 28, padding: "16px", border: `1px solid ${C.line}`, background: C.card }}>
+            <label style={{ display: "flex", alignItems: "flex-start", gap: 12, cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                checked={giftWrap}
+                onChange={(e) => setGiftWrap(e.target.checked)}
+                style={{ marginTop: 3, accentColor: C.rust }}
+              />
+              <span>
+                <strong style={{ ...serif, fontSize: 18, fontWeight: 500, color: C.ink }}>Gift wrapping</strong>
+                <span style={{ ...sans, display: "block", fontSize: 13.5, color: C.ink70, lineHeight: 1.6, marginTop: 4 }}>
+                  Add gift wrapping for someone special · +{inr(giftWrapCharge)}
+                </span>
+              </span>
+            </label>
+          </div>
+          )}
+
           <div style={{ marginBottom: 28 }}>
             <p style={{ ...label, color: C.ink70, marginBottom: 10 }}>Quantity</p>
             <div style={{ display: "inline-flex", alignItems: "center", border: `1px solid ${C.line}` }}>
-              <button onClick={() => setQty((q) => Math.max(1, q - 1))} style={{ ...sans, fontSize: 16, padding: "10px 16px", color: C.ink }} aria-label="Decrease quantity">−</button>
+              <button onClick={() => setQty((q) => Math.max(minQty, q - 1))} style={{ ...sans, fontSize: 16, padding: "10px 16px", color: C.ink }} aria-label="Decrease quantity">−</button>
               <span style={{ ...sans, fontSize: 14, padding: "0 16px", minWidth: 28, textAlign: "center" }}>{qty}</span>
               <button onClick={() => setQty((q) => q + 1)} style={{ ...sans, fontSize: 16, padding: "10px 16px", color: C.ink }} aria-label="Increase quantity">+</button>
             </div>
@@ -1111,9 +1220,9 @@ function ProductDetailPage({ data, nav, slug, settings }) {
 
           {isDiscoverySet && (
             <div className="hairline-top" style={{ marginTop: 32 }}>
-              <h2 style={{ ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 }}>What's Inside the Discover Set</h2>
+              <h2 style={{ ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 }}>What's Inside the Discovery Set</h2>
               <p style={{ ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75, marginBottom: 14 }}>
-                Six 60 ml shot glass jar candles, one in each Mysaa Rituals fragrance, so you can experience the full collection and discover the scent that feels most personal to you.
+                Six 60 ml Mini Ritual candles, one in each Mysaa Rituals fragrance, so you can experience the full collection and discover the scent that feels most personal to you.
               </p>
               <div className="discovery-fragrance-list">
                 {DISCOVERY_SET_FRAGRANCES.map((slug, index) => {

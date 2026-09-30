@@ -7,9 +7,18 @@
   "instagram": "https://instagram.com/mysaarituals",
   "instagramHandle": "@mysaarituals",
   "address": "Noida, UP, India",
-  "seoTitle": "Mysaa Rituals \u2014 Handcrafted Fragrance & Gifting",
+  "seoTitle": "Mysaa Rituals — Handcrafted Fragrance & Gifting",
   "seoDescription": "Handcrafted candles and gifts inspired by Indian fragrances, memories and everyday rituals.",
   "feedbackUrl": "https://forms.cloud.microsoft/r/6S4JFC1WaX?origin=QRCode",
   "feedbackQr": "./assets/feedback-qr.jpeg",
-  "connectQr": "./assets/connect-qr.jpeg"
+  "connectQr": "./assets/connect-qr.jpeg",
+  "giftWrapEnabled": true,
+  "giftWrapCharge": 50,
+  "festivalBannerEnabled": true,
+  "festivalBannerEyebrow": "Upcoming · Navratri & Dussehra",
+  "festivalBannerTitle": "Light up the season. Gift a little warmth.",
+  "festivalBannerText": "Bring home thoughtful candles and gifts for Navratri, Dussehra and the festive celebrations ahead.",
+  "festivalBannerButtonText": "Shop the Festive Collection",
+  "festivalBannerCategory": "festivals-celebrations",
+  "festivalBannerImage": null
 }

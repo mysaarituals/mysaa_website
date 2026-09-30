@@ -158,71 +158,48 @@ assets/catalogue/
 
 ### Current catalogue combinations
 
-The catalogue contains **25 combinations**:
+The catalogue now includes:
 
-- 5 fragrances: gulab-ki-chitthi, dhoop-chandan, gajre-ka-shringar,
-  madhuban, raat-ki-rani
-- 5 formats: hero-jar-candle, wide-jar-candle, shot-glass-candle,
-  wax-melts (displayed as "Wax Sachet Combo"), gift-hampers
-
-Every fragrance is paired with every format.
+- 6 fragrances: gulab-ki-chitthi, dhoop-chandan, gajre-ka-shringar,
+  madhuban, raat-ki-rani, saanjh
+- Candle formats: Signature (220 ml), Everyday Ritual (120 ml),
+  Mini Ritual (60 ml), Grand Ritual (450 ml / 3 wick)
+- Wax Sachet Combo, Gift Hampers, Discovery Set
+- Mold Candles with selectable Daisy, Rose, Carnation, Cactus, Tortoise,
+  Laddu or Chakli shapes and a minimum order quantity of 6 pieces
 
 ### Pricing
 
-- Hero Jar: ₹950 (Madhuban Hero Jar keeps its original ₹1,050)
-- Wide Jar: ₹650
-- Shot Glass: ₹350
+The final selling prices remain unchanged:
+
+- Signature: ₹799 with a 20% launch discount
+- Everyday Ritual: ₹549 with a 15% launch discount
+- Mini Ritual: ₹299 with a 10% launch discount
+- Discovery Set: ₹1,699 with a 20% launch discount
 - Wax Sachet Combo: ₹350
-- Gift Hampers: Enquire (price is `0`, which the site displays as "Enquire")
+- Gift Hampers and Grand Rituals: Enquire
+- Mold Candles: Enquire; MOQ 6 pieces
 
-Edit the `price` column in `data/mysaa_products.xlsx` (or `price` in
-`products.json` directly) with your final prices.
+Gift wrapping is an optional ₹50 add-on on product detail pages.
 
-### Updating the website after Excel edits
-
-After editing `data/mysaa_products.xlsx`:
-
-```bash
-python3 scripts/xlsx_to_json.py
-```
-
-Then push the updated `data/*.json` files to GitHub. This does not
-touch photos — run `build_image_manifest.py` separately if you've
-also changed photos.
+The crossed-out price is calculated from the requested discount percentage so
+the final selling price remains the same as the current catalogue price.
 
 ## Product options and galleries
 
-- Hero Jar Candle and Wide Jar Candle now have two finish options: Classic Top — No Flower (included) and Flower Mould on Top (+₹100).
-- Hero Jar Candle, Wide Jar Candle, and Wax Sachet Combo have Standard Packaging (included). Premium Packaging is displayed as Coming Soon across the site and cannot currently be selected.
-- Premium packaging is shown as Coming Soon across the website; the previous ₹200 premium option is not currently selectable or added to product pricing.
-- Product detail pages now show every photograph found in the corresponding `assets/catalogue/<fragrance>/<category>/` folder, with previous/next controls, a counter, and scrollable thumbnails.
-- After adding or renaming catalogue photos, run `python3 scripts/build_image_manifest.py` and recompile `app.jsx` to `app.js` before publishing.
-
-## Recent catalogue updates
-
-- Added **Mysaa Rituals Discover Set**: 6 × 60 ml shot glass candles covering all six fragrances, priced at **₹2,200**.
-- Added a dedicated Discovery Set category and product-detail section listing all six fragrances.
-- The Discover Set uses existing Mysaa fragrance photography for its gallery; dedicated shot-glass photos can be added later to the same `assets/catalogue/all-fragrances/discovery-set/` folder and will automatically appear in the product gallery after rebuilding the image manifest.
-- Homepage fragrance cards now use a taller **4:5** image area for better portrait-image presentation.
-- Homepage Shop by Feeling and Shop by Occasion cards are compact and use dropdown subcategories; the same feeling and occasion filters are available on the Catalogue page.
-- Homepage primary actions (Explore the Catalogue, Create Your Ritual, Chat on WhatsApp) have been redesigned as prominent themed CTAs.
-- Added basic search-engine metadata, Open Graph/Twitter metadata, canonical handling, structured Organization data, and a robots.txt allowing crawling.
-
-### SEO / Google indexing
-
-The live GitHub Pages site is:
-
-`https://mysaarituals.github.io/mysaa_website/`
-
-The repository includes:
-- `robots.txt` with the live sitemap URL
-- `sitemap.xml` for the canonical homepage
-- An absolute canonical URL and Open Graph URL for the GitHub Pages site
-- Absolute social-preview image URLs
-- Organization structured data using the live site URL
-
-After publishing, add the property to Google Search Console and request indexing for:
-`https://mysaarituals.github.io/mysaa_website/`
-
-The `#/home` URL is a client-side hash route; the canonical/indexable URL is the site root above.
-
+- Signature and Everyday Ritual have two finish options: Classic Top — No Flower
+  (included) and Flower Mould on Top (+₹100).
+- Standard Packaging is included where applicable. Premium Packaging remains
+  Coming Soon and cannot currently be selected.
+- Every product detail page can offer optional Gift Wrapping for +₹50.
+  The selected wrapping is included in the WhatsApp enquiry total.
+- Mold Candles have a minimum order quantity of 6 pieces and a selectable shape:
+  Daisy, Rose, Carnation, Cactus, Tortoise, Laddu or Chakli.
+- Product detail galleries show every photograph found in the corresponding
+  `assets/catalogue/<fragrance>/<category>/` folder, with previous/next
+  controls, a counter and thumbnails.
+- The homepage festival banner is controlled through `data/settings.json`
+  (and the Settings sheet in Excel): edit `festivalBannerEyebrow`,
+  `festivalBannerTitle`, `festivalBannerText`, `festivalBannerButtonText`,
+  `festivalBannerCategory`, `festivalBannerImage`, and
+  `festivalBannerEnabled` when the campaign changes.

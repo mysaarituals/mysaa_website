@@ -48,15 +48,17 @@ def main():
     ws = wb.active
     ws.title = "Products"
     headers = [
-        "slug", "name", "categorySlug", "fragranceSlug", "price", "volume", "weight",
-        "materials", "packaging", "shortDescription", "about", "bestseller",
-        "isNew", "customizable", "active", "image1", "image2", "image3",
+        "slug", "name", "categorySlug", "fragranceSlug", "mrp", "price", "discountPercent", "moq",
+        "optionValues", "volume", "weight", "materials", "packaging", "shortDescription", "about",
+        "bestseller", "isNew", "customizable", "active", "image1", "image2", "image3",
     ]
     rows = []
     for p in products:
         rows.append([
             p.get("slug", ""), p.get("name", ""), p.get("categorySlug", ""), p.get("fragranceSlug", ""),
-            p.get("price", 0), p.get("volume", ""), p.get("weight", ""), p.get("materials", ""),
+            p.get("mrp", 0), p.get("price", 0), p.get("discountPercent", 0), p.get("moq", 1),
+            "|".join(p.get("optionValues", []) or []),
+            p.get("volume", ""), p.get("weight", ""), p.get("materials", ""),
             p.get("packaging", ""), p.get("shortDescription", ""), p.get("about", ""),
             p.get("bestseller", False), p.get("isNew", False), p.get("customizable", False),
             p.get("active", True), *(p.get("images", []) + ["", "", ""])[:3],
@@ -86,7 +88,7 @@ def main():
         ["   Keep the 'slug' column unique on each sheet — it is how a"],
         ["   product links to its fragrance and category."],
         ["2. Categories are: hero-jar-candle, wide-jar-candle, shot-glass-candle,"],
-        ["   wax-melts, gift-hampers. A product's categorySlug must match one"],
+        ["   mold-candles, wax-melts, gift-hampers, discovery-set. A product's categorySlug must match one"],
         ["   of these exactly."],
         ["3. Save this file as mysaa_products.xlsx in the data/ folder."],
         ["4. From a terminal in the project folder, run:"],
