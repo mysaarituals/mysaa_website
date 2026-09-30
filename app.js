@@ -8,7 +8,7 @@
      mv app.js app.js   (tsc writes app.js next to app.jsx)
 
    Product data is fetched from ./data/*.json — the shop owner edits
-   data/mysaa_products.xlsx and regenerates the JSON (see scripts/).
+   data/mysaa_products.xlsx and regenerates the JSON (see scripts/). Orders are prepared in the cart and sent by email.
    ============================================================ */
 const { useState, useEffect, useMemo, useCallback } = React;
 const C = {
@@ -63,7 +63,7 @@ function DiscountedPrice({ product, currentPrice, large = false }) {
         React.createElement("span", { className: large ? "price-current price-current-large" : "price-current" }, inr(current))));
 }
 // Product customisation pricing. Standard packaging is included in the base price.
-// Premium packaging is currently marked Coming Soon. Jar flower mould adds ₹100.
+// Premium packaging is currently marked Coming Soon. Flower moulds are included by default on jar products.
 const PACKAGING_OPTIONS = {
     standard: {
         label: "Standard Packaging",
@@ -76,19 +76,11 @@ const PREMIUM_PACKAGING = {
     label: "Premium Packaging — Coming Soon",
     description: "Premium packaging is coming soon."
 };
-const JAR_VARIANTS = {
-    plain: {
-        label: "Classic Top — No Flower",
-        shortLabel: "No Flower",
-        priceDelta: 0,
-        description: "A clean, minimal wax surface."
-    },
-    flower: {
-        label: "Flower Mould on Top",
-        shortLabel: "Flower Mould (+₹100)",
-        priceDelta: 100,
-        description: "Finished with a handcrafted flower mould on top for an extra decorative touch."
-    }
+// Jar flower mould is now included by default on all jar products. There is no user-selectable jar finish option.
+const JAR_VARIANT_DEFAULT = {
+    label: "Flower mould on top",
+    shortLabel: "Flower mould included",
+    priceDelta: 0,
 };
 const MOLD_CANDLE_SHAPES = [
     "Daisy",
@@ -150,6 +142,49 @@ function ImageOrPlaceholder({ src, label: text, ratio = "4 / 5" }) {
 function waLink(number, message) {
     const clean = (number || "").replace(/[^0-9]/g, "");
     return `https://wa.me/${clean}?text=${encodeURIComponent(message)}`;
+}
+const CART_KEY = "mysaa_rituals_cart_v1";
+function readCart() {
+    try {
+        return JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    }
+    catch (_) {
+        return [];
+    }
+}
+function writeCart(items) {
+    localStorage.setItem(CART_KEY, JSON.stringify(items));
+    window.dispatchEvent(new Event("mysaa-cart-updated"));
+}
+function cartItemKey(item) {
+    return [item.slug, item.shape || "", item.fragranceSlug || "", item.color || "", item.giftWrap ? "gift" : "no-gift"].join("|");
+}
+function addCartItem(item) {
+    const items = readCart();
+    const key = cartItemKey(item);
+    const existing = items.find((x) => cartItemKey(x) === key);
+    if (existing)
+        existing.qty = Number(existing.qty || 0) + Number(item.qty || 1);
+    else
+        items.push({ ...item, key });
+    writeCart(items);
+    return items;
+}
+function updateCartItem(key, qty) {
+    const items = readCart().map((item) => item.key === key ? { ...item, qty: Math.max(item.moq || 1, qty) } : item);
+    writeCart(items);
+}
+function removeCartItem(key) { writeCart(readCart().filter((item) => item.key !== key)); }
+function cartTotal(items) { return items.reduce((sum, item) => sum + Number(item.unitPrice || 0) * Number(item.qty || 0) + (item.giftWrap ? Number(item.giftWrapCharge || 0) : 0), 0); }
+function useCartCount() {
+    const [count, setCount] = useState(() => readCart().reduce((n, item) => n + Number(item.qty || 0), 0));
+    useEffect(() => {
+        const refresh = () => setCount(readCart().reduce((n, item) => n + Number(item.qty || 0), 0));
+        window.addEventListener("mysaa-cart-updated", refresh);
+        window.addEventListener("storage", refresh);
+        return () => { window.removeEventListener("mysaa-cart-updated", refresh); window.removeEventListener("storage", refresh); };
+    }, []);
+    return count;
 }
 /* ---------- tiny hash router: #/page/param?query ---------- */
 function parseHash() {
@@ -333,6 +368,9 @@ function Header({ nav, settings, route }) {
                     discoverOpen && (React.createElement("div", { style: { position: "absolute", top: "100%", left: 0, background: "#FFFDFA", border: `1px solid ${C.line}`, boxShadow: "0 12px 28px rgba(68,55,47,0.12)", minWidth: 210, padding: "8px 0", zIndex: 60 } }, discoverLinks.map(([lbl, page, param, query]) => (React.createElement("button", { key: lbl, onClick: () => { nav(page, param, query); setDiscoverOpen(false); }, style: { ...sans, display: "block", width: "100%", textAlign: "left", fontSize: 13.5, color: C.ink, padding: "10px 18px" } }, lbl)))))),
                 tailLinks.map(([lbl, page, param]) => (React.createElement("button", { key: lbl, onClick: () => nav(page, param), style: linkStyle(page) }, lbl)))),
             React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 16 } },
+                React.createElement("button", { onClick: () => nav("cart"), "aria-label": "Cart", className: "cart-nav-button" },
+                    React.createElement("span", null, "Cart"),
+                    React.createElement("span", { className: "cart-count" }, useCartCount())),
                 React.createElement("div", { className: "desktop-nav", style: { position: "relative" } }, searchOpen ? (React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 6 } },
                     React.createElement("input", { autoFocus: true, value: searchVal, onChange: (e) => setSearchVal(e.target.value), onKeyDown: (e) => { if (e.key === "Enter")
                             runSearch(); if (e.key === "Escape")
@@ -343,7 +381,7 @@ function Header({ nav, settings, route }) {
                 React.createElement("button", { className: "mobile-only", onClick: () => setOpen(!open), "aria-label": "Menu", style: { padding: 8 } },
                     React.createElement("svg", { width: "22", height: "22", viewBox: "0 0 24 24", fill: "none", stroke: C.ink, strokeWidth: "1.6" },
                         React.createElement("path", { d: "M3 6h18M3 12h18M3 18h18" }))))),
-        open && (React.createElement("div", { className: "mobile-only", style: { padding: "0 20px 20px", display: "flex", flexDirection: "column", gap: 2, background: C.cream, borderTop: `1px solid ${C.line}` } }, [...links.map((l) => [...l, null]), ...discoverLinks, ...tailLinks.map((l) => [...l, null])].map(([lbl, page, param, query]) => (React.createElement("button", { key: lbl, onClick: () => { nav(page, param, query); setOpen(false); }, style: { ...sans, textAlign: "left", padding: "12px 4px", fontSize: 15, color: C.ink, borderBottom: `1px solid ${C.line}` } }, lbl)))))));
+        open && (React.createElement("div", { className: "mobile-only", style: { padding: "0 20px 20px", display: "flex", flexDirection: "column", gap: 2, background: C.cream, borderTop: `1px solid ${C.line}` } }, [...links.map((l) => [...l, null]), ...discoverLinks, ...tailLinks.map((l) => [...l, null]), ["Cart", "cart", null, null]].map(([lbl, page, param, query]) => (React.createElement("button", { key: lbl, onClick: () => { nav(page, param, query); setOpen(false); }, style: { ...sans, textAlign: "left", padding: "12px 4px", fontSize: 15, color: C.ink, borderBottom: `1px solid ${C.line}` } }, lbl)))))));
 }
 function Footer({ nav, settings }) {
     return (React.createElement("footer", { style: { background: "#FCFAF7", borderTop: `1px solid ${C.line}`, marginTop: 80 } },
@@ -384,11 +422,6 @@ function Footer({ nav, settings }) {
                     ". All rights reserved."),
                 settings.address && React.createElement("span", { style: { letterSpacing: "0.04em", textTransform: "uppercase", fontSize: 11 } }, settings.address)))));
 }
-function WhatsAppFloat({ settings }) {
-    return (React.createElement("a", { href: waLink(settings.whatsapp, "Hello Mysaa Rituals, I would like to know more about your products."), target: "_blank", rel: "noreferrer", "aria-label": "Chat on WhatsApp", style: { position: "fixed", bottom: 22, right: 22, zIndex: 50, width: 54, height: 54, borderRadius: "50%", background: "#25D366", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 18px rgba(0,0,0,0.25)" } },
-        React.createElement("svg", { width: "26", height: "26", viewBox: "0 0 24 24", fill: "#fff" },
-            React.createElement("path", { d: "M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.29-1.39a9.9 9.9 0 0 0 4.75 1.21h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.24 0 4.34.87 5.93 2.46a8.23 8.23 0 0 1 2.42 5.85c0 4.56-3.71 8.27-8.35 8.27a8.3 8.3 0 0 1-4.21-1.15l-.3-.18-3.14.82.84-3.06-.2-.32a8.2 8.2 0 0 1-1.26-4.38c0-4.56 3.71-8.31 8.27-8.31M8.53 6.7c-.16 0-.43.06-.65.31-.22.24-.86.84-.86 2.05s.88 2.38 1 2.55c.13.16 1.7 2.72 4.2 3.71.58.25 1.04.4 1.4.51.59.19 1.12.16 1.55.1.47-.07 1.45-.59 1.65-1.17s.2-1.07.14-1.17c-.06-.1-.22-.16-.47-.28s-1.45-.72-1.68-.8c-.22-.08-.39-.13-.55.13-.16.25-.63.8-.78.97-.14.16-.29.18-.53.06-.25-.13-1.04-.38-1.99-1.23-.73-.66-1.23-1.46-1.37-1.71-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.44.13-.15.17-.25.25-.41.08-.16.04-.31-.02-.44-.07-.13-.55-1.4-.78-1.9-.19-.42-.4-.42-.55-.43z" }))));
-}
 /* ============================================================
    Product / Fragrance cards
    ============================================================ */
@@ -398,7 +431,7 @@ function ProductCard({ product, fragrance, images, nav }) {
         React.createElement("div", { className: "hairline-top", style: { paddingTop: 0 } },
             React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 8, minHeight: 14 } }, outOfStock ? "Out of Stock" : product.bestseller ? "Bestseller" : product.isNew ? "New" : product.customizable ? "Customizable" : "\u00A0"),
             isMoldCandle(product) ? (React.createElement("div", { className: "mold-product-card-visual" },
-                React.createElement(MoldShapeVisual, { shape: MOLD_CANDLE_SHAPES[0] }))) : (React.createElement(ImageOrPlaceholder, { src: productImage(product, images, 0), label: product.name }))),
+                React.createElement("div", { className: "mold-image-placeholder" }, "Add mold image"))) : (React.createElement(ImageOrPlaceholder, { src: productImage(product, images, 0), label: product.name }))),
         React.createElement("div", { className: "product-card-body", style: { paddingTop: 14 } },
             React.createElement("h3", { style: { ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 } }, product.name),
             React.createElement("p", { style: { ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }, className: "line-clamp-2" }, product.shortDescription),
@@ -425,14 +458,14 @@ function FilterChip({ active, onClick, children }) {
    ============================================================ */
 const HOW_TO_ORDER_HOME = [
     { title: "Choose", body: "Find your fragrance, product or gift in the catalogue." },
-    { title: "Enquire", body: "Tap Order on WhatsApp, or send us an enquiry directly." },
+    { title: "Enquire", body: "Add products to your cart and send the order to us by email." },
     { title: "Personalize", body: "Discuss fragrance, quantity, packaging or customization." },
     { title: "Confirm", body: "We confirm availability, pricing and final details personally." },
 ];
 const HOW_TO_ORDER_PRODUCT = [
     { title: "Select", body: "Select the product and quantity you'd like." },
-    { title: "Tap Order", body: "Tap Order on WhatsApp — the product name is filled in for you." },
-    { title: "Send", body: "Send us your enquiry or order on WhatsApp." },
+    { title: "Tap Order", body: "Add the product to your cart — your order details are collected for email." },
+    { title: "Send", body: "Send your complete order to us by email." },
     { title: "Confirm", body: "We confirm availability, price and delivery details." },
 ];
 function HowToOrder({ steps, eyebrow = "How to Order", title = "Simple, personal, unhurried." }) {
@@ -593,7 +626,7 @@ function HomePage({ data, nav, settings }) {
         React.createElement("section", { className: "container", style: { padding: "72px 20px" } },
             React.createElement(HowToOrder, { steps: [
                     { title: "Choose", body: "Pick your fragrance, format or gift." },
-                    { title: "Enquire", body: "Send us your order through WhatsApp." },
+                    { title: "Enquire", body: "Send us your order through the cart by email." },
                     { title: "Personalize", body: "Share quantity, occasion and preferences." },
                     { title: "Confirm", body: "We confirm availability, final price and delivery details." },
                 ], title: "Simple, personal, unhurried." })),
@@ -603,7 +636,7 @@ function HomePage({ data, nav, settings }) {
                 React.createElement("h2", { style: { ...serif, fontSize: "clamp(26px,3.4vw,34px)", fontWeight: 500, marginBottom: 12 } }, "Have something special in mind?"),
                 React.createElement("p", { style: { ...sans, fontSize: 14, color: "#D8CFC3", maxWidth: 460, margin: "0 auto 24px", lineHeight: 1.7 } }, "Tell us what you're looking for and we'll help you create the right ritual."),
                 React.createElement("div", { style: { display: "flex", justifyContent: "center", gap: 22, flexWrap: "wrap" } },
-                    React.createElement("a", { href: waLink(settings.whatsapp, "Hello Mysaa Rituals!"), target: "_blank", rel: "noreferrer", style: { ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" } }, "Chat on WhatsApp"),
+                    React.createElement("a", { href: `mailto:${settings.email}`, style: { ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" } }, "Order by Email"),
                     React.createElement("a", { href: settings.instagram, target: "_blank", rel: "noreferrer", style: { ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" } }, "Follow @mysaarituals"))))));
 }
 function CataloguePage({ data, nav, initialType, initialQuery }) {
@@ -767,6 +800,14 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
     const giftWrapCharge = Number(settings.giftWrapCharge || GIFT_WRAP_CHARGE);
     const total = subtotal + (giftWrap ? giftWrapCharge : 0);
     const enquiryMsg = `Hello Mysaa Rituals! I'd like to order a custom Mold Candle batch:\n\nMould: ${shape}\nFragrance: ${fragrance ? fragrance.name : fragranceSlug}\nPrimary colour: ${color}\nQuantity: ${qty} pieces (MOQ ${MOLD_CANDLE_MOQ})\nBatch price basis: ${inr(batchPrice)} for ${baseQty} pieces\n${giftWrap ? `Gift wrapping: Yes (+${inr(giftWrapCharge)})\n` : "Gift wrapping: No\n"}Total: ${inr(total)}\n\nPlease confirm availability and delivery details.`;
+    const addMoldToCart = () => {
+        addCartItem({
+            slug: product.slug, name: product.name, unitPrice: unitPiecePrice, qty, moq: MOLD_CANDLE_MOQ,
+            shape, fragranceSlug, fragranceName: fragrance ? fragrance.name : fragranceSlug, color, giftWrap, giftWrapCharge,
+            details: `Mould: ${shape}; Fragrance: ${fragrance ? fragrance.name : fragranceSlug}; Primary colour: ${color}`,
+        });
+        nav("cart");
+    };
     return (React.createElement("div", { className: "container mold-page", style: { padding: "32px 20px 80px" } },
         React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 24 } },
             React.createElement("button", { onClick: () => nav("catalogue", "all"), style: { ...label, color: C.ink70 } }, "Catalogue"),
@@ -788,16 +829,14 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
                         React.createElement("h2", null, "Choose your mould")),
                     React.createElement("div", { className: "mold-shape-grid" }, MOLD_CANDLE_SHAPES.map((item) => (React.createElement("button", { key: item, onClick: () => setShape(item), className: `mold-shape-card${shape === item ? " selected" : ""}` },
                         React.createElement("div", { className: "mold-shape-art" },
-                            React.createElement(MoldShapeVisual, { shape: item })),
+                            React.createElement("div", { className: "mold-image-placeholder" }, "Add mold image")),
                         React.createElement("span", null, item)))))),
                 React.createElement("section", { className: "mold-step" },
                     React.createElement("div", { className: "mold-step-heading" },
                         React.createElement("span", null, "2"),
                         React.createElement("h2", null, "Choose your fragrance")),
                     React.createElement("div", { className: "mold-fragrance-grid" }, data.fragrances.filter((f) => f.active).map((f) => (React.createElement("button", { key: f.slug, onClick: () => setFragranceSlug(f.slug), className: `mold-fragrance-card${fragranceSlug === f.slug ? " selected" : ""}` },
-                        React.createElement(ImageOrPlaceholder, { src: fragranceImage(f, data.images, 0), label: f.name, ratio: "4 / 3" }),
-                        React.createElement("strong", null, f.name),
-                        React.createElement("span", null, (f.mood || "").split(",")[0]))))),
+                        React.createElement("strong", null, f.name))))),
                     React.createElement("button", { className: "mold-more-link", onClick: () => nav("catalogue", "fragrance", { value: fragranceSlug }) }, "View fragrance notes \u2192")),
                 React.createElement("section", { className: "mold-step" },
                     React.createElement("div", { className: "mold-step-heading" },
@@ -813,7 +852,7 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
                 React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 16 } }, "Your selection"),
                 React.createElement("div", { className: "mold-summary-preview" },
                     React.createElement("div", { className: "mold-summary-art", style: { background: colorData.hex } },
-                        React.createElement(MoldShapeVisual, { shape: shape })),
+                        React.createElement("div", { className: "mold-image-placeholder" }, "Add mold image")),
                     React.createElement("div", null,
                         React.createElement("strong", null, shape),
                         React.createElement("span", null, fragrance ? fragrance.name : ""),
@@ -840,16 +879,15 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
                             React.createElement("small", null,
                                 "+",
                                 inr(giftWrapCharge))))),
-                React.createElement("a", { className: "mold-create-button", href: waLink(settings.whatsapp, enquiryMsg), target: "_blank", rel: "noreferrer" },
-                    "Create my batch ",
+                React.createElement("button", { className: "mold-create-button", onClick: addMoldToCart },
+                    "Add batch to cart ",
                     React.createElement("span", null, "\u2192")),
-                React.createElement("a", { className: "mold-enquiry-button", href: waLink(settings.whatsapp, enquiryMsg), target: "_blank", rel: "noreferrer" }, "Send enquiry")))));
+                React.createElement("button", { className: "mold-enquiry-button", onClick: addMoldToCart }, "Add to cart")))));
 }
 function ProductDetailPage({ data, nav, slug, settings }) {
     const productForState = data.products.find((p) => p.slug === slug);
     const isMoldForState = isMoldCandle(productForState);
     const [qty, setQty] = useState(isMoldForState ? MOLD_CANDLE_MOQ : 1);
-    const [jarVariant, setJarVariant] = useState("plain");
     const [giftWrap, setGiftWrap] = useState(false);
     const [moldShape, setMoldShape] = useState(MOLD_CANDLE_SHAPES[0]);
     const [moldFragrance, setMoldFragrance] = useState("raat-ki-rani");
@@ -859,7 +897,6 @@ function ProductDetailPage({ data, nav, slug, settings }) {
         const mold = isMoldCandle(product);
         setQty(mold ? MOLD_CANDLE_MOQ : 1);
         setGiftWrap(false);
-        setJarVariant("plain");
         setMoldShape(MOLD_CANDLE_SHAPES[0]);
         setMoldFragrance("raat-ki-rani");
         setMoldColor("Dusty Rose");
@@ -880,15 +917,26 @@ function ProductDetailPage({ data, nav, slug, settings }) {
     const giftWrapCharge = Number(settings.giftWrapCharge || GIFT_WRAP_CHARGE);
     const related = data.products.filter((p) => p.active && p.categorySlug === product.categorySlug && p.slug !== product.slug).slice(0, 4);
     const hasPackagingOptions = supportsPackaging(product);
-    const hasJarVariants = isJarProduct(product);
+    const hasJarVariants = false;
     const packagingChoice = PACKAGING_OPTIONS.standard;
-    const jarChoice = hasJarVariants ? JAR_VARIANTS[jarVariant] : JAR_VARIANTS.plain;
+    const jarChoice = JAR_VARIANT_DEFAULT;
     const minQty = isMold ? MOLD_CANDLE_MOQ : 1;
-    const unitPrice = Number(product.price || 0) + (hasJarVariants ? jarChoice.priceDelta : 0);
+    const unitPrice = Number(product.price || 0);
     const subtotal = unitPrice * qty;
     const giftWrapTotal = giftWrap ? giftWrapCharge : 0;
     const totalPrice = subtotal + giftWrapTotal;
-    const enquiryMsg = `Hello Mysaa Rituals! I'd like to order:\n\n${product.name}\n${isMold ? `Mould shape: ${moldShape}\n` : ""}Quantity: ${qty}${isMold ? ` (MOQ ${MOLD_CANDLE_MOQ})` : ""}\nPackaging: ${isDiscoverySet ? "Discovery Set presentation" : (hasPackagingOptions ? packagingChoice.label : "Standard")}\n${hasJarVariants ? `Jar finish: ${jarChoice.label}\n` : ""}Gift wrapping: ${giftWrap ? `Yes (+${inr(giftWrapCharge)})` : "No"}\nUnit price: ${unitPrice > 0 ? inr(unitPrice) : "Enquire"}\nSubtotal: ${subtotal > 0 ? inr(subtotal) : "Enquire"}\n${giftWrap ? `Gift wrapping: ${inr(giftWrapCharge)}\n` : ""}Total: ${totalPrice > 0 ? inr(totalPrice) : "Enquire"}\n\nCould you confirm availability and delivery details?`;
+    const enquiryMsg = `Hello Mysaa Rituals! I'd like to order:\n\n${product.name}\n${isMold ? `Mould shape: ${moldShape}\n` : ""}Quantity: ${qty}${isMold ? ` (MOQ ${MOLD_CANDLE_MOQ})` : ""}\nPackaging: ${isDiscoverySet ? "Discovery Set presentation" : (hasPackagingOptions ? packagingChoice.label : "Standard")}\nJar finish: ${isJarProduct(product) ? "Flower mould included by default" : ""}\nGift wrapping: ${giftWrap ? `Yes (+${inr(giftWrapCharge)})` : "No"}\nUnit price: ${unitPrice > 0 ? inr(unitPrice) : "Enquire"}\nSubtotal: ${subtotal > 0 ? inr(subtotal) : "Enquire"}\n${giftWrap ? `Gift wrapping: ${inr(giftWrapCharge)}\n` : ""}Total: ${totalPrice > 0 ? inr(totalPrice) : "Enquire"}\n\nCould you confirm availability and delivery details?`;
+    const addCurrentProductToCart = () => {
+        if (isOutOfStock(product))
+            return;
+        addCartItem({
+            slug: product.slug, name: product.name, unitPrice, qty,
+            giftWrap, giftWrapCharge, moq: minQty,
+            fragranceName: fragrance ? fragrance.name : "",
+            details: isJarProduct(product) ? "Flower mould included by default" : "",
+        });
+        nav("cart");
+    };
     const infoRows = [
         ["Size", product.volume],
         ["Weight", product.weight],
@@ -896,7 +944,7 @@ function ProductDetailPage({ data, nav, slug, settings }) {
         ["Fragrance Notes", fragrance ? fragrance.notes : ""],
         ["Material / Ingredients", product.materials],
         ["Packaging", hasPackagingOptions ? packagingChoice.label : product.packaging],
-        ["Jar Finish", hasJarVariants ? jarChoice.label : ""],
+        ["Jar Finish", isJarProduct(product) ? "Flower mould included by default" : ""],
         ["Collection", category ? category.name : ""],
     ].filter(([, v]) => v);
     return (React.createElement("div", { className: "container", style: { padding: "32px 20px 80px" } },
@@ -925,12 +973,6 @@ function ProductDetailPage({ data, nav, slug, settings }) {
                 fragrance && (React.createElement("div", { style: { marginBottom: 24 } },
                     React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Variant"),
                     React.createElement("span", { style: { ...sans, fontSize: 13, padding: "9px 16px", border: `1px solid ${C.ink}`, display: "inline-block" } }, fragrance.name))),
-                hasJarVariants && (React.createElement("div", { style: { marginBottom: 24 } },
-                    React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Jar Finish"),
-                    React.createElement("div", { className: "option-grid" }, Object.entries(JAR_VARIANTS).map(([key, option]) => (React.createElement("button", { key: key, onClick: () => setJarVariant(key), className: `selection-card${jarVariant === key ? " selected" : ""}` },
-                        React.createElement("span", { style: { ...sans, fontSize: 13.5, color: C.ink, fontWeight: 500 } }, option.label),
-                        React.createElement("span", { style: { ...sans, fontSize: 12.5, color: C.ink70, marginTop: 5 } }, option.priceDelta ? `+${inr(option.priceDelta)}` : "Included"))))),
-                    React.createElement("p", { style: { ...sans, fontSize: 12.5, color: C.ink70, lineHeight: 1.6, marginTop: 10 } }, jarChoice.description))),
                 hasPackagingOptions && (React.createElement("div", { style: { marginBottom: 28 } },
                     React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Packaging"),
                     React.createElement("div", { className: "option-grid" },
@@ -958,9 +1000,7 @@ function ProductDetailPage({ data, nav, slug, settings }) {
                         React.createElement("button", { onClick: () => setQty((q) => Math.max(minQty, q - 1)), style: { ...sans, fontSize: 16, padding: "10px 16px", color: C.ink }, "aria-label": "Decrease quantity" }, "\u2212"),
                         React.createElement("span", { style: { ...sans, fontSize: 14, padding: "0 16px", minWidth: 28, textAlign: "center" } }, qty),
                         React.createElement("button", { onClick: () => setQty((q) => q + 1), style: { ...sans, fontSize: 16, padding: "10px 16px", color: C.ink }, "aria-label": "Increase quantity" }, "+"))),
-                isOutOfStock(product) ? (React.createElement("button", { className: "out-of-stock-button", disabled: true }, "Out of Stock")) : (React.createElement(Button, { href: waLink(settings.whatsapp, enquiryMsg), target: "_blank", variant: "solid", style: { width: "100%", justifyContent: "center" } },
-                    React.createElement(ChatIcon, { color: "#fff" }),
-                    " Order on WhatsApp")),
+                isOutOfStock(product) ? (React.createElement("button", { className: "out-of-stock-button", disabled: true }, "Out of Stock")) : (React.createElement(Button, { onClick: addCurrentProductToCart, variant: "solid", style: { width: "100%", justifyContent: "center" } }, "Add to Cart")),
                 product.customizable && (React.createElement("button", { onClick: () => nav("create-ritual"), style: { ...label, color: C.rust, marginTop: 18, display: "block", textDecoration: "underline", textUnderlineOffset: "3px" } }, "Want this customized instead? \u2192")),
                 React.createElement("div", { className: "hairline-top", style: { marginTop: 32 } },
                     React.createElement("h2", { style: { ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 } }, "About this Product"),
@@ -1001,14 +1041,14 @@ function CreateRitualPage({ settings, data }) {
         form.notes && `Notes: ${form.notes}`,
     ].filter(Boolean).join("\n");
     return (React.createElement("div", { className: "container", style: { padding: "48px 20px 80px", maxWidth: 680 } },
-        React.createElement(SectionHeading, { eyebrow: "Made Just For You", title: "Create Your Own Ritual", sub: "Tell us a little about what you're looking for, and we'll get back to you on WhatsApp to design it together." }),
+        React.createElement(SectionHeading, { eyebrow: "Made Just For You", title: "Create Your Own Ritual", sub: "Tell us a little about what you're looking for, and send your custom request to us by email." }),
         React.createElement("div", { style: { marginTop: 36, display: "grid", gap: 18 } },
             React.createElement(Field, { label: "Your name", value: form.name, onChange: set("name") }),
             React.createElement(SelectField, { label: "Preferred fragrance or mood", value: form.fragrance, onChange: set("fragrance"), placeholder: "Help me choose", options: (data.fragrances || []).filter((f) => f.active !== false).map((f) => f.name) }),
             React.createElement(SelectField, { label: "Format", value: form.format, onChange: set("format"), placeholder: "Not sure", options: (data.categories || []).filter((c) => c.active !== false).map((c) => c.name) }),
             React.createElement(SelectField, { label: "Occasion", value: form.occasion, onChange: set("occasion"), placeholder: "Not sure yet", options: ["Birthday", "Anniversary", "Wedding / Wedding Favour", "Festival", "Housewarming", "Corporate / Gifting", "Other"] }),
             React.createElement(FieldArea, { label: "Anything else we should know?", value: form.notes, onChange: set("notes") }),
-            React.createElement(Button, { href: waLink(settings.whatsapp, message), target: "_blank", style: { marginTop: 8, width: "fit-content" } }, "Send via WhatsApp"))));
+            React.createElement(Button, { href: `mailto:${settings.email}?subject=${encodeURIComponent("Mysaa Rituals — Custom Ritual Request")}&body=${encodeURIComponent(message)}`, style: { marginTop: 8, width: "fit-content" } }, "Send via Email"))));
 }
 function Field({ label: text, ...props }) {
     return (React.createElement("label", { style: { display: "block" } },
@@ -1083,7 +1123,7 @@ function ContactPage({ settings }) {
             React.createElement("div", { className: "contact-hero-image" },
                 React.createElement(ImageOrPlaceholder, { src: "./assets/contact.jpg", label: "Mysaa Rituals candle", ratio: "1 / 1" }),
                 React.createElement("div", { className: "contact-ritual-caption" },
-                    React.createElement("p", { style: { ...serif, fontSize: 30, color: C.ink, lineHeight: 1.05, margin: 0 } },
+                    React.createElement("p", { style: { ...serif, fontSize: 20, color: C.ink, lineHeight: 1.05, margin: 0 } },
                         "Carry",
                         React.createElement("br", null),
                         "the ritual",
@@ -1157,6 +1197,89 @@ function WelcomePopup() {
             React.createElement("p", null, "Every order comes with free goodies, and our launch discount is live. Discover your next little ritual with Mysaa."),
             React.createElement("button", { className: "welcome-cta", onClick: close }, "Start exploring \u2192"))));
 }
+function CartPage({ nav, settings }) {
+    const [items, setItems] = useState(() => readCart());
+    const [customer, setCustomer] = useState({ name: "", email: "", phone: "", note: "" });
+    useEffect(() => {
+        const refresh = () => setItems(readCart());
+        window.addEventListener("mysaa-cart-updated", refresh);
+        return () => window.removeEventListener("mysaa-cart-updated", refresh);
+    }, []);
+    const total = cartTotal(items);
+    const setCustomerField = (key) => (e) => setCustomer((v) => ({ ...v, [key]: e.target.value }));
+    const orderBody = [
+        "Hello Mysaa Rituals, I'd like to place the following order:",
+        "",
+        ...items.map((item, i) => `${i + 1}. ${item.name}\n   Quantity: ${item.qty}${item.moq ? ` (MOQ ${item.moq})` : ""}\n   Unit price: ${inr(item.unitPrice)}\n   ${item.details || ""}${item.giftWrap ? `\n   Gift wrapping: +${inr(item.giftWrapCharge || GIFT_WRAP_CHARGE)}` : ""}\n   Line total: ${inr(Number(item.unitPrice) * Number(item.qty) + (item.giftWrap ? Number(item.giftWrapCharge || GIFT_WRAP_CHARGE) : 0))}`),
+        "",
+        `Order total: ${inr(total)}`,
+        "",
+        `Name: ${customer.name || ""}`,
+        `Email: ${customer.email || ""}`,
+        `Phone: ${customer.phone || ""}`,
+        customer.note ? `Notes: ${customer.note}` : "",
+        "",
+        "Please confirm availability, delivery charges and final delivery details."
+    ].filter(Boolean).join("\n");
+    const emailHref = `mailto:${settings.email}?subject=${encodeURIComponent(`Mysaa Rituals Order — ${customer.name || "Customer"}`)}&body=${encodeURIComponent(orderBody)}`;
+    const changeQty = (item, delta) => {
+        const next = Math.max(item.moq || 1, Number(item.qty || 1) + delta);
+        updateCartItem(item.key, next);
+        setItems(readCart());
+    };
+    const remove = (key) => { removeCartItem(key); setItems(readCart()); };
+    return (React.createElement("div", { className: "container cart-page", style: { padding: "48px 20px 80px" } },
+        React.createElement(SectionHeading, { eyebrow: "Your Cart", title: "Ready to make it a ritual?", sub: "Review your products, add gift wrapping if you need it, then send the complete order to us by email." }),
+        items.length === 0 ? (React.createElement("div", { className: "cart-empty" },
+            React.createElement("p", { style: { ...serif, fontSize: 26, color: C.ink, marginBottom: 10 } }, "Your cart is empty."),
+            React.createElement("p", { style: { ...sans, fontSize: 14, color: C.ink70, marginBottom: 20 } }, "Choose something from the catalogue and it will appear here."),
+            React.createElement(Button, { variant: "solid", onClick: () => nav("catalogue", "all") }, "Explore the Catalogue"))) : (React.createElement("div", { className: "cart-grid" },
+            React.createElement("div", { className: "cart-items" },
+                items.map((item) => {
+                    const lineTotal = Number(item.unitPrice) * Number(item.qty) + (item.giftWrap ? Number(item.giftWrapCharge || GIFT_WRAP_CHARGE) : 0);
+                    return (React.createElement("div", { className: "cart-item", key: item.key },
+                        React.createElement("div", { className: "cart-item-main" },
+                            React.createElement("div", null,
+                                React.createElement("h3", null, item.name),
+                                item.fragranceName && React.createElement("p", null,
+                                    "Fragrance: ",
+                                    item.fragranceName),
+                                item.details && React.createElement("p", null, item.details),
+                                item.giftWrap && React.createElement("p", null,
+                                    "Gift wrapping: +",
+                                    inr(item.giftWrapCharge || GIFT_WRAP_CHARGE))),
+                            React.createElement("strong", null, inr(lineTotal))),
+                        React.createElement("div", { className: "cart-item-actions" },
+                            React.createElement("div", { className: "cart-qty" },
+                                React.createElement("button", { onClick: () => changeQty(item, -1) }, "\u2212"),
+                                React.createElement("span", null, item.qty),
+                                React.createElement("button", { onClick: () => changeQty(item, 1) }, "+")),
+                            React.createElement("button", { className: "cart-remove", onClick: () => remove(item.key) }, "Remove"))));
+                }),
+                React.createElement("button", { className: "cart-continue", onClick: () => nav("catalogue", "all") }, "\u2190 Continue shopping")),
+            React.createElement("aside", { className: "cart-summary" },
+                React.createElement("div", { className: "cart-summary-total" },
+                    React.createElement("span", null, "Total"),
+                    React.createElement("strong", null, inr(total))),
+                React.createElement("p", { className: "cart-email-note" }, "Orders are placed through email only. Your email app will open with the order details already filled in."),
+                React.createElement("div", { className: "cart-customer-fields" },
+                    React.createElement("label", null,
+                        React.createElement("span", null, "Name"),
+                        React.createElement("input", { value: customer.name, onChange: setCustomerField("name"), placeholder: "Your name" })),
+                    React.createElement("label", null,
+                        React.createElement("span", null, "Email"),
+                        React.createElement("input", { type: "email", value: customer.email, onChange: setCustomerField("email"), placeholder: "your@email.com" })),
+                    React.createElement("label", null,
+                        React.createElement("span", null, "Phone"),
+                        React.createElement("input", { value: customer.phone, onChange: setCustomerField("phone"), placeholder: "Phone number" })),
+                    React.createElement("label", null,
+                        React.createElement("span", null, "Order notes"),
+                        React.createElement("textarea", { value: customer.note, onChange: setCustomerField("note"), placeholder: "Occasion, delivery notes, gifting details\u2026" }))),
+                React.createElement("a", { className: "cart-email-button", href: emailHref }, "Send Order by Email \u2192"),
+                React.createElement("p", { className: "cart-small-note" },
+                    "To: ",
+                    settings.email))))));
+}
 /* ============================================================
    App root
    ============================================================ */
@@ -1223,14 +1346,15 @@ function App() {
         page = React.createElement(AboutPage, { data: data });
     else if (route.page === "contact")
         page = React.createElement(ContactPage, { settings: settings });
+    else if (route.page === "cart")
+        page = React.createElement(CartPage, { nav: nav, settings: settings });
     else
         page = React.createElement(HomePage, { data: data, nav: nav, settings: settings });
     return (React.createElement(React.Fragment, null,
         React.createElement(WelcomePopup, null),
         React.createElement(Header, { nav: nav, settings: settings, route: route }),
         React.createElement("main", { style: { minHeight: "60vh" } }, page),
-        React.createElement(Footer, { nav: nav, settings: settings }),
-        React.createElement(WhatsAppFloat, { settings: settings })));
+        React.createElement(Footer, { nav: nav, settings: settings })));
 }
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(React.createElement(App, null));

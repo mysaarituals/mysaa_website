@@ -8,7 +8,7 @@
      mv app.js app.js   (tsc writes app.js next to app.jsx)
 
    Product data is fetched from ./data/*.json — the shop owner edits
-   data/mysaa_products.xlsx and regenerates the JSON (see scripts/).
+   data/mysaa_products.xlsx and regenerates the JSON (see scripts/). Orders are prepared in the cart and sent by email.
    ============================================================ */
 const { useState, useEffect, useMemo, useCallback } = React;
 
@@ -69,7 +69,7 @@ function DiscountedPrice({ product, currentPrice, large = false }) {
 }
 
 // Product customisation pricing. Standard packaging is included in the base price.
-// Premium packaging is currently marked Coming Soon. Jar flower mould adds ₹100.
+// Premium packaging is currently marked Coming Soon. Flower moulds are included by default on jar products.
 const PACKAGING_OPTIONS = {
   standard: {
     label: "Standard Packaging",
@@ -84,19 +84,11 @@ const PREMIUM_PACKAGING = {
   description: "Premium packaging is coming soon."
 };
 
-const JAR_VARIANTS = {
-  plain: {
-    label: "Classic Top — No Flower",
-    shortLabel: "No Flower",
-    priceDelta: 0,
-    description: "A clean, minimal wax surface."
-  },
-  flower: {
-    label: "Flower Mould on Top",
-    shortLabel: "Flower Mould (+₹100)",
-    priceDelta: 100,
-    description: "Finished with a handcrafted flower mould on top for an extra decorative touch."
-  }
+// Jar flower mould is now included by default on all jar products. There is no user-selectable jar finish option.
+const JAR_VARIANT_DEFAULT = {
+  label: "Flower mould on top",
+  shortLabel: "Flower mould included",
+  priceDelta: 0,
 };
 
 const MOLD_CANDLE_SHAPES = [
@@ -163,6 +155,43 @@ function ImageOrPlaceholder({ src, label: text, ratio = "4 / 5" }) {
 function waLink(number, message) {
   const clean = (number || "").replace(/[^0-9]/g, "");
   return `https://wa.me/${clean}?text=${encodeURIComponent(message)}`;
+}
+
+const CART_KEY = "mysaa_rituals_cart_v1";
+function readCart() {
+  try { return JSON.parse(localStorage.getItem(CART_KEY) || "[]"); } catch (_) { return []; }
+}
+function writeCart(items) {
+  localStorage.setItem(CART_KEY, JSON.stringify(items));
+  window.dispatchEvent(new Event("mysaa-cart-updated"));
+}
+function cartItemKey(item) {
+  return [item.slug, item.shape || "", item.fragranceSlug || "", item.color || "", item.giftWrap ? "gift" : "no-gift"].join("|");
+}
+function addCartItem(item) {
+  const items = readCart();
+  const key = cartItemKey(item);
+  const existing = items.find((x) => cartItemKey(x) === key);
+  if (existing) existing.qty = Number(existing.qty || 0) + Number(item.qty || 1);
+  else items.push({ ...item, key });
+  writeCart(items);
+  return items;
+}
+function updateCartItem(key, qty) {
+  const items = readCart().map((item) => item.key === key ? { ...item, qty: Math.max(item.moq || 1, qty) } : item);
+  writeCart(items);
+}
+function removeCartItem(key) { writeCart(readCart().filter((item) => item.key !== key)); }
+function cartTotal(items) { return items.reduce((sum, item) => sum + Number(item.unitPrice || 0) * Number(item.qty || 0) + (item.giftWrap ? Number(item.giftWrapCharge || 0) : 0), 0); }
+function useCartCount() {
+  const [count, setCount] = useState(() => readCart().reduce((n, item) => n + Number(item.qty || 0), 0));
+  useEffect(() => {
+    const refresh = () => setCount(readCart().reduce((n, item) => n + Number(item.qty || 0), 0));
+    window.addEventListener("mysaa-cart-updated", refresh);
+    window.addEventListener("storage", refresh);
+    return () => { window.removeEventListener("mysaa-cart-updated", refresh); window.removeEventListener("storage", refresh); };
+  }, []);
+  return count;
 }
 
 /* ---------- tiny hash router: #/page/param?query ---------- */
@@ -414,6 +443,9 @@ function Header({ nav, settings, route }) {
         </nav>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <button onClick={() => nav("cart")} aria-label="Cart" className="cart-nav-button">
+            <span>Cart</span><span className="cart-count">{useCartCount()}</span>
+          </button>
           <div className="desktop-nav" style={{ position: "relative" }}>
             {searchOpen ? (
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -436,7 +468,7 @@ function Header({ nav, settings, route }) {
 
       {open && (
         <div className="mobile-only" style={{ padding: "0 20px 20px", display: "flex", flexDirection: "column", gap: 2, background: C.cream, borderTop: `1px solid ${C.line}` }}>
-          {[...links.map((l) => [...l, null]), ...discoverLinks, ...tailLinks.map((l) => [...l, null])].map(([lbl, page, param, query]) => (
+          {[...links.map((l) => [...l, null]), ...discoverLinks, ...tailLinks.map((l) => [...l, null]), ["Cart", "cart", null, null]].map(([lbl, page, param, query]) => (
             <button key={lbl} onClick={() => { nav(page, param, query); setOpen(false); }}
               style={{ ...sans, textAlign: "left", padding: "12px 4px", fontSize: 15, color: C.ink, borderBottom: `1px solid ${C.line}` }}>
               {lbl}
@@ -499,15 +531,6 @@ function Footer({ nav, settings }) {
   );
 }
 
-function WhatsAppFloat({ settings }) {
-  return (
-    <a href={waLink(settings.whatsapp, "Hello Mysaa Rituals, I would like to know more about your products.")}
-      target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp"
-      style={{ position: "fixed", bottom: 22, right: 22, zIndex: 50, width: 54, height: 54, borderRadius: "50%", background: "#25D366", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 18px rgba(0,0,0,0.25)" }}>
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.29-1.39a9.9 9.9 0 0 0 4.75 1.21h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.24 0 4.34.87 5.93 2.46a8.23 8.23 0 0 1 2.42 5.85c0 4.56-3.71 8.27-8.35 8.27a8.3 8.3 0 0 1-4.21-1.15l-.3-.18-3.14.82.84-3.06-.2-.32a8.2 8.2 0 0 1-1.26-4.38c0-4.56 3.71-8.31 8.27-8.31M8.53 6.7c-.16 0-.43.06-.65.31-.22.24-.86.84-.86 2.05s.88 2.38 1 2.55c.13.16 1.7 2.72 4.2 3.71.58.25 1.04.4 1.4.51.59.19 1.12.16 1.55.1.47-.07 1.45-.59 1.65-1.17s.2-1.07.14-1.17c-.06-.1-.22-.16-.47-.28s-1.45-.72-1.68-.8c-.22-.08-.39-.13-.55.13-.16.25-.63.8-.78.97-.14.16-.29.18-.53.06-.25-.13-1.04-.38-1.99-1.23-.73-.66-1.23-1.46-1.37-1.71-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.44.13-.15.17-.25.25-.41.08-.16.04-.31-.02-.44-.07-.13-.55-1.4-.78-1.9-.19-.42-.4-.42-.55-.43z"/></svg>
-    </a>
-  );
-}
 
 /* ============================================================
    Product / Fragrance cards
@@ -521,7 +544,7 @@ function ProductCard({ product, fragrance, images, nav }) {
           {outOfStock ? "Out of Stock" : product.bestseller ? "Bestseller" : product.isNew ? "New" : product.customizable ? "Customizable" : "\u00A0"}
         </p>
         {isMoldCandle(product) ? (
-          <div className="mold-product-card-visual"><MoldShapeVisual shape={MOLD_CANDLE_SHAPES[0]} /></div>
+          <div className="mold-product-card-visual"><div className="mold-image-placeholder">Add mold image</div></div>
         ) : (
           <ImageOrPlaceholder src={productImage(product, images, 0)} label={product.name} />
         )}
@@ -567,14 +590,14 @@ function FilterChip({ active, onClick, children }) {
    ============================================================ */
 const HOW_TO_ORDER_HOME = [
   { title: "Choose", body: "Find your fragrance, product or gift in the catalogue." },
-  { title: "Enquire", body: "Tap Order on WhatsApp, or send us an enquiry directly." },
+  { title: "Enquire", body: "Add products to your cart and send the order to us by email." },
   { title: "Personalize", body: "Discuss fragrance, quantity, packaging or customization." },
   { title: "Confirm", body: "We confirm availability, pricing and final details personally." },
 ];
 const HOW_TO_ORDER_PRODUCT = [
   { title: "Select", body: "Select the product and quantity you'd like." },
-  { title: "Tap Order", body: "Tap Order on WhatsApp — the product name is filled in for you." },
-  { title: "Send", body: "Send us your enquiry or order on WhatsApp." },
+  { title: "Tap Order", body: "Add the product to your cart — your order details are collected for email." },
+  { title: "Send", body: "Send your complete order to us by email." },
   { title: "Confirm", body: "We confirm availability, price and delivery details." },
 ];
 
@@ -834,7 +857,7 @@ function HomePage({ data, nav, settings }) {
         <HowToOrder
           steps={[
             { title: "Choose", body: "Pick your fragrance, format or gift." },
-            { title: "Enquire", body: "Send us your order through WhatsApp." },
+            { title: "Enquire", body: "Send us your order through the cart by email." },
             { title: "Personalize", body: "Share quantity, occasion and preferences." },
             { title: "Confirm", body: "We confirm availability, final price and delivery details." },
           ]}
@@ -851,8 +874,8 @@ function HomePage({ data, nav, settings }) {
             Tell us what you're looking for and we'll help you create the right ritual.
           </p>
           <div style={{ display: "flex", justifyContent: "center", gap: 22, flexWrap: "wrap" }}>
-            <a href={waLink(settings.whatsapp, "Hello Mysaa Rituals!")} target="_blank" rel="noreferrer" style={{ ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" }}>
-              Chat on WhatsApp
+            <a href={`mailto:${settings.email}`} style={{ ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" }}>
+              Order by Email
             </a>
             <a href={settings.instagram} target="_blank" rel="noreferrer" style={{ ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" }}>
               Follow @mysaarituals
@@ -1084,6 +1107,14 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
   const giftWrapCharge = Number(settings.giftWrapCharge || GIFT_WRAP_CHARGE);
   const total = subtotal + (giftWrap ? giftWrapCharge : 0);
   const enquiryMsg = `Hello Mysaa Rituals! I'd like to order a custom Mold Candle batch:\n\nMould: ${shape}\nFragrance: ${fragrance ? fragrance.name : fragranceSlug}\nPrimary colour: ${color}\nQuantity: ${qty} pieces (MOQ ${MOLD_CANDLE_MOQ})\nBatch price basis: ${inr(batchPrice)} for ${baseQty} pieces\n${giftWrap ? `Gift wrapping: Yes (+${inr(giftWrapCharge)})\n` : "Gift wrapping: No\n"}Total: ${inr(total)}\n\nPlease confirm availability and delivery details.`;
+  const addMoldToCart = () => {
+    addCartItem({
+      slug: product.slug, name: product.name, unitPrice: unitPiecePrice, qty, moq: MOLD_CANDLE_MOQ,
+      shape, fragranceSlug, fragranceName: fragrance ? fragrance.name : fragranceSlug, color, giftWrap, giftWrapCharge,
+      details: `Mould: ${shape}; Fragrance: ${fragrance ? fragrance.name : fragranceSlug}; Primary colour: ${color}`,
+    });
+    nav("cart");
+  };
 
   return (
     <div className="container mold-page" style={{ padding: "32px 20px 80px" }}>
@@ -1106,7 +1137,7 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
             <div className="mold-shape-grid">
               {MOLD_CANDLE_SHAPES.map((item) => (
                 <button key={item} onClick={() => setShape(item)} className={`mold-shape-card${shape === item ? " selected" : ""}`}>
-                  <div className="mold-shape-art"><MoldShapeVisual shape={item} /></div>
+                  <div className="mold-shape-art"><div className="mold-image-placeholder">Add mold image</div></div>
                   <span>{item}</span>
                 </button>
               ))}
@@ -1118,9 +1149,7 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
             <div className="mold-fragrance-grid">
               {data.fragrances.filter((f) => f.active).map((f) => (
                 <button key={f.slug} onClick={() => setFragranceSlug(f.slug)} className={`mold-fragrance-card${fragranceSlug === f.slug ? " selected" : ""}`}>
-                  <ImageOrPlaceholder src={fragranceImage(f, data.images, 0)} label={f.name} ratio="4 / 3" />
                   <strong>{f.name}</strong>
-                  <span>{(f.mood || "").split(",")[0]}</span>
                 </button>
               ))}
             </div>
@@ -1144,15 +1173,15 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
 
         <aside className="mold-summary">
           <p style={{ ...label, color: C.ink70, marginBottom: 16 }}>Your selection</p>
-          <div className="mold-summary-preview"><div className="mold-summary-art" style={{ background: colorData.hex }}><MoldShapeVisual shape={shape} /></div><div><strong>{shape}</strong><span>{fragrance ? fragrance.name : ""}</span><span>{color}</span></div></div>
+          <div className="mold-summary-preview"><div className="mold-summary-art" style={{ background: colorData.hex }}><div className="mold-image-placeholder">Add mold image</div></div><div><strong>{shape}</strong><span>{fragrance ? fragrance.name : ""}</span><span>{color}</span></div></div>
           <div className="mold-summary-line"><span>Quantity</span><div className="mold-quantity"><button onClick={() => setQty((q) => Math.max(MOLD_CANDLE_MOQ, q - 1))}>−</button><strong>{qty}</strong><button onClick={() => setQty((q) => q + 1)}>+</button></div></div>
           <div className="mold-summary-price"><span>Current batch price</span><strong>{inr(subtotal)}</strong><small>Batch basis: ₹399 for the minimum 6 pieces</small></div>
           <div className="mold-moq-note">Minimum order: {MOLD_CANDLE_MOQ} pieces. Your selected mould, fragrance and colour will be made as one batch.</div>
           <div className="mold-gift-wrap">
             <label><input type="checkbox" checked={giftWrap} onChange={(e) => setGiftWrap(e.target.checked)} /><span><strong>Gift wrapping</strong><small>+{inr(giftWrapCharge)}</small></span></label>
           </div>
-          <a className="mold-create-button" href={waLink(settings.whatsapp, enquiryMsg)} target="_blank" rel="noreferrer">Create my batch <span>→</span></a>
-          <a className="mold-enquiry-button" href={waLink(settings.whatsapp, enquiryMsg)} target="_blank" rel="noreferrer">Send enquiry</a>
+          <button className="mold-create-button" onClick={addMoldToCart}>Add batch to cart <span>→</span></button>
+          <button className="mold-enquiry-button" onClick={addMoldToCart}>Add to cart</button>
         </aside>
       </div>
     </div>
@@ -1163,7 +1192,6 @@ function ProductDetailPage({ data, nav, slug, settings }) {
   const productForState = data.products.find((p) => p.slug === slug);
   const isMoldForState = isMoldCandle(productForState);
   const [qty, setQty] = useState(isMoldForState ? MOLD_CANDLE_MOQ : 1);
-  const [jarVariant, setJarVariant] = useState("plain");
   const [giftWrap, setGiftWrap] = useState(false);
   const [moldShape, setMoldShape] = useState(MOLD_CANDLE_SHAPES[0]);
   const [moldFragrance, setMoldFragrance] = useState("raat-ki-rani");
@@ -1174,7 +1202,6 @@ function ProductDetailPage({ data, nav, slug, settings }) {
     const mold = isMoldCandle(product);
     setQty(mold ? MOLD_CANDLE_MOQ : 1);
     setGiftWrap(false);
-    setJarVariant("plain");
     setMoldShape(MOLD_CANDLE_SHAPES[0]);
     setMoldFragrance("raat-ki-rani");
     setMoldColor("Dusty Rose");
@@ -1201,16 +1228,27 @@ function ProductDetailPage({ data, nav, slug, settings }) {
   const giftWrapCharge = Number(settings.giftWrapCharge || GIFT_WRAP_CHARGE);
   const related = data.products.filter((p) => p.active && p.categorySlug === product.categorySlug && p.slug !== product.slug).slice(0, 4);
   const hasPackagingOptions = supportsPackaging(product);
-  const hasJarVariants = isJarProduct(product);
+  const hasJarVariants = false;
   const packagingChoice = PACKAGING_OPTIONS.standard;
-  const jarChoice = hasJarVariants ? JAR_VARIANTS[jarVariant] : JAR_VARIANTS.plain;
+  const jarChoice = JAR_VARIANT_DEFAULT;
   const minQty = isMold ? MOLD_CANDLE_MOQ : 1;
-  const unitPrice = Number(product.price || 0) + (hasJarVariants ? jarChoice.priceDelta : 0);
+  const unitPrice = Number(product.price || 0);
   const subtotal = unitPrice * qty;
   const giftWrapTotal = giftWrap ? giftWrapCharge : 0;
   const totalPrice = subtotal + giftWrapTotal;
 
-  const enquiryMsg = `Hello Mysaa Rituals! I'd like to order:\n\n${product.name}\n${isMold ? `Mould shape: ${moldShape}\n` : ""}Quantity: ${qty}${isMold ? ` (MOQ ${MOLD_CANDLE_MOQ})` : ""}\nPackaging: ${isDiscoverySet ? "Discovery Set presentation" : (hasPackagingOptions ? packagingChoice.label : "Standard")}\n${hasJarVariants ? `Jar finish: ${jarChoice.label}\n` : ""}Gift wrapping: ${giftWrap ? `Yes (+${inr(giftWrapCharge)})` : "No"}\nUnit price: ${unitPrice > 0 ? inr(unitPrice) : "Enquire"}\nSubtotal: ${subtotal > 0 ? inr(subtotal) : "Enquire"}\n${giftWrap ? `Gift wrapping: ${inr(giftWrapCharge)}\n` : ""}Total: ${totalPrice > 0 ? inr(totalPrice) : "Enquire"}\n\nCould you confirm availability and delivery details?`;
+  const enquiryMsg = `Hello Mysaa Rituals! I'd like to order:\n\n${product.name}\n${isMold ? `Mould shape: ${moldShape}\n` : ""}Quantity: ${qty}${isMold ? ` (MOQ ${MOLD_CANDLE_MOQ})` : ""}\nPackaging: ${isDiscoverySet ? "Discovery Set presentation" : (hasPackagingOptions ? packagingChoice.label : "Standard")}\nJar finish: ${isJarProduct(product) ? "Flower mould included by default" : ""}\nGift wrapping: ${giftWrap ? `Yes (+${inr(giftWrapCharge)})` : "No"}\nUnit price: ${unitPrice > 0 ? inr(unitPrice) : "Enquire"}\nSubtotal: ${subtotal > 0 ? inr(subtotal) : "Enquire"}\n${giftWrap ? `Gift wrapping: ${inr(giftWrapCharge)}\n` : ""}Total: ${totalPrice > 0 ? inr(totalPrice) : "Enquire"}\n\nCould you confirm availability and delivery details?`;
+
+  const addCurrentProductToCart = () => {
+    if (isOutOfStock(product)) return;
+    addCartItem({
+      slug: product.slug, name: product.name, unitPrice, qty,
+      giftWrap, giftWrapCharge, moq: minQty,
+      fragranceName: fragrance ? fragrance.name : "",
+      details: isJarProduct(product) ? "Flower mould included by default" : "",
+    });
+    nav("cart");
+  };
 
   const infoRows = [
     ["Size", product.volume],
@@ -1219,7 +1257,7 @@ function ProductDetailPage({ data, nav, slug, settings }) {
     ["Fragrance Notes", fragrance ? fragrance.notes : ""],
     ["Material / Ingredients", product.materials],
     ["Packaging", hasPackagingOptions ? packagingChoice.label : product.packaging],
-    ["Jar Finish", hasJarVariants ? jarChoice.label : ""],
+    ["Jar Finish", isJarProduct(product) ? "Flower mould included by default" : ""],
     ["Collection", category ? category.name : ""],
   ].filter(([, v]) => v);
 
@@ -1268,21 +1306,6 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             <div style={{ marginBottom: 24 }}>
               <p style={{ ...label, color: C.ink70, marginBottom: 10 }}>Variant</p>
               <span style={{ ...sans, fontSize: 13, padding: "9px 16px", border: `1px solid ${C.ink}`, display: "inline-block" }}>{fragrance.name}</span>
-            </div>
-          )}
-
-          {hasJarVariants && (
-            <div style={{ marginBottom: 24 }}>
-              <p style={{ ...label, color: C.ink70, marginBottom: 10 }}>Jar Finish</p>
-              <div className="option-grid">
-                {Object.entries(JAR_VARIANTS).map(([key, option]) => (
-                  <button key={key} onClick={() => setJarVariant(key)} className={`selection-card${jarVariant === key ? " selected" : ""}`}>
-                    <span style={{ ...sans, fontSize: 13.5, color: C.ink, fontWeight: 500 }}>{option.label}</span>
-                    <span style={{ ...sans, fontSize: 12.5, color: C.ink70, marginTop: 5 }}>{option.priceDelta ? `+${inr(option.priceDelta)}` : "Included"}</span>
-                  </button>
-                ))}
-              </div>
-              <p style={{ ...sans, fontSize: 12.5, color: C.ink70, lineHeight: 1.6, marginTop: 10 }}>{jarChoice.description}</p>
             </div>
           )}
 
@@ -1338,8 +1361,8 @@ function ProductDetailPage({ data, nav, slug, settings }) {
           {isOutOfStock(product) ? (
             <button className="out-of-stock-button" disabled>Out of Stock</button>
           ) : (
-            <Button href={waLink(settings.whatsapp, enquiryMsg)} target="_blank" variant="solid" style={{ width: "100%", justifyContent: "center" }}>
-              <ChatIcon color="#fff" /> Order on WhatsApp
+            <Button onClick={addCurrentProductToCart} variant="solid" style={{ width: "100%", justifyContent: "center" }}>
+              Add to Cart
             </Button>
           )}
 
@@ -1431,7 +1454,7 @@ function CreateRitualPage({ settings, data }) {
 
   return (
     <div className="container" style={{ padding: "48px 20px 80px", maxWidth: 680 }}>
-      <SectionHeading eyebrow="Made Just For You" title="Create Your Own Ritual" sub="Tell us a little about what you're looking for, and we'll get back to you on WhatsApp to design it together." />
+      <SectionHeading eyebrow="Made Just For You" title="Create Your Own Ritual" sub="Tell us a little about what you're looking for, and send your custom request to us by email." />
       <div style={{ marginTop: 36, display: "grid", gap: 18 }}>
         <Field label="Your name" value={form.name} onChange={set("name")} />
         <SelectField
@@ -1456,7 +1479,7 @@ function CreateRitualPage({ settings, data }) {
           options={["Birthday", "Anniversary", "Wedding / Wedding Favour", "Festival", "Housewarming", "Corporate / Gifting", "Other"]}
         />
         <FieldArea label="Anything else we should know?" value={form.notes} onChange={set("notes")} />
-        <Button href={waLink(settings.whatsapp, message)} target="_blank" style={{ marginTop: 8, width: "fit-content" }}>Send via WhatsApp</Button>
+        <Button href={`mailto:${settings.email}?subject=${encodeURIComponent("Mysaa Rituals — Custom Ritual Request")}&body=${encodeURIComponent(message)}`} style={{ marginTop: 8, width: "fit-content" }}>Send via Email</Button>
       </div>
     </div>
   );
@@ -1568,7 +1591,7 @@ function ContactPage({ settings }) {
         <div className="contact-hero-image">
           <ImageOrPlaceholder src="./assets/contact.jpg" label="Mysaa Rituals candle" ratio="1 / 1" />
           <div className="contact-ritual-caption">
-            <p style={{ ...serif, fontSize: 30, color: C.ink, lineHeight: 1.05, margin: 0 }}>Carry<br/>the ritual<br/>with you.</p>
+            <p style={{ ...serif, fontSize: 20, color: C.ink, lineHeight: 1.05, margin: 0 }}>Carry<br/>the ritual<br/>with you.</p>
           </div>
         </div>
       </section>
@@ -1656,6 +1679,89 @@ function WelcomePopup() {
   );
 }
 
+function CartPage({ nav, settings }) {
+  const [items, setItems] = useState(() => readCart());
+  const [customer, setCustomer] = useState({ name: "", email: "", phone: "", note: "" });
+  useEffect(() => {
+    const refresh = () => setItems(readCart());
+    window.addEventListener("mysaa-cart-updated", refresh);
+    return () => window.removeEventListener("mysaa-cart-updated", refresh);
+  }, []);
+  const total = cartTotal(items);
+  const setCustomerField = (key) => (e) => setCustomer((v) => ({ ...v, [key]: e.target.value }));
+  const orderBody = [
+    "Hello Mysaa Rituals, I'd like to place the following order:",
+    "",
+    ...items.map((item, i) => `${i + 1}. ${item.name}\n   Quantity: ${item.qty}${item.moq ? ` (MOQ ${item.moq})` : ""}\n   Unit price: ${inr(item.unitPrice)}\n   ${item.details || ""}${item.giftWrap ? `\n   Gift wrapping: +${inr(item.giftWrapCharge || GIFT_WRAP_CHARGE)}` : ""}\n   Line total: ${inr(Number(item.unitPrice) * Number(item.qty) + (item.giftWrap ? Number(item.giftWrapCharge || GIFT_WRAP_CHARGE) : 0))}`),
+    "",
+    `Order total: ${inr(total)}`,
+    "",
+    `Name: ${customer.name || ""}`,
+    `Email: ${customer.email || ""}`,
+    `Phone: ${customer.phone || ""}`,
+    customer.note ? `Notes: ${customer.note}` : "",
+    "",
+    "Please confirm availability, delivery charges and final delivery details."
+  ].filter(Boolean).join("\n");
+  const emailHref = `mailto:${settings.email}?subject=${encodeURIComponent(`Mysaa Rituals Order — ${customer.name || "Customer"}`)}&body=${encodeURIComponent(orderBody)}`;
+  const changeQty = (item, delta) => {
+    const next = Math.max(item.moq || 1, Number(item.qty || 1) + delta);
+    updateCartItem(item.key, next);
+    setItems(readCart());
+  };
+  const remove = (key) => { removeCartItem(key); setItems(readCart()); };
+  return (
+    <div className="container cart-page" style={{ padding: "48px 20px 80px" }}>
+      <SectionHeading eyebrow="Your Cart" title="Ready to make it a ritual?" sub="Review your products, add gift wrapping if you need it, then send the complete order to us by email." />
+      {items.length === 0 ? (
+        <div className="cart-empty">
+          <p style={{ ...serif, fontSize: 26, color: C.ink, marginBottom: 10 }}>Your cart is empty.</p>
+          <p style={{ ...sans, fontSize: 14, color: C.ink70, marginBottom: 20 }}>Choose something from the catalogue and it will appear here.</p>
+          <Button variant="solid" onClick={() => nav("catalogue", "all")}>Explore the Catalogue</Button>
+        </div>
+      ) : (
+        <div className="cart-grid">
+          <div className="cart-items">
+            {items.map((item) => {
+              const lineTotal = Number(item.unitPrice) * Number(item.qty) + (item.giftWrap ? Number(item.giftWrapCharge || GIFT_WRAP_CHARGE) : 0);
+              return (
+                <div className="cart-item" key={item.key}>
+                  <div className="cart-item-main">
+                    <div>
+                      <h3>{item.name}</h3>
+                      {item.fragranceName && <p>Fragrance: {item.fragranceName}</p>}
+                      {item.details && <p>{item.details}</p>}
+                      {item.giftWrap && <p>Gift wrapping: +{inr(item.giftWrapCharge || GIFT_WRAP_CHARGE)}</p>}
+                    </div>
+                    <strong>{inr(lineTotal)}</strong>
+                  </div>
+                  <div className="cart-item-actions">
+                    <div className="cart-qty"><button onClick={() => changeQty(item, -1)}>−</button><span>{item.qty}</span><button onClick={() => changeQty(item, 1)}>+</button></div>
+                    <button className="cart-remove" onClick={() => remove(item.key)}>Remove</button>
+                  </div>
+                </div>
+              );
+            })}
+            <button className="cart-continue" onClick={() => nav("catalogue", "all")}>← Continue shopping</button>
+          </div>
+          <aside className="cart-summary">
+            <div className="cart-summary-total"><span>Total</span><strong>{inr(total)}</strong></div>
+            <p className="cart-email-note">Orders are placed through email only. Your email app will open with the order details already filled in.</p>
+            <div className="cart-customer-fields">
+              <label><span>Name</span><input value={customer.name} onChange={setCustomerField("name")} placeholder="Your name" /></label>
+              <label><span>Email</span><input type="email" value={customer.email} onChange={setCustomerField("email")} placeholder="your@email.com" /></label>
+              <label><span>Phone</span><input value={customer.phone} onChange={setCustomerField("phone")} placeholder="Phone number" /></label>
+              <label><span>Order notes</span><textarea value={customer.note} onChange={setCustomerField("note")} placeholder="Occasion, delivery notes, gifting details…" /></label>
+            </div>
+            <a className="cart-email-button" href={emailHref}>Send Order by Email →</a>
+            <p className="cart-small-note">To: {settings.email}</p>
+          </aside>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ============================================================
    App root
    ============================================================ */
@@ -1715,6 +1821,7 @@ function App() {
   else if (route.page === "create-ritual") page = <CreateRitualPage settings={settings} data={data} />;
   else if (route.page === "about") page = <AboutPage data={data} />;
   else if (route.page === "contact") page = <ContactPage settings={settings} />;
+  else if (route.page === "cart") page = <CartPage nav={nav} settings={settings} />;
   else page = <HomePage data={data} nav={nav} settings={settings} />;
 
   return (
@@ -1723,7 +1830,6 @@ function App() {
       <Header nav={nav} settings={settings} route={route} />
       <main style={{ minHeight: "60vh" }}>{page}</main>
       <Footer nav={nav} settings={settings} />
-      <WhatsAppFloat settings={settings} />
     </React.Fragment>
   );
 }

@@ -2,7 +2,7 @@
 
 A static product catalogue site for Mysaa Rituals: candles (hero jar, wide
 jar, shot glass), wax melts & sachets, and gift hampers — browsable by
-fragrance or by format, with WhatsApp enquiries and ordering.
+fragrance or by format, with email-only ordering and a cart for order preparation.
 
 No server or database — it runs as plain files, which makes it a perfect
 fit for **GitHub Pages**.
@@ -103,10 +103,8 @@ Then open `http://localhost:8000`.
 
 ## Notes
 
-- All ordering goes through WhatsApp — there's no shopping cart or
-  payment processing, matching how the brand currently sells. The
-  quantity selector and Order button on each product page prefill a
-  WhatsApp message with the product name, quantity and total price.
+- Product ordering is handled through the shopping cart and email only. There is no online payment/checkout backend. Customers add products, review quantities and gift wrapping, enter their details, and use **Send Order by Email** to open an email addressed to the configured order email.
+- WhatsApp remains available for direct contact on the Contact page and in the footer only.
 
 
 ## 6. Product image folder & naming convention
@@ -172,13 +170,13 @@ The catalogue now includes:
 
 The final selling prices remain unchanged:
 
-- Signature: ₹799 with a 20% launch discount
-- Everyday Ritual: ₹549 with a 15% launch discount
-- Mini Ritual: ₹299 with a 10% launch discount
-- Discovery Set: ₹1,699 with a 20% launch discount
+- Signature Ritual: ₹799 with a 20% launch discount; crossed-out pre-discount price ₹999
+- Everyday Ritual: ₹549 with a 15% launch discount; crossed-out pre-discount price ₹649
+- Mini Ritual: ₹299 with a 10% launch discount; crossed-out pre-discount price ₹349
+- Discovery Set: ₹1,699 with a 20% launch discount; crossed-out pre-discount price ₹2,099
 - Wax Sachet Combo: ₹350
 - Gift Hampers and Grand Rituals: Enquire
-- Mold Candles: Enquire; MOQ 6 pieces
+- Mold Candles: ₹399 for 6 pieces (₹66.50 per piece at the minimum batch); crossed-out pre-discount reference price ₹499; MOQ 6 pieces
 
 Gift wrapping is an optional ₹50 add-on on product detail pages.
 
@@ -187,12 +185,11 @@ the final selling price remains the same as the current catalogue price.
 
 ## Product options and galleries
 
-- Signature and Everyday Ritual have two finish options: Classic Top — No Flower
-  (included) and Flower Mould on Top (+₹100).
+- Signature Ritual and Everyday Ritual include the flower mould on top by default. There is no user-selectable no-flower/flower surcharge option.
 - Standard Packaging is included where applicable. Premium Packaging remains
   Coming Soon and cannot currently be selected.
 - Every product detail page can offer optional Gift Wrapping for +₹50.
-  The selected wrapping is included in the WhatsApp enquiry total.
+  The selected wrapping is included in the cart order total and email order summary.
 - Mold Candles have a minimum order quantity of 6 pieces and a selectable shape:
   Daisy, Rose, Carnation, Cactus, Tortoise, Laddu or Chakli.
 - Product detail galleries show every photograph found in the corresponding
