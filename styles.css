@@ -396,3 +396,82 @@ button:hover, a:hover { opacity: .82; }
     padding: 42px 20px;
   }
 }
+
+
+/* Occasion-specific gifting recommendations */
+.gifting-recommendations { display:grid; grid-template-columns:1fr; gap:10px; margin-top:4px; }
+.gifting-recommendations button { display:grid; grid-template-columns:minmax(120px,.55fr) 1fr; gap:14px; align-items:center; text-align:left; padding:12px 0; border-top:1px solid var(--border); color:var(--ink); }
+.gifting-recommendations button:last-child { border-bottom:1px solid var(--border); }
+.gifting-recommendations strong { font:500 17px 'Cormorant Garamond',Georgia,serif; }
+.gifting-recommendations span { font:400 12.5px/1.5 'Karla',sans-serif; color:var(--muted); }
+.product-card-out-of-stock { opacity:.68; }
+.out-of-stock-button { width:100%; padding:14px 18px; border:1px solid var(--border); background:#eee9e1; color:var(--muted); font:600 11px 'Karla',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:not-allowed; }
+
+/* About page: all section headings use the shared SectionHeading typography. */
+.about-page .about-section h2 { font-family:'Cormorant Garamond',Georgia,serif; font-weight:500; }
+.about-page .process-layout > div:first-child { display:flex; flex-direction:column; align-items:flex-start; }
+
+/* Contact page ritual caption — intentionally overlaps the image edge rather than sitting in the corner. */
+.contact-ritual-caption { position:absolute; right:-20px; bottom:30px; z-index:2; background:rgba(250,247,240,.96); border:1px solid var(--border); padding:20px 24px 18px; box-shadow:0 14px 34px rgba(68,55,47,.12); transform:rotate(-2deg); }
+
+/* Mold Candle custom builder, following the supplied reference layout. */
+.mold-page-heading { margin-bottom:28px; }
+.mold-builder-grid { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(280px,.7fr); gap:36px; align-items:start; }
+.mold-builder { min-width:0; }
+.mold-step { padding:0 0 30px; margin-bottom:30px; border-bottom:1px solid var(--border); }
+.mold-step-heading { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.mold-step-heading > span { width:25px; height:25px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:var(--ink); color:#fff; font:600 11px 'Karla',sans-serif; }
+.mold-step-heading h2 { margin:0; font:500 15px 'Karla',sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--ink); }
+.mold-shape-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+.mold-shape-card { position:relative; min-height:145px; padding:10px; background:#f7f2e9; border:1px solid transparent; display:flex; flex-direction:column; align-items:center; justify-content:space-between; gap:6px; color:var(--ink); }
+.mold-shape-card:hover { opacity:1; }
+.mold-shape-card.selected { border-color:var(--ink); box-shadow:inset 0 0 0 1px var(--ink); background:#fcfaf7; }
+.mold-shape-card.selected::after { content:'✓'; position:absolute; top:7px; right:7px; width:18px; height:18px; border-radius:50%; background:var(--ink); color:#fff; font:600 11px/18px 'Karla',sans-serif; text-align:center; }
+.mold-shape-card > span { font:500 12px 'Karla',sans-serif; }
+.mold-shape-art { flex:1; width:100%; display:flex; align-items:center; justify-content:center; color:#B9A891; }
+.mold-shape-visual { width:82px; height:82px; display:block; }
+.mold-fragrance-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.mold-fragrance-card { padding:0 0 10px; text-align:left; border:1px solid transparent; background:#f7f2e9; }
+.mold-fragrance-card.selected { border-color:var(--ink); box-shadow:inset 0 0 0 1px var(--ink); background:#fcfaf7; }
+.mold-fragrance-card > div { border:0; }
+.mold-fragrance-card strong { display:block; padding:9px 10px 3px; font:500 13px 'Karla',sans-serif; color:var(--ink); }
+.mold-fragrance-card span { display:block; padding:0 10px; font:400 10.5px 'Karla',sans-serif; color:var(--muted); }
+.mold-more-link { margin-top:12px; color:var(--rust); font:500 11px 'Karla',sans-serif; letter-spacing:.1em; text-transform:uppercase; text-decoration:underline; text-underline-offset:4px; }
+.mold-color-grid { display:grid; grid-template-columns:repeat(8,minmax(58px,1fr)); gap:8px; }
+.mold-color-card { display:flex; flex-direction:column; align-items:center; gap:7px; padding:8px 4px; border:1px solid transparent; color:var(--muted); font:400 10px 'Karla',sans-serif; }
+.mold-color-card.selected { border-color:var(--ink); color:var(--ink); }
+.mold-color-swatch { width:34px; height:34px; border-radius:50%; border:1px solid rgba(68,55,47,.15); box-shadow:0 0 0 2px #fff, 0 0 0 3px transparent; }
+.mold-color-card.selected .mold-color-swatch { box-shadow:0 0 0 2px #fff, 0 0 0 3px var(--ink); }
+.mold-note { display:grid; gap:5px; padding:14px 16px; background:#efeadf; border:1px solid var(--border); color:var(--ink70); font:400 12px/1.6 'Karla',sans-serif; }
+.mold-note strong { color:var(--ink); font-weight:500; }
+.mold-summary { position:sticky; top:20px; padding:22px; background:#fcfaf7; border:1px solid var(--border); box-shadow:0 12px 28px rgba(68,55,47,.05); }
+.mold-summary-preview { display:grid; grid-template-columns:76px 1fr; gap:12px; align-items:center; padding-bottom:18px; border-bottom:1px solid var(--border); }
+.mold-summary-art { width:76px; height:76px; display:flex; align-items:center; justify-content:center; background:#f1eadf; color:#b6a58e; }
+.mold-summary-art .mold-shape-visual { width:62px; height:62px; }
+.mold-summary-preview strong,.mold-summary-preview span { display:block; }
+.mold-summary-preview strong { font:500 15px 'Cormorant Garamond',Georgia,serif; color:var(--ink); margin-bottom:4px; }
+.mold-summary-preview span { font:400 11.5px/1.5 'Karla',sans-serif; color:var(--muted); }
+.mold-summary-line { display:flex; align-items:center; justify-content:space-between; padding:18px 0; border-bottom:1px solid var(--border); }
+.mold-summary-line > span { font:500 10px 'Karla',sans-serif; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); }
+.mold-quantity { display:flex; align-items:center; border:1px solid var(--border); background:#fff; }
+.mold-quantity button { width:34px; height:32px; color:var(--ink); }
+.mold-quantity strong { min-width:34px; text-align:center; font:500 12px 'Karla',sans-serif; }
+.mold-summary-price { padding:18px 0; border-bottom:1px solid var(--border); }
+.mold-summary-price span,.mold-summary-price small { display:block; color:var(--muted); font:400 11.5px/1.5 'Karla',sans-serif; }
+.mold-summary-price strong { display:block; margin:3px 0 3px; color:var(--rust); font:500 27px 'Karla',sans-serif; }
+.mold-summary-price small { font-size:10.5px; }
+.mold-moq-note { margin:16px 0; padding:12px; background:#efeadf; color:var(--muted); font:400 11.5px/1.55 'Karla',sans-serif; }
+.mold-gift-wrap { margin-bottom:14px; padding:12px; border:1px solid var(--border); }
+.mold-gift-wrap label { display:flex; gap:10px; align-items:flex-start; cursor:pointer; }
+.mold-gift-wrap span { display:flex; flex-direction:column; gap:3px; }
+.mold-gift-wrap strong { font:500 15px 'Cormorant Garamond',Georgia,serif; color:var(--ink); }
+.mold-gift-wrap small { font:400 11px 'Karla',sans-serif; color:var(--muted); }
+.mold-create-button,.mold-enquiry-button { display:flex; align-items:center; justify-content:center; width:100%; min-height:46px; text-transform:uppercase; letter-spacing:.12em; font:600 10.5px 'Karla',sans-serif; }
+.mold-create-button { background:var(--ink); color:#fff; }
+.mold-create-button span { margin-left:auto; margin-right:14px; font-size:16px; }
+.mold-enquiry-button { margin-top:8px; border:1px solid var(--border); color:var(--ink); background:#fff; }
+@media (max-width:900px) { .mold-builder-grid { grid-template-columns:1fr; } .mold-summary { position:static; } }
+@media (max-width:680px) { .mold-shape-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .mold-fragrance-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .mold-color-grid { grid-template-columns:repeat(4,minmax(58px,1fr)); } .contact-ritual-caption { right:16px; bottom:18px; } }
+@media (max-width:520px) { .mold-shape-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .mold-fragrance-grid { grid-template-columns:1fr 1fr; } .mold-summary { padding:18px; } }
+.mold-product-card-visual { aspect-ratio:4/5; background:#f3ede2; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:#b6a58e; }
+.mold-product-card-visual .mold-shape-visual { width:150px; height:150px; }

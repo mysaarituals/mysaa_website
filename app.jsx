@@ -126,9 +126,9 @@ const FEELING_FILTERS = [
   { slug: "dreamy-evening", title: "Dreamy & Evening", description: "Night-blooming florals made for slower, intimate moments.", fragrances: ["madhuban", "raat-ki-rani"] },
 ];
 const OCCASION_FILTERS = [
-  { slug: "festivals-celebrations", title: "Festivals & Celebrations", description: "Thoughtful candles, sachets and hampers for festive moments.", categories: ["gift-hampers", "discovery-set", "hero-jar-candle", "wide-jar-candle", "shot-glass-candle", "grand-ritual", "mold-candles", "wax-melts"] },
-  { slug: "weddings-return-gifts", title: "Weddings & Return Gifts", description: "Personalised pieces for wedding favours, events and guests.", categories: ["gift-hampers", "wax-melts", "shot-glass-candle"] },
-  { slug: "birthdays-just-because", title: "Birthdays & Just Because", description: "Small, personal gifts for someone you want to make smile.", categories: ["gift-hampers", "discovery-set", "shot-glass-candle", "wide-jar-candle"] },
+  { slug: "festivals-celebrations", title: "Festivals & Celebrations", description: "Recommended festive hampers: Dhoop & Chandan and Madhuban.", categories: ["gift-hampers", "discovery-set", "hero-jar-candle", "wide-jar-candle", "shot-glass-candle", "grand-ritual", "mold-candles", "wax-melts"], hamperFragrances: ["dhoop-chandan", "madhuban"] },
+  { slug: "weddings-return-gifts", title: "Weddings & Return Gifts", description: "Recommended wedding hampers: Gajre Ka Shringar and Gulab Ki Chitthi.", categories: ["gift-hampers", "wax-melts", "shot-glass-candle"], hamperFragrances: ["gajre-ka-shringar", "gulab-ki-chitthi"] },
+  { slug: "birthdays-just-because", title: "Birthdays & Just Because", description: "Recommended everyday gifting: Raat Ki Rani and Saanjh.", categories: ["gift-hampers", "discovery-set", "shot-glass-candle", "wide-jar-candle"], hamperFragrances: ["raat-ki-rani", "saanjh"] },
 ];
 
 function isJarProduct(product) {
@@ -136,6 +136,9 @@ function isJarProduct(product) {
 }
 function isMoldCandle(product) {
   return product && product.categorySlug === "mold-candles";
+}
+function isOutOfStock(product) {
+  return product && String(product.availability || "").toLowerCase() === "out-of-stock";
 }
 function supportsPackaging(product) {
   return product && ["hero-jar-candle", "wide-jar-candle", "wax-melts"].includes(product.categorySlug);
@@ -510,13 +513,18 @@ function WhatsAppFloat({ settings }) {
    Product / Fragrance cards
    ============================================================ */
 function ProductCard({ product, fragrance, images, nav }) {
+  const outOfStock = isOutOfStock(product);
   return (
-    <button className="product-card" onClick={() => nav("product", product.slug)} style={{ textAlign: "left", display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
+    <button className={`product-card${outOfStock ? " product-card-out-of-stock" : ""}`} onClick={() => nav("product", product.slug)} style={{ textAlign: "left", display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
       <div className="hairline-top" style={{ paddingTop: 0 }}>
         <p style={{ ...label, color: C.ink70, marginBottom: 8, minHeight: 14 }}>
-          {product.bestseller ? "Bestseller" : product.isNew ? "New" : product.customizable ? "Customizable" : "\u00A0"}
+          {outOfStock ? "Out of Stock" : product.bestseller ? "Bestseller" : product.isNew ? "New" : product.customizable ? "Customizable" : "\u00A0"}
         </p>
-        <ImageOrPlaceholder src={productImage(product, images, 0)} label={product.name} />
+        {isMoldCandle(product) ? (
+          <div className="mold-product-card-visual"><MoldShapeVisual shape={MOLD_CANDLE_SHAPES[0]} /></div>
+        ) : (
+          <ImageOrPlaceholder src={productImage(product, images, 0)} label={product.name} />
+        )}
       </div>
       <div className="product-card-body" style={{ paddingTop: 14 }}>
         <h3 style={{ ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 }}>{product.name}</h3>
@@ -623,7 +631,7 @@ function HomePage({ data, nav, settings }) {
 
   // Homepage collection: prioritize products explicitly marked as bestsellers
   // across candle formats. If the data has no bestseller flags yet, fall back
-  // to a balanced mix of Signature, Everyday Ritual and Mini Ritual candles.
+  // to a balanced mix of Signature Ritual, Everyday Ritual and Mini Ritual candles.
   const candleProducts = data.products.filter((p) =>
     p.active && ["hero-jar-candle", "wide-jar-candle", "shot-glass-candle"].includes(p.categorySlug)
   );
@@ -716,7 +724,7 @@ function HomePage({ data, nav, settings }) {
             <button onClick={() => nav("catalogue", "candle")} className="editorial-card">
               <p style={{ ...label, color: C.rust, marginBottom: 12 }}>02</p>
               <h3 style={{ ...serif, fontSize: 24, color: C.ink, fontWeight: 500, marginBottom: 8 }}>Shop by Candle</h3>
-              <p style={{ ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.65, marginBottom: 16 }}>Choose your format first — Signature, Everyday Ritual, Mini Ritual or Grand Ritual.</p>
+              <p style={{ ...sans, fontSize: 14, color: C.ink70, lineHeight: 1.65, marginBottom: 16 }}>Choose your format first — Signature Ritual, Everyday Ritual, Mini Ritual or Grand Ritual.</p>
               <span style={{ ...label, color: C.rust }}>Explore →</span>
             </button>
           </div>
@@ -746,7 +754,7 @@ function HomePage({ data, nav, settings }) {
 
       {/* Featured products */}
       <section className="container" style={{ padding: "72px 20px" }}>
-        <SectionHeading eyebrow="Best Sellers" title="Made to be lit slowly." sub="A selection of Mysaa candles across our Signature, Everyday Ritual and Mini Ritual formats." />
+        <SectionHeading eyebrow="Best Sellers" title="Made to be lit slowly." sub="A selection of Mysaa candles across our Signature Ritual, Everyday Ritual and Mini Ritual formats." />
         <div className="product-grid" style={{ marginTop: 36 }}>
           {featured.map((p) => (
             <ProductCard key={p.slug} product={p} fragrance={fragranceById[p.fragranceSlug]} images={data.images} nav={nav} />
@@ -785,13 +793,10 @@ function HomePage({ data, nav, settings }) {
             <p style={{ ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, maxWidth: 450, marginBottom: 22 }}>
               Thoughtful pieces for festivals, birthdays, weddings, housewarmings, return gifts and moments that deserve a little more thought.
             </p>
-            <div className="gifting-list">
-              <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Festival gifting</span>
-              <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Birthday gifting</span>
-              <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Wedding favours</span>
-              <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Return gifts</span>
-              <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Housewarming</span>
-              <span style={{ ...sans, fontSize: 14, color: C.ink70 }}>Custom gifts</span>
+            <div className="gifting-list gifting-recommendations">
+              <button onClick={() => nav("catalogue", "occasion", { value: "festivals-celebrations" })}><strong>Festivals</strong><span>Dhoop & Chandan · Madhuban</span></button>
+              <button onClick={() => nav("catalogue", "occasion", { value: "weddings-return-gifts" })}><strong>Weddings</strong><span>Gajre Ka Shringar · Gulab Ki Chitthi</span></button>
+              <button onClick={() => nav("catalogue", "occasion", { value: "birthdays-just-because" })}><strong>Birthdays & Just Because</strong><span>Raat Ki Rani · Saanjh</span></button>
             </div>
             <Button variant="link" onClick={() => nav("catalogue", "category", { value: "gift-hampers" })} style={{ marginTop: 26, color: C.rust, fontWeight: 600, letterSpacing: "0.11em", textTransform: "uppercase", textDecoration: "underline", textUnderlineOffset: "4px" }}>Explore Gifting →</Button>
           </div>
@@ -893,6 +898,10 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
       if (occasion !== "all") {
         const group = OCCASION_FILTERS.find((item) => item.slug === occasion);
         if (!group || !group.categories.includes(p.categorySlug)) return false;
+        if (p.categorySlug === "gift-hampers") {
+          const assigned = Array.isArray(p.occasionSlugs) ? p.occasionSlugs : [];
+          if (!assigned.includes(occasion)) return false;
+        }
       }
       if ((p.price || 0) > priceCap) return false;
       if (search) {
@@ -1035,6 +1044,121 @@ function ProductGallery({ product, images }) {
   );
 }
 
+function MoldShapeVisual({ shape }) {
+  const common = { fill: "none", stroke: "currentColor", strokeWidth: 1.4, strokeLinecap: "round", strokeLinejoin: "round" };
+  const shapes = {
+    Daisy: <><circle cx="50" cy="50" r="10" {...common}/>{Array.from({length:8}).map((_,i)=>{const a=i*Math.PI/4; return <ellipse key={i} cx={50+28*Math.cos(a)} cy={50+28*Math.sin(a)} rx="9" ry="16" transform={`rotate(${i*45} ${50+28*Math.cos(a)} ${50+28*Math.sin(a)})`} {...common}/>})}</>,
+    Rose: <path d="M50 78c-20-2-30-15-26-29 3-10 13-17 25-17 11 0 22 6 25 16 5 15-7 29-24 30ZM35 50c9-8 23-8 31 0M39 42c7-6 16-6 22 0M44 35c4-3 8-3 12 0" {...common}/>,
+    Carnation: <path d="M30 55c5-14 14-22 20-18 6-4 15 4 20 18 2 8-1 17-8 22H38c-7-5-10-14-8-22Zm6-8c5 4 10 4 14 0 5 4 10 4 14 0M38 58c8 5 16 5 24 0M41 67c6 3 12 3 18 0" {...common}/>,
+    Cactus: <path d="M42 78V39c0-9 6-15 12-15s12 6 12 15v8h6v-8c0-4 3-7 7-7s7 3 7 7v12c0 9-7 16-16 16h-4v11H42ZM42 52H34c-5 0-9-4-9-9V35c0-4 3-7 7-7s7 3 7 7v6h3" {...common}/>,
+    Tortoise: <path d="M24 58c4-16 17-25 31-25s27 9 31 25c-5 12-17 19-31 19S29 70 24 58Zm8-2c8 8 16 12 23 12 8 0 16-4 23-12M50 34v38M33 48c12 6 24 6 34 0M31 72l-8 5M69 72l8 5M26 55l-8-4M74 55l8-4" {...common}/>,
+    Laddu: <circle cx="50" cy="54" r="28" {...common}/>,
+    Chakli: <path d="M50 79c-18 0-31-10-31-24 0-16 14-28 31-28s31 12 31 28c0 14-13 24-31 24Zm0-8c-12 0-21-6-21-16 0-10 9-18 21-18s21 8 21 18c0 10-9 16-21 16Zm0-8c-6 0-11-3-11-8s5-10 11-10 11 5 11 10-5 8-11 8Z" {...common}/>
+  };
+  return <svg viewBox="0 0 100 100" className="mold-shape-visual" aria-hidden="true">{shapes[shape] || shapes.Daisy}</svg>;
+}
+
+const MOLD_COLORS = [
+  { name: "Ivory", hex: "#EFE7D8" },
+  { name: "Blush", hex: "#E9C4BD" },
+  { name: "Dusty Rose", hex: "#C98E86" },
+  { name: "Sage", hex: "#AAB39D" },
+  { name: "Olive", hex: "#96966A" },
+  { name: "Terracotta", hex: "#C77A4D" },
+  { name: "Mocha", hex: "#8A6652" },
+  { name: "Charcoal", hex: "#4A4744" },
+];
+
+function MoldCandleProductPage({ data, nav, product, settings }) {
+  const [shape, setShape] = useState(MOLD_CANDLE_SHAPES[0]);
+  const [fragranceSlug, setFragranceSlug] = useState("raat-ki-rani");
+  const [color, setColor] = useState("Dusty Rose");
+  const [qty, setQty] = useState(MOLD_CANDLE_MOQ);
+  const [giftWrap, setGiftWrap] = useState(false);
+  const fragrance = data.fragrances.find((f) => f.slug === fragranceSlug);
+  const colorData = MOLD_COLORS.find((c) => c.name === color) || MOLD_COLORS[2];
+  const batchPrice = Number(product.price || 399);
+  const baseQty = MOLD_CANDLE_MOQ;
+  const unitPiecePrice = batchPrice / baseQty;
+  const subtotal = Math.round(unitPiecePrice * qty);
+  const giftWrapCharge = Number(settings.giftWrapCharge || GIFT_WRAP_CHARGE);
+  const total = subtotal + (giftWrap ? giftWrapCharge : 0);
+  const enquiryMsg = `Hello Mysaa Rituals! I'd like to order a custom Mold Candle batch:\n\nMould: ${shape}\nFragrance: ${fragrance ? fragrance.name : fragranceSlug}\nPrimary colour: ${color}\nQuantity: ${qty} pieces (MOQ ${MOLD_CANDLE_MOQ})\nBatch price basis: ${inr(batchPrice)} for ${baseQty} pieces\n${giftWrap ? `Gift wrapping: Yes (+${inr(giftWrapCharge)})\n` : "Gift wrapping: No\n"}Total: ${inr(total)}\n\nPlease confirm availability and delivery details.`;
+
+  return (
+    <div className="container mold-page" style={{ padding: "32px 20px 80px" }}>
+      <p style={{ ...label, color: C.ink70, marginBottom: 24 }}>
+        <button onClick={() => nav("catalogue", "all")} style={{ ...label, color: C.ink70 }}>Catalogue</button>{" / "}<span style={{ color: C.ink }}>Mold Candles</span>
+      </p>
+
+      <div className="mold-page-heading">
+        <div>
+          <p style={{ ...label, color: C.rust, marginBottom: 10 }}>Custom Candle Studio</p>
+          <h1 style={{ ...serif, color: C.ink, fontSize: "clamp(34px,5vw,52px)", fontWeight: 500, lineHeight: 1.02, marginBottom: 10 }}>Mold Candles</h1>
+          <p style={{ ...sans, color: C.ink70, fontSize: 14.5, lineHeight: 1.7, maxWidth: 680 }}>Minimum order 6 pieces · <strong style={{ color: C.ink }}>₹399 for 6 pieces</strong>. Create your own batch by choosing a mould, fragrance and primary colour.</p>
+        </div>
+      </div>
+
+      <div className="mold-builder-grid">
+        <div className="mold-builder">
+          <section className="mold-step">
+            <div className="mold-step-heading"><span>1</span><h2>Choose your mould</h2></div>
+            <div className="mold-shape-grid">
+              {MOLD_CANDLE_SHAPES.map((item) => (
+                <button key={item} onClick={() => setShape(item)} className={`mold-shape-card${shape === item ? " selected" : ""}`}>
+                  <div className="mold-shape-art"><MoldShapeVisual shape={item} /></div>
+                  <span>{item}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="mold-step">
+            <div className="mold-step-heading"><span>2</span><h2>Choose your fragrance</h2></div>
+            <div className="mold-fragrance-grid">
+              {data.fragrances.filter((f) => f.active).map((f) => (
+                <button key={f.slug} onClick={() => setFragranceSlug(f.slug)} className={`mold-fragrance-card${fragranceSlug === f.slug ? " selected" : ""}`}>
+                  <ImageOrPlaceholder src={fragranceImage(f, data.images, 0)} label={f.name} ratio="4 / 3" />
+                  <strong>{f.name}</strong>
+                  <span>{(f.mood || "").split(",")[0]}</span>
+                </button>
+              ))}
+            </div>
+            <button className="mold-more-link" onClick={() => nav("catalogue", "fragrance", { value: fragranceSlug })}>View fragrance notes →</button>
+          </section>
+
+          <section className="mold-step">
+            <div className="mold-step-heading"><span>3</span><h2>Choose your primary colour</h2></div>
+            <div className="mold-color-grid">
+              {MOLD_COLORS.map((c) => (
+                <button key={c.name} onClick={() => setColor(c.name)} className={`mold-color-card${color === c.name ? " selected" : ""}`}>
+                  <span className="mold-color-swatch" style={{ background: c.hex }} />
+                  <span>{c.name}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <div className="mold-note"><strong>One batch = one mould + one fragrance + one primary colour.</strong><span>Minimum order is 6 pieces. You can increase the quantity after selecting your batch.</span></div>
+        </div>
+
+        <aside className="mold-summary">
+          <p style={{ ...label, color: C.ink70, marginBottom: 16 }}>Your selection</p>
+          <div className="mold-summary-preview"><div className="mold-summary-art" style={{ background: colorData.hex }}><MoldShapeVisual shape={shape} /></div><div><strong>{shape}</strong><span>{fragrance ? fragrance.name : ""}</span><span>{color}</span></div></div>
+          <div className="mold-summary-line"><span>Quantity</span><div className="mold-quantity"><button onClick={() => setQty((q) => Math.max(MOLD_CANDLE_MOQ, q - 1))}>−</button><strong>{qty}</strong><button onClick={() => setQty((q) => q + 1)}>+</button></div></div>
+          <div className="mold-summary-price"><span>Current batch price</span><strong>{inr(subtotal)}</strong><small>Batch basis: ₹399 for the minimum 6 pieces</small></div>
+          <div className="mold-moq-note">Minimum order: {MOLD_CANDLE_MOQ} pieces. Your selected mould, fragrance and colour will be made as one batch.</div>
+          <div className="mold-gift-wrap">
+            <label><input type="checkbox" checked={giftWrap} onChange={(e) => setGiftWrap(e.target.checked)} /><span><strong>Gift wrapping</strong><small>+{inr(giftWrapCharge)}</small></span></label>
+          </div>
+          <a className="mold-create-button" href={waLink(settings.whatsapp, enquiryMsg)} target="_blank" rel="noreferrer">Create my batch <span>→</span></a>
+          <a className="mold-enquiry-button" href={waLink(settings.whatsapp, enquiryMsg)} target="_blank" rel="noreferrer">Send enquiry</a>
+        </aside>
+      </div>
+    </div>
+  );
+}
+
 function ProductDetailPage({ data, nav, slug, settings }) {
   const productForState = data.products.find((p) => p.slug === slug);
   const isMoldForState = isMoldCandle(productForState);
@@ -1042,6 +1166,8 @@ function ProductDetailPage({ data, nav, slug, settings }) {
   const [jarVariant, setJarVariant] = useState("plain");
   const [giftWrap, setGiftWrap] = useState(false);
   const [moldShape, setMoldShape] = useState(MOLD_CANDLE_SHAPES[0]);
+  const [moldFragrance, setMoldFragrance] = useState("raat-ki-rani");
+  const [moldColor, setMoldColor] = useState("Dusty Rose");
   const product = data.products.find((p) => p.slug === slug);
 
   useEffect(() => {
@@ -1050,6 +1176,8 @@ function ProductDetailPage({ data, nav, slug, settings }) {
     setGiftWrap(false);
     setJarVariant("plain");
     setMoldShape(MOLD_CANDLE_SHAPES[0]);
+    setMoldFragrance("raat-ki-rani");
+    setMoldColor("Dusty Rose");
   }, [slug]);
 
   if (!product) {
@@ -1059,6 +1187,10 @@ function ProductDetailPage({ data, nav, slug, settings }) {
         <Button onClick={() => nav("catalogue", "all")}>Back to Catalogue</Button>
       </div>
     );
+  }
+
+  if (isMoldForState) {
+    return <MoldCandleProductPage data={data} nav={nav} product={product} settings={settings} />;
   }
 
   const category = data.categories.find((c) => c.slug === product.categorySlug);
@@ -1203,9 +1335,13 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             </div>
           </div>
 
-          <Button href={waLink(settings.whatsapp, enquiryMsg)} target="_blank" variant="solid" style={{ width: "100%", justifyContent: "center" }}>
-            <ChatIcon color="#fff" /> Order on WhatsApp
-          </Button>
+          {isOutOfStock(product) ? (
+            <button className="out-of-stock-button" disabled>Out of Stock</button>
+          ) : (
+            <Button href={waLink(settings.whatsapp, enquiryMsg)} target="_blank" variant="solid" style={{ width: "100%", justifyContent: "center" }}>
+              <ChatIcon color="#fff" /> Order on WhatsApp
+            </Button>
+          )}
 
           {product.customizable && (
             <button onClick={() => nav("create-ritual")} style={{ ...label, color: C.rust, marginTop: 18, display: "block", textDecoration: "underline", textUnderlineOffset: "3px" }}>
@@ -1378,10 +1514,7 @@ function AboutPage({ data }) {
       <div className="about-section process-section">
         <div className="process-layout">
           <div>
-            <p style={{ ...label, color: C.rust, marginBottom: 10 }}>Our Process</p>
-            <h2 style={{ ...serif, color: C.ink, fontSize: "clamp(34px,5vw,50px)", fontWeight: 500, lineHeight: 1.02, maxWidth: 520, marginBottom: 20 }}>
-              Thoughtfully made,<br/>from start to finish.
-            </h2>
+            <SectionHeading eyebrow="Our Process" title={<>Thoughtfully made,<br/>from start to finish.</>} />
             <div className="process-steps">
               {[
                 ["01", "Curate familiar Indian fragrances."],
@@ -1434,7 +1567,7 @@ function ContactPage({ settings }) {
         </div>
         <div className="contact-hero-image">
           <ImageOrPlaceholder src="./assets/contact.jpg" label="Mysaa Rituals candle" ratio="1 / 1" />
-          <div className="contact-hero-caption">
+          <div className="contact-ritual-caption">
             <p style={{ ...serif, fontSize: 30, color: C.ink, lineHeight: 1.05, margin: 0 }}>Carry<br/>the ritual<br/>with you.</p>
           </div>
         </div>

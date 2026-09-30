@@ -50,6 +50,8 @@ def main():
             "price": r.get("price", 0) or 0,
             "discountPercent": r.get("discountPercent", 0) or 0,
             "moq": int(r.get("moq", 1) or 1),
+            "availability": r.get("availability", "") or "",
+            "occasionSlugs": [x.strip() for x in str(r.get("occasionSlugs", "") or "").split("|") if x.strip()],
             "optionValues": [x.strip() for x in str(r.get("optionValues", "") or "").split("|") if x.strip()],
             "volume": r.get("volume", "") or "",
             "weight": r.get("weight", "") or "",
