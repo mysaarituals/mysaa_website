@@ -553,9 +553,11 @@ function ProductCard({ product, fragrance, images, nav }) {
       <div className="product-card-body" style={{ paddingTop: 14 }}>
         <h3 style={{ ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 }}>{product.name}</h3>
         <p style={{ ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }} className="line-clamp-2">{product.shortDescription}</p>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: "auto" }}>
-          <DiscountedPrice product={product} currentPrice={product.price} />
-          <span style={{ ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" }}>View Details</span>
+        <div className="product-card-actions" style={{ marginTop: "auto" }}>
+          <div className="product-card-price">
+            <DiscountedPrice product={product} currentPrice={product.price} />
+          </div>
+          <span className="product-card-details-link" style={{ ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" }}>View Details</span>
         </div>
       </div>
     </button>
@@ -635,7 +637,11 @@ function FestivalBanner({ nav, settings }) {
     nav("catalogue", "occasion", { value: category });
   };
   return (
-    <section className="festival-banner" aria-label={eyebrow}>
+    <section
+      className="festival-banner"
+      aria-label={eyebrow}
+      style={image ? { backgroundImage: `linear-gradient(90deg, rgba(250,247,240,.96) 0%, rgba(250,247,240,.82) 46%, rgba(250,247,240,.16) 100%), url("${image}")` } : undefined}
+    >
       <div className="container festival-banner-inner">
         <div className="festival-banner-copy">
           <p style={{ ...label, color: C.rust, marginBottom: 12 }}>{eyebrow}</p>
@@ -643,7 +649,6 @@ function FestivalBanner({ nav, settings }) {
           <p style={{ ...sans, color: C.ink70, fontSize: 15, lineHeight: 1.7, maxWidth: 560, marginBottom: 22 }}>{text}</p>
           <Button variant="rust" onClick={action}>{buttonText} →</Button>
         </div>
-        {image && <ImageOrPlaceholder src={image} label={eyebrow} ratio="4 / 3" />}
       </div>
     </section>
   );
@@ -1009,7 +1014,9 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
             <>
               <p style={{ ...sans, fontSize: 13, color: C.ink70, marginBottom: 20 }}>{filtered.length} product{filtered.length !== 1 ? "s" : ""} found</p>
               <div className="product-grid">
-                {filtered.map((p) => <ProductCard key={p.slug} product={p} fragrance={fragranceById[p.fragranceSlug]} images={data.images} nav={nav} />)}
+                {[...filtered].sort((a, b) => Number(isOutOfStock(a)) - Number(isOutOfStock(b))).map((p) => (
+                  <ProductCard key={p.slug} product={p} fragrance={fragranceById[p.fragranceSlug]} images={data.images} nav={nav} />
+                ))}
               </div>
             </>
           )}
@@ -1254,6 +1261,11 @@ function ProductDetailPage({ data, nav, slug, settings }) {
     ["Material / Ingredients", product.materials],
     ["Packaging", hasPackagingOptions ? packagingChoice.label : product.packaging],
     ["Jar Finish", isJarProduct(product) ? "Flower mould included by default" : ""],
+    ["Burn Time", product.burnTime],
+    ["Care Instructions", product.careInstructions],
+    ["Delivery Time", product.deliveryTime],
+    ["Shipping", product.shippingNote],
+    ["Returns", product.returnsPolicy],
     ["Collection", category ? category.name : ""],
   ].filter(([, v]) => v);
 
@@ -1280,7 +1292,13 @@ function ProductDetailPage({ data, nav, slug, settings }) {
               {isMold ? `Minimum order ${MOLD_CANDLE_MOQ} pieces · price shared on enquiry` : `Discounted base price ${inr(product.price)} · final price updates with your selections`}
             </p>
           )}
-          <p style={{ ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, marginBottom: 28 }}>{product.shortDescription}</p>
+          <p style={{ ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, marginBottom: 24 }}>{product.description || product.shortDescription}</p>
+          <div className="product-detail-highlights">
+            <div><span>Burn Time</span><strong>{product.burnTime || "Approx. burn time varies by format"}</strong></div>
+            <div><span>Care</span><strong>{product.careInstructions || "Trim wick before each burn and keep away from drafts."}</strong></div>
+            <div><span>Delivery</span><strong>{product.deliveryTime || "Usually 3–7 business days; final estimate shared with your order."}</strong></div>
+            <div><span>Shipping</span><strong>{product.shippingNote || "Shipping cost is calculated separately and shared at payment."}</strong></div>
+          </div>
 
           {isMold && (
             <div style={{ marginBottom: 28 }}>
@@ -1321,7 +1339,7 @@ function ProductDetailPage({ data, nav, slug, settings }) {
               <div className="packaging-note">
                 <strong style={{ ...serif, fontSize: 17, fontWeight: 500, color: C.ink }}>{packagingChoice.label}</strong>
                 <p style={{ ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.7, marginTop: 6 }}>{packagingChoice.description}</p>
-                <p style={{ ...sans, fontSize: 12.5, color: C.rust, lineHeight: 1.6, marginTop: 8 }}>{PREMIUM_PACKAGING.description}</p>
+                <p className="premium-packaging-single-note">Premium Packaging — Coming Soon</p>
               </div>
             </div>
           )}
@@ -1372,6 +1390,10 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             <h2 style={{ ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 }}>About this Product</h2>
             <p style={{ ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75 }}>{product.about}</p>
           </div>
+          <div className="policy-note">
+            <strong>Returns Policy</strong>
+            <span>{product.returnsPolicy || "This product cannot be returned unless the wrong product or a defective product is received."}</span>
+          </div>
 
           {isDiscoverySet && (
             <div className="hairline-top" style={{ marginTop: 32 }}>
@@ -1393,17 +1415,7 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             </div>
           )}
 
-          {hasPackagingOptions && (
-            <div className="hairline-top" style={{ marginTop: 32 }}>
-              <h2 style={{ ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 }}>About the Packaging</h2>
-              <p style={{ ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75, marginBottom: 10 }}>
-                Standard packaging is currently available and included in the product price. Premium packaging is planned as a future option and is coming soon.
-              </p>
-              <p style={{ ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.7 }}>
-                Premium packaging will be introduced once the fragrance-led presentation is ready.
-              </p>
-            </div>
-          )}
+          {hasPackagingOptions && null}
         </div>
       </div>
 
@@ -1427,7 +1439,9 @@ function ProductDetailPage({ data, nav, slug, settings }) {
         <div style={{ marginTop: 64 }}>
           <h2 style={{ ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 24 }}>You May Also Like</h2>
           <div className="product-grid">
-            {related.map((p) => <ProductCard key={p.slug} product={p} fragrance={data.fragrances.find((f) => f.slug === p.fragranceSlug)} images={data.images} nav={nav} />)}
+            {[...related].sort((a, b) => Number(isOutOfStock(a)) - Number(isOutOfStock(b))).map((p) => (
+              <ProductCard key={p.slug} product={p} fragrance={data.fragrances.find((f) => f.slug === p.fragranceSlug)} images={data.images} nav={nav} />
+            ))}
           </div>
         </div>
       )}
@@ -1796,15 +1810,62 @@ function App() {
   useEffect(() => {
     if (!data || !data.settings) return;
     const settings = data.settings;
-    document.title = settings.seoTitle || "Mysaa Rituals";
-    const description = settings.seoDescription || "Handcrafted candles and gifts inspired by Indian fragrances, memories and everyday rituals.";
+    const base = "Mysaa Rituals";
+    const product = route.page === "product" ? data.products.find((p) => p.slug === route.param) : null;
+    const fragrance = product ? data.fragrances.find((f) => f.slug === product.fragranceSlug) : null;
+    const category = product ? data.categories.find((c) => c.slug === product.categorySlug) : null;
+
+    const title = product
+      ? `${product.name} | ${base}`
+      : route.page === "catalogue"
+        ? `Handcrafted Candles, Gift Hampers & Fragrance | ${base}`
+        : settings.seoTitle || `${base} — Handcrafted Fragrance & Gifting`;
+    const description = product
+      ? `${product.description || product.shortDescription} ${product.burnTime ? `Burn time: ${product.burnTime}.` : ""} Shop ${product.name} from ${base}.`
+      : settings.seoDescription || "Handcrafted soy wax candles, Indian fragrance candles, gift hampers and personalised rituals from Mysaa Rituals.";
+
+    document.title = title;
     let meta = document.querySelector('meta[name="description"]');
     if (!meta) { meta = document.createElement("meta"); meta.name = "description"; document.head.appendChild(meta); }
-    meta.setAttribute("content", description);
+    meta.setAttribute("content", description.slice(0, 300));
+
+    let keywords = document.querySelector('meta[name="keywords"]');
+    if (!keywords) { keywords = document.createElement("meta"); keywords.name = "keywords"; document.head.appendChild(keywords); }
+    keywords.setAttribute("content", product
+      ? (product.seoKeywords || `${product.name}, ${fragrance ? fragrance.name : ""} candle, handcrafted soy wax candle, Indian fragrance candle, Mysaa Rituals`)
+      : (settings.seoKeywords || "handcrafted candles India, soy wax candles India, luxury candles, Indian fragrance candles, gift hampers India, wedding return gifts, festive candles, personalised candles, Mysaa Rituals"));
+
     let canonical = document.querySelector('link[rel="canonical"]');
     if (!canonical) { canonical = document.createElement("link"); canonical.rel = "canonical"; document.head.appendChild(canonical); }
-    canonical.href = window.location.href.split("#")[0];
-  }, [data]);
+    canonical.href = product
+      ? `${window.location.origin}${window.location.pathname}products/${product.slug}/`
+      : window.location.href.split("#")[0];
+
+    document.querySelectorAll('script[data-mysaa-seo]').forEach((el) => el.remove());
+    if (product) {
+      const schema = document.createElement("script");
+      schema.type = "application/ld+json";
+      schema.dataset.mysaaSeo = "product";
+      schema.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": product.name,
+        "description": product.description || product.shortDescription,
+        "brand": {"@type": "Brand", "name": base},
+        "category": category ? category.name : "Candles",
+        "image": (product.images || []).filter(Boolean).map((src) => new URL(src, window.location.href).href),
+        "sku": product.slug,
+        "offers": Number(product.price) > 0 ? {
+          "@type": "Offer",
+          "priceCurrency": "INR",
+          "price": Number(product.price),
+          "availability": isOutOfStock(product) ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+          "url": `${window.location.origin}${window.location.pathname}products/${product.slug}/`
+        } : undefined
+      });
+      document.head.appendChild(schema);
+    }
+  }, [data, route.page, route.param]);
 
   if (loading) {
     return (

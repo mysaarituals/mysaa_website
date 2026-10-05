@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 620" role="img" aria-labelledby="title desc">
+<title>Festive candlelight background for Mysaa Rituals</title>
+<desc>Original warm festive illustration with diyas, marigold flowers, leaves and soft candlelight.</desc>
+<defs>
+  <radialGradient id="bg" cx="65%" cy="42%" r="85%"><stop offset="0" stop-color="#f7e5c4"/><stop offset=".5" stop-color="#d39a69"/><stop offset="1" stop-color="#704c3b"/></radialGradient>
+  <radialGradient id="glow"><stop offset="0" stop-color="#fff7d5" stop-opacity=".98"/><stop offset=".35" stop-color="#ffd98d" stop-opacity=".5"/><stop offset="1" stop-color="#eaa65b" stop-opacity="0"/></radialGradient>
+  <linearGradient id="metal" x1="0" x2="1"><stop stop-color="#8b4d2d"/><stop offset=".45" stop-color="#d49a4e"/><stop offset="1" stop-color="#74412d"/></linearGradient>
+  <filter id="blur"><feGaussianBlur stdDeviation="18"/></filter>
+</defs>
+<rect width="1600" height="620" fill="url(#bg)"/>
+<g opacity=".45" filter="url(#blur)">
+  <circle cx="1180" cy="150" r="130" fill="#ffd88a"/><circle cx="1370" cy="330" r="110" fill="#ffcf72"/><circle cx="970" cy="420" r="90" fill="#ffd68b"/>
+</g>
+<!-- leafy branches -->
+<g fill="none" stroke="#536044" stroke-width="10" stroke-linecap="round" opacity=".85">
+ <path d="M0 535 C210 410 360 455 535 345"/><path d="M1600 520 C1420 410 1290 445 1130 335"/>
+</g>
+<g fill="#78805a" opacity=".9">
+ <ellipse cx="150" cy="475" rx="58" ry="20" transform="rotate(-24 150 475)"/><ellipse cx="250" cy="438" rx="55" ry="19" transform="rotate(24 250 438)"/>
+ <ellipse cx="420" cy="390" rx="60" ry="20" transform="rotate(-20 420 390)"/><ellipse cx="1450" cy="455" rx="60" ry="20" transform="rotate(24 1450 455)"/>
+ <ellipse cx="1340" cy="405" rx="55" ry="19" transform="rotate(-26 1340 405)"/><ellipse cx="1200" cy="365" rx="60" ry="20" transform="rotate(20 1200 365)"/>
+</g>
+<!-- marigold clusters -->
+<g fill="#e08c38">
+ <circle cx="115" cy="535" r="28"/><circle cx="155" cy="520" r="32"/><circle cx="195" cy="540" r="26"/>
+ <circle cx="1420" cy="525" r="30"/><circle cx="1460" cy="505" r="25"/><circle cx="1500" cy="535" r="34"/>
+</g>
+<g fill="#f1b45c" opacity=".95">
+ <circle cx="105" cy="515" r="12"/><circle cx="150" cy="495" r="14"/><circle cx="188" cy="518" r="12"/>
+ <circle cx="1415" cy="505" r="12"/><circle cx="1460" cy="486" r="10"/><circle cx="1505" cy="510" r="13"/>
+</g>
+<!-- central diyas -->
+<g>
+ <ellipse cx="1060" cy="500" rx="185" ry="42" fill="#5f3b2e" opacity=".35"/>
+ <path d="M900 470 Q1060 405 1220 470 L1180 520 Q1060 555 940 520Z" fill="url(#metal)"/>
+ <ellipse cx="1060" cy="472" rx="160" ry="42" fill="#b87543"/>
+ <ellipse cx="1060" cy="468" rx="135" ry="29" fill="#6b3e2e"/>
+ <ellipse cx="1060" cy="445" rx="45" ry="95" fill="url(#glow)" filter="url(#blur)"/>
+ <path d="M1060 460 C1025 425 1050 390 1062 355 C1088 402 1092 430 1060 460Z" fill="#ffd37a"/>
+ <path d="M1060 448 C1048 420 1060 400 1066 386 C1080 414 1080 435 1060 448Z" fill="#fff4b7"/>
+</g>
+<g transform="translate(1270 250) scale(.65)">
+ <ellipse cx="180" cy="350" rx="185" ry="42" fill="#5f3b2e" opacity=".3"/>
+ <path d="M20 320 Q180 255 340 320 L300 370 Q180 405 60 370Z" fill="url(#metal)"/>
+ <ellipse cx="180" cy="320" rx="160" ry="42" fill="#b87543"/><ellipse cx="180" cy="315" rx="135" ry="29" fill="#6b3e2e"/>
+ <ellipse cx="180" cy="290" rx="45" ry="95" fill="url(#glow)" filter="url(#blur)"/>
+ <path d="M180 305 C145 270 170 235 182 200 C208 247 212 275 180 305Z" fill="#ffd37a"/><path d="M180 293 C168 265 180 245 186 230 C200 259 200 280 180 293Z" fill="#fff4b7"/>
+</g>
+<!-- foreground petals -->
+<g fill="#b75d45" opacity=".9">
+ <ellipse cx="690" cy="545" rx="54" ry="16" transform="rotate(-18 690 545)"/><ellipse cx="760" cy="570" rx="45" ry="14" transform="rotate(22 760 570)"/>
+ <ellipse cx="820" cy="530" rx="48" ry="15" transform="rotate(-12 820 530)"/><ellipse cx="1320" cy="565" rx="50" ry="15" transform="rotate(18 1320 565)"/>
+</g>
+</svg>

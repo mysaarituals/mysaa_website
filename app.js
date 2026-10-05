@@ -436,9 +436,10 @@ function ProductCard({ product, fragrance, images, nav }) {
         React.createElement("div", { className: "product-card-body", style: { paddingTop: 14 } },
             React.createElement("h3", { style: { ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 } }, product.name),
             React.createElement("p", { style: { ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }, className: "line-clamp-2" }, product.shortDescription),
-            React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: "auto" } },
-                React.createElement(DiscountedPrice, { product: product, currentPrice: product.price }),
-                React.createElement("span", { style: { ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" } }, "View Details")))));
+            React.createElement("div", { className: "product-card-actions", style: { marginTop: "auto" } },
+                React.createElement("div", { className: "product-card-price" },
+                    React.createElement(DiscountedPrice, { product: product, currentPrice: product.price })),
+                React.createElement("span", { className: "product-card-details-link", style: { ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" } }, "View Details")))));
 }
 function FragranceCard({ fragrance, images, nav }) {
     return (React.createElement("button", { onClick: () => nav("catalogue", "fragrance", { value: fragrance.slug }), style: { textAlign: "left", display: "block" } },
@@ -494,7 +495,7 @@ function FestivalBanner({ nav, settings }) {
         const category = settings.festivalBannerCategory || "festivals-celebrations";
         nav("catalogue", "occasion", { value: category });
     };
-    return (React.createElement("section", { className: "festival-banner", "aria-label": eyebrow },
+    return (React.createElement("section", { className: "festival-banner", "aria-label": eyebrow, style: image ? { backgroundImage: `linear-gradient(90deg, rgba(250,247,240,.96) 0%, rgba(250,247,240,.82) 46%, rgba(250,247,240,.16) 100%), url("${image}")` } : undefined },
         React.createElement("div", { className: "container festival-banner-inner" },
             React.createElement("div", { className: "festival-banner-copy" },
                 React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 12 } }, eyebrow),
@@ -502,8 +503,7 @@ function FestivalBanner({ nav, settings }) {
                 React.createElement("p", { style: { ...sans, color: C.ink70, fontSize: 15, lineHeight: 1.7, maxWidth: 560, marginBottom: 22 } }, text),
                 React.createElement(Button, { variant: "rust", onClick: action },
                     buttonText,
-                    " \u2192")),
-            image && React.createElement(ImageOrPlaceholder, { src: image, label: eyebrow, ratio: "4 / 3" }))));
+                    " \u2192")))));
 }
 function HomePage({ data, nav, settings }) {
     var _a, _b, _c, _d, _e, _f;
@@ -730,7 +730,7 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
                     " product",
                     filtered.length !== 1 ? "s" : "",
                     " found"),
-                React.createElement("div", { className: "product-grid" }, filtered.map((p) => React.createElement(ProductCard, { key: p.slug, product: p, fragrance: fragranceById[p.fragranceSlug], images: data.images, nav: nav })))))))));
+                React.createElement("div", { className: "product-grid" }, [...filtered].sort((a, b) => Number(isOutOfStock(a)) - Number(isOutOfStock(b))).map((p) => (React.createElement(ProductCard, { key: p.slug, product: p, fragrance: fragranceById[p.fragranceSlug], images: data.images, nav: nav }))))))))));
 }
 function ProductGallery({ product, images }) {
     const gallery = (images && images.products && images.products[`${product.fragranceSlug}/${product.categorySlug}`]) || [];
@@ -940,6 +940,11 @@ function ProductDetailPage({ data, nav, slug, settings }) {
         ["Material / Ingredients", product.materials],
         ["Packaging", hasPackagingOptions ? packagingChoice.label : product.packaging],
         ["Jar Finish", isJarProduct(product) ? "Flower mould included by default" : ""],
+        ["Burn Time", product.burnTime],
+        ["Care Instructions", product.careInstructions],
+        ["Delivery Time", product.deliveryTime],
+        ["Shipping", product.shippingNote],
+        ["Returns", product.returnsPolicy],
         ["Collection", category ? category.name : ""],
     ].filter(([, v]) => v);
     return (React.createElement("div", { className: "container", style: { padding: "32px 20px 80px" } },
@@ -956,7 +961,20 @@ function ProductDetailPage({ data, nav, slug, settings }) {
                 React.createElement("div", { className: "product-detail-price", style: { marginBottom: 6 } },
                     React.createElement(DiscountedPrice, { product: product, currentPrice: unitPrice, large: true })),
                 (hasPackagingOptions || hasJarVariants || isMold) && (React.createElement("p", { style: { ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 } }, isMold ? `Minimum order ${MOLD_CANDLE_MOQ} pieces · price shared on enquiry` : `Discounted base price ${inr(product.price)} · final price updates with your selections`)),
-                React.createElement("p", { style: { ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, marginBottom: 28 } }, product.shortDescription),
+                React.createElement("p", { style: { ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, marginBottom: 24 } }, product.description || product.shortDescription),
+                React.createElement("div", { className: "product-detail-highlights" },
+                    React.createElement("div", null,
+                        React.createElement("span", null, "Burn Time"),
+                        React.createElement("strong", null, product.burnTime || "Approx. burn time varies by format")),
+                    React.createElement("div", null,
+                        React.createElement("span", null, "Care"),
+                        React.createElement("strong", null, product.careInstructions || "Trim wick before each burn and keep away from drafts.")),
+                    React.createElement("div", null,
+                        React.createElement("span", null, "Delivery"),
+                        React.createElement("strong", null, product.deliveryTime || "Usually 3–7 business days; final estimate shared with your order.")),
+                    React.createElement("div", null,
+                        React.createElement("span", null, "Shipping"),
+                        React.createElement("strong", null, product.shippingNote || "Shipping cost is calculated separately and shared at payment."))),
                 isMold && (React.createElement("div", { style: { marginBottom: 28 } },
                     React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Choose Your Mould"),
                     React.createElement("div", { className: "option-grid" }, MOLD_CANDLE_SHAPES.map((shape) => (React.createElement("button", { key: shape, onClick: () => setMoldShape(shape), className: `selection-card${moldShape === shape ? " selected" : ""}` },
@@ -980,7 +998,7 @@ function ProductDetailPage({ data, nav, slug, settings }) {
                     React.createElement("div", { className: "packaging-note" },
                         React.createElement("strong", { style: { ...serif, fontSize: 17, fontWeight: 500, color: C.ink } }, packagingChoice.label),
                         React.createElement("p", { style: { ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.7, marginTop: 6 } }, packagingChoice.description),
-                        React.createElement("p", { style: { ...sans, fontSize: 12.5, color: C.rust, lineHeight: 1.6, marginTop: 8 } }, PREMIUM_PACKAGING.description)))),
+                        React.createElement("p", { className: "premium-packaging-single-note" }, "Premium Packaging \u2014 Coming Soon")))),
                 giftWrapAvailable && (React.createElement("div", { style: { marginBottom: 28, padding: "16px", border: `1px solid ${C.line}`, background: C.card } },
                     React.createElement("label", { style: { display: "flex", alignItems: "flex-start", gap: 12, cursor: "pointer" } },
                         React.createElement("input", { type: "checkbox", checked: giftWrap, onChange: (e) => setGiftWrap(e.target.checked), style: { marginTop: 3, accentColor: C.rust } }),
@@ -1000,6 +1018,9 @@ function ProductDetailPage({ data, nav, slug, settings }) {
                 React.createElement("div", { className: "hairline-top", style: { marginTop: 32 } },
                     React.createElement("h2", { style: { ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 } }, "About this Product"),
                     React.createElement("p", { style: { ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75 } }, product.about)),
+                React.createElement("div", { className: "policy-note" },
+                    React.createElement("strong", null, "Returns Policy"),
+                    React.createElement("span", null, product.returnsPolicy || "This product cannot be returned unless the wrong product or a defective product is received.")),
                 isDiscoverySet && (React.createElement("div", { className: "hairline-top", style: { marginTop: 32 } },
                     React.createElement("h2", { style: { ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 } }, "What's Inside the Discovery Set"),
                     React.createElement("p", { style: { ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75, marginBottom: 14 } }, "Six 60 ml Mini Ritual candles, one in each Mysaa Rituals fragrance, so you can experience the full collection and discover the scent that feels most personal to you."),
@@ -1009,10 +1030,7 @@ function ProductDetailPage({ data, nav, slug, settings }) {
                             React.createElement("span", { style: { ...label, color: C.rust } }, String(index + 1).padStart(2, "0")),
                             React.createElement("span", { style: { ...serif, fontSize: 17, color: C.ink } }, f.name))) : null;
                     })))),
-                hasPackagingOptions && (React.createElement("div", { className: "hairline-top", style: { marginTop: 32 } },
-                    React.createElement("h2", { style: { ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 } }, "About the Packaging"),
-                    React.createElement("p", { style: { ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75, marginBottom: 10 } }, "Standard packaging is currently available and included in the product price. Premium packaging is planned as a future option and is coming soon."),
-                    React.createElement("p", { style: { ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.7 } }, "Premium packaging will be introduced once the fragrance-led presentation is ready."))))),
+                hasPackagingOptions && null)),
         React.createElement("div", { style: { marginTop: 56 } },
             React.createElement("h2", { style: { ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 20 } }, "Product Information"),
             React.createElement("div", null, infoRows.map(([k, v]) => (React.createElement("div", { key: k, style: { display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "space-between", padding: "14px 0", borderBottom: `1px solid ${C.line}` } },
@@ -1022,7 +1040,7 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             React.createElement(HowToOrder, { steps: HOW_TO_ORDER_PRODUCT })),
         related.length > 0 && (React.createElement("div", { style: { marginTop: 64 } },
             React.createElement("h2", { style: { ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 24 } }, "You May Also Like"),
-            React.createElement("div", { className: "product-grid" }, related.map((p) => React.createElement(ProductCard, { key: p.slug, product: p, fragrance: data.fragrances.find((f) => f.slug === p.fragranceSlug), images: data.images, nav: nav })))))));
+            React.createElement("div", { className: "product-grid" }, [...related].sort((a, b) => Number(isOutOfStock(a)) - Number(isOutOfStock(b))).map((p) => (React.createElement(ProductCard, { key: p.slug, product: p, fragrance: data.fragrances.find((f) => f.slug === p.fragranceSlug), images: data.images, nav: nav }))))))));
 }
 function CreateRitualPage({ settings, data }) {
     const [form, setForm] = useState({ name: "", fragrance: "", format: "", occasion: "", notes: "" });
@@ -1317,23 +1335,69 @@ function App() {
         if (!data || !data.settings)
             return;
         const settings = data.settings;
-        document.title = settings.seoTitle || "Mysaa Rituals";
-        const description = settings.seoDescription || "Handcrafted candles and gifts inspired by Indian fragrances, memories and everyday rituals.";
+        const base = "Mysaa Rituals";
+        const product = route.page === "product" ? data.products.find((p) => p.slug === route.param) : null;
+        const fragrance = product ? data.fragrances.find((f) => f.slug === product.fragranceSlug) : null;
+        const category = product ? data.categories.find((c) => c.slug === product.categorySlug) : null;
+        const title = product
+            ? `${product.name} | ${base}`
+            : route.page === "catalogue"
+                ? `Handcrafted Candles, Gift Hampers & Fragrance | ${base}`
+                : settings.seoTitle || `${base} — Handcrafted Fragrance & Gifting`;
+        const description = product
+            ? `${product.description || product.shortDescription} ${product.burnTime ? `Burn time: ${product.burnTime}.` : ""} Shop ${product.name} from ${base}.`
+            : settings.seoDescription || "Handcrafted soy wax candles, Indian fragrance candles, gift hampers and personalised rituals from Mysaa Rituals.";
+        document.title = title;
         let meta = document.querySelector('meta[name="description"]');
         if (!meta) {
             meta = document.createElement("meta");
             meta.name = "description";
             document.head.appendChild(meta);
         }
-        meta.setAttribute("content", description);
+        meta.setAttribute("content", description.slice(0, 300));
+        let keywords = document.querySelector('meta[name="keywords"]');
+        if (!keywords) {
+            keywords = document.createElement("meta");
+            keywords.name = "keywords";
+            document.head.appendChild(keywords);
+        }
+        keywords.setAttribute("content", product
+            ? (product.seoKeywords || `${product.name}, ${fragrance ? fragrance.name : ""} candle, handcrafted soy wax candle, Indian fragrance candle, Mysaa Rituals`)
+            : (settings.seoKeywords || "handcrafted candles India, soy wax candles India, luxury candles, Indian fragrance candles, gift hampers India, wedding return gifts, festive candles, personalised candles, Mysaa Rituals"));
         let canonical = document.querySelector('link[rel="canonical"]');
         if (!canonical) {
             canonical = document.createElement("link");
             canonical.rel = "canonical";
             document.head.appendChild(canonical);
         }
-        canonical.href = window.location.href.split("#")[0];
-    }, [data]);
+        canonical.href = product
+            ? `${window.location.origin}${window.location.pathname}products/${product.slug}/`
+            : window.location.href.split("#")[0];
+        document.querySelectorAll('script[data-mysaa-seo]').forEach((el) => el.remove());
+        if (product) {
+            const schema = document.createElement("script");
+            schema.type = "application/ld+json";
+            schema.dataset.mysaaSeo = "product";
+            schema.textContent = JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Product",
+                "name": product.name,
+                "description": product.description || product.shortDescription,
+                "brand": { "@type": "Brand", "name": base },
+                "category": category ? category.name : "Candles",
+                "image": (product.images || []).filter(Boolean).map((src) => new URL(src, window.location.href).href),
+                "sku": product.slug,
+                "offers": Number(product.price) > 0 ? {
+                    "@type": "Offer",
+                    "priceCurrency": "INR",
+                    "price": Number(product.price),
+                    "availability": isOutOfStock(product) ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+                    "url": `${window.location.origin}${window.location.pathname}products/${product.slug}/`
+                } : undefined
+            });
+            document.head.appendChild(schema);
+        }
+    }, [data, route.page, route.param]);
     if (loading) {
         return (React.createElement("div", { style: { minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: C.cream } },
             React.createElement("p", { style: { ...sans, color: C.ink70 } }, "Loading catalogue\u2026")));

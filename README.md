@@ -200,3 +200,15 @@ the final selling price remains the same as the current catalogue price.
   `festivalBannerTitle`, `festivalBannerText`, `festivalBannerButtonText`,
   `festivalBannerCategory`, `festivalBannerImage`, and
   `festivalBannerEnabled` when the campaign changes.
+
+
+## SEO / discoverability
+
+The site keeps the main React shop experience but also publishes crawlable,
+static pages for individual products, collections and fragrances. This avoids
+relying only on hash URLs such as `#/product/...` for search discovery.
+
+- `sitemap.xml` lists the homepage plus product, collection, fragrance, about and contact pages.
+- `llms.txt` gives machine-readable context about the brand, collections, fragrances and policies.
+- Product pages include Product + BreadcrumbList structured data, detailed descriptions, prices, availability, burn time, care, delivery, shipping and returns.
+- `index.html` and product routes use keyword-focused titles/descriptions without relying on keyword stuffing.

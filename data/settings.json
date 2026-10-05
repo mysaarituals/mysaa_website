@@ -7,8 +7,8 @@
   "instagram": "https://instagram.com/mysaarituals",
   "instagramHandle": "@mysaarituals",
   "address": "Noida, UP, India",
-  "seoTitle": "Mysaa Rituals — Handcrafted Fragrance & Gifting",
-  "seoDescription": "Handcrafted candles and gifts inspired by Indian fragrances, memories and everyday rituals.",
+  "seoTitle": "Mysaa Rituals — Handcrafted Soy Wax Candles, Indian Fragrances & Gifting",
+  "seoDescription": "Shop handcrafted soy wax candles, Indian fragrance candles, Grand Rituals, Mini Rituals, gift hampers, wedding return gifts and personalised candles from Mysaa Rituals.",
   "feedbackUrl": "https://forms.cloud.microsoft/r/6S4JFC1WaX?origin=QRCode",
   "feedbackQr": "./assets/feedback-qr.jpeg",
   "connectQr": "./assets/connect-qr.jpeg",
@@ -20,6 +20,7 @@
   "festivalBannerText": "Bring home thoughtful candles and gifts for Navratri, Dussehra and the festive celebrations ahead.",
   "festivalBannerButtonText": "Shop the Festive Collection",
   "festivalBannerCategory": "festivals-celebrations",
-  "festivalBannerImage": null,
-  "orderEmail": "mysaarituals@gmail.com"
+  "festivalBannerImage": "assets/festive-banner-bg.svg",
+  "orderEmail": "mysaarituals@gmail.com",
+  "seoKeywords": "handcrafted candles India, soy wax candles India, luxury candles India, Indian fragrance candles, handmade candles, gift hampers India, wedding return gifts, festive candles, personalised candles, custom candles, candle gifting, Mysaa Rituals"
 }

@@ -50,6 +50,7 @@ def main():
     headers = [
         "slug", "name", "categorySlug", "fragranceSlug", "mrp", "price", "discountPercent", "moq",
         "availability", "occasionSlugs", "optionValues", "volume", "weight", "materials", "packaging", "shortDescription", "about",
+        "description", "burnTime", "careInstructions", "deliveryTime", "shippingNote", "returnsPolicy", "seoKeywords",
         "bestseller", "isNew", "customizable", "active", "image1", "image2", "image3",
     ]
     rows = []
@@ -61,6 +62,8 @@ def main():
             "|".join(p.get("optionValues", []) or []),
             p.get("volume", ""), p.get("weight", ""), p.get("materials", ""),
             p.get("packaging", ""), p.get("shortDescription", ""), p.get("about", ""),
+            p.get("description", ""), p.get("burnTime", ""), p.get("careInstructions", ""),
+            p.get("deliveryTime", ""), p.get("shippingNote", ""), p.get("returnsPolicy", ""), p.get("seoKeywords", ""),
             p.get("bestseller", False), p.get("isNew", False), p.get("customizable", False),
             p.get("active", True), *(p.get("images", []) + ["", "", ""])[:3],
         ])

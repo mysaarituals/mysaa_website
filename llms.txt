@@ -1,0 +1,36 @@
+# Mysaa Rituals
+
+> Mysaa Rituals is an India-based handcrafted candle and gifting brand creating soy wax candles, Indian fragrance candles, gift hampers, wedding return gifts, festive gifting and personalised candle rituals.
+
+## Primary website
+- https://mysaarituals.github.io/mysaa_website/
+
+## Product catalogue
+- https://mysaarituals.github.io/mysaa_website/#/catalogue
+
+## Crawlable product pages
+Each product has a dedicated crawlable page under `/products/<product-slug>/`, with price, format, fragrance notes, burn time, care instructions, delivery guidance, shipping policy and returns policy.
+
+## Collections
+- https://mysaarituals.github.io/mysaa_website/collections/signature-ritual/
+- https://mysaarituals.github.io/mysaa_website/collections/everyday-ritual/
+- https://mysaarituals.github.io/mysaa_website/collections/mini-ritual/
+- https://mysaarituals.github.io/mysaa_website/collections/grand-ritual/
+- https://mysaarituals.github.io/mysaa_website/collections/discovery-set/
+- https://mysaarituals.github.io/mysaa_website/collections/gift-hampers/
+- https://mysaarituals.github.io/mysaa_website/collections/wax-melts/
+- https://mysaarituals.github.io/mysaa_website/collections/mold-candles/
+
+## Fragrances
+- https://mysaarituals.github.io/mysaa_website/fragrances/gulab-ki-chitthi/
+- https://mysaarituals.github.io/mysaa_website/fragrances/dhoop-chandan/
+- https://mysaarituals.github.io/mysaa_website/fragrances/gajre-ka-shringar/
+- https://mysaarituals.github.io/mysaa_website/fragrances/madhuban/
+- https://mysaarituals.github.io/mysaa_website/fragrances/raat-ki-rani/
+- https://mysaarituals.github.io/mysaa_website/fragrances/saanjh/
+
+## Gifting and customisation
+Mysaa Rituals offers festival gifting, wedding and return gifts, birthdays, just-because gifting, custom mould candles and personalised candle requests.
+
+## Policies
+Shipping cost is separate and shared during payment. Products cannot be returned unless the wrong product or a defective product is received.
