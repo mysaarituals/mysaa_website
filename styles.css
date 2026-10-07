@@ -265,9 +265,8 @@ button:hover, a:hover { opacity: .82; }
 .price-stack-large { gap:4px; }
 .product-detail-price { display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
 .price-original-row { display:flex; align-items:center; gap:10px; min-height:24px; }
-.price-original { position:relative; display:inline-block; color:var(--muted); font:400 14px/1 'Karla',sans-serif; white-space:nowrap; overflow:visible; }
-/* Intentional single diagonal strike-through for every pre-discount/MRP price. */
-.price-original::after { content:""; position:absolute; left:-4px; right:-4px; top:50%; height:2.5px; background:var(--rust); border-radius:999px; transform:rotate(-12deg); transform-origin:center; z-index:2; pointer-events:none; }
+.price-original { position:relative; display:inline-block; color:var(--muted); font:400 14px/1 'Karla',sans-serif; }
+.price-original::after { content:""; position:absolute; left:-3px; right:-3px; top:50%; height:2px; background:var(--rust); transform:rotate(-12deg); transform-origin:center; }
 .price-discount { display:inline-flex; align-items:center; justify-content:center; min-height:28px; padding:4px 10px; border:1px solid #CFCFCF; color:var(--ink); font:400 14px/1 'Karla',sans-serif; }
 .price-current { color:var(--rust); font:500 17px/1.05 'Karla',sans-serif; }
 .price-current-large { font-size:24px; }
