@@ -539,11 +539,7 @@ function ProductCard({ product, fragrance, images, nav }) {
         <p style={{ ...label, color: C.ink70, marginBottom: 8, minHeight: 14 }}>
           {outOfStock ? "Out of Stock" : product.bestseller ? "Bestseller" : product.isNew ? "New" : product.customizable ? "Customizable" : "\u00A0"}
         </p>
-        {isMoldCandle(product) ? (
-          <div className="mold-product-card-visual"><div className="mold-image-placeholder">Add mold image</div></div>
-        ) : (
-          <ImageOrPlaceholder src={productImage(product, images, 0)} label={product.name} />
-        )}
+        <ImageOrPlaceholder src={productImage(product, images, 0)} label={product.name} />
       </div>
       <div className="product-card-body" style={{ paddingTop: 14 }}>
         <h3 style={{ ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 }}>{product.name}</h3>
