@@ -70,7 +70,7 @@ function DiscountedPrice({ product, currentPrice, large = false }) {
 }
 
 // Product customisation pricing. Standard packaging is included in the base price.
-// Standard packaging is included where applicable. Flower moulds are included by default on jar products.
+// Premium packaging is currently marked Coming Soon. Flower moulds are included by default on jar products.
 const PACKAGING_OPTIONS = {
   standard: {
     label: "Standard Packaging",
@@ -78,6 +78,11 @@ const PACKAGING_OPTIONS = {
     priceDelta: 0,
     description: "Our carefully packed everyday presentation, keeping the Mysaa Rituals experience simple and beautiful."
   }
+};
+
+const PREMIUM_PACKAGING = {
+  label: "Premium Packaging — Coming Soon",
+  description: "Premium packaging is coming soon."
 };
 
 // Jar flower mould is now included by default on all jar products. There is no user-selectable jar finish option.
@@ -1037,17 +1042,15 @@ function ProductGallery({ product, images }) {
 
   return (
     <div className="product-gallery">
-      <div className="product-gallery-main">
-        <div className="product-gallery-main-frame">
-          <ImageOrPlaceholder src={gallery[activeIndex]} label={product.name} ratio="4 / 5" />
-          {total > 1 && (
-            <>
-              <button className="gallery-arrow gallery-arrow-left" onClick={() => move(-1)} aria-label="Previous product image">‹</button>
-              <button className="gallery-arrow gallery-arrow-right" onClick={() => move(1)} aria-label="Next product image">›</button>
-              <div className="gallery-counter">{activeIndex + 1} / {total}</div>
-            </>
-          )}
-        </div>
+      <div style={{ position: "relative" }}>
+        <ImageOrPlaceholder src={gallery[activeIndex]} label={product.name} ratio="4 / 5" />
+        {total > 1 && (
+          <>
+            <button className="gallery-arrow gallery-arrow-left" onClick={() => move(-1)} aria-label="Previous product image">‹</button>
+            <button className="gallery-arrow gallery-arrow-right" onClick={() => move(1)} aria-label="Next product image">›</button>
+            <div className="gallery-counter">{activeIndex + 1} / {total}</div>
+          </>
+        )}
       </div>
 
       {total > 1 && (
@@ -1231,11 +1234,14 @@ function ProductDetailPage({ data, nav, slug, settings }) {
   const hasPackagingOptions = supportsPackaging(product);
   const hasJarVariants = false;
   const packagingChoice = PACKAGING_OPTIONS.standard;
+  const jarChoice = JAR_VARIANT_DEFAULT;
   const minQty = isMold ? MOLD_CANDLE_MOQ : 1;
   const unitPrice = Number(product.price || 0);
   const subtotal = unitPrice * qty;
   const giftWrapTotal = giftWrap ? giftWrapCharge : 0;
   const totalPrice = subtotal + giftWrapTotal;
+
+  const enquiryMsg = `Hello Mysaa Rituals! I'd like to order:\n\n${product.name}\n${isMold ? `Mould shape: ${moldShape}\n` : ""}Quantity: ${qty}${isMold ? ` (MOQ ${MOLD_CANDLE_MOQ})` : ""}\nPackaging: ${isDiscoverySet ? "Discovery Set presentation" : (hasPackagingOptions ? packagingChoice.label : "Standard")}\nJar finish: ${isJarProduct(product) ? "Flower mould included by default" : ""}\nGift wrapping: ${giftWrap ? `Yes (+${inr(giftWrapCharge)})` : "No"}\nUnit price: ${unitPrice > 0 ? inr(unitPrice) : "Enquire"}\nSubtotal: ${subtotal > 0 ? inr(subtotal) : "Enquire"}\n${giftWrap ? `Gift wrapping: ${inr(giftWrapCharge)}\n` : ""}Total: ${totalPrice > 0 ? inr(totalPrice) : "Enquire"}\n\nCould you confirm availability and delivery details?`;
 
   const addCurrentProductToCart = () => {
     if (isOutOfStock(product)) return;
@@ -1256,19 +1262,15 @@ function ProductDetailPage({ data, nav, slug, settings }) {
     ["Packaging", hasPackagingOptions ? packagingChoice.label : product.packaging],
     ["Jar Finish", isJarProduct(product) ? "Flower mould included by default" : ""],
     ["Burn Time", product.burnTime],
+    ["Care Instructions", product.careInstructions],
+    ["Delivery Time", product.deliveryTime],
+    ["Shipping", product.shippingNote],
+    ["Returns", product.returnsPolicy],
     ["Collection", category ? category.name : ""],
   ].filter(([, v]) => v);
 
-  const candleCareSteps = [
-    { title: "Trim the wick", body: "Trim the wick to 5 mm before every burn." },
-    { title: "Let the first burn reach a full melt pool", body: "For the first burn, allow 2–3 hours so the wax melts evenly across the surface." },
-    { title: "Keep the flame calm", body: "Keep the candle away from drafts and direct sunlight." },
-    { title: "Know when to stop", body: "Stop burning when about 1 cm of wax remains at the base." },
-    { title: "Never leave it unattended", body: "Always extinguish the candle before leaving the room or going to sleep." },
-  ];
-
   return (
-    <div className="container product-detail-page" style={{ padding: "32px 20px 80px" }}>
+    <div className="container" style={{ padding: "32px 20px 80px" }}>
       <p style={{ ...label, color: C.ink70, marginBottom: 28 }}>
         <button onClick={() => nav("catalogue", "all")} style={{ ...label, color: C.ink70 }}>Catalogue</button>
         {" / "}
@@ -1280,17 +1282,23 @@ function ProductDetailPage({ data, nav, slug, settings }) {
       <div className="product-detail-grid">
         <ProductGallery product={product} images={data.images} />
 
-        <div className="product-detail-content">
+        <div>
           <h1 style={{ ...serif, fontSize: "clamp(26px,4vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 14 }}>{product.name}</h1>
           <div className="product-detail-price" style={{ marginBottom: 6 }}>
             <DiscountedPrice product={product} currentPrice={unitPrice} large />
           </div>
-          {isMold && (
+          {(hasPackagingOptions || hasJarVariants || isMold) && (
             <p style={{ ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 }}>
-              Minimum order {MOLD_CANDLE_MOQ} pieces · price shared on enquiry
+              {isMold ? `Minimum order ${MOLD_CANDLE_MOQ} pieces · price shared on enquiry` : `Discounted base price ${inr(product.price)} · final price updates with your selections`}
             </p>
           )}
-          <p className="product-detail-description">{product.description || product.shortDescription}</p>
+          <p style={{ ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, marginBottom: 24 }}>{product.description || product.shortDescription}</p>
+          <div className="product-detail-highlights">
+            <div><span>Burn Time</span><strong>{product.burnTime || "Approx. burn time varies by format"}</strong></div>
+            <div><span>Care</span><strong>{product.careInstructions || "Trim wick before each burn and keep away from drafts."}</strong></div>
+            <div><span>Delivery</span><strong>{product.deliveryTime || "Usually 3–7 business days; final estimate shared with your order."}</strong></div>
+            <div><span>Shipping</span><strong>{product.shippingNote || "Shipping cost is calculated separately and shared at payment."}</strong></div>
+          </div>
 
           {isMold && (
             <div style={{ marginBottom: 28 }}>
@@ -1316,30 +1324,43 @@ function ProductDetailPage({ data, nav, slug, settings }) {
           )}
 
           {hasPackagingOptions && (
-            <div className="standard-packaging-note">
-              <span>Standard Packaging · Included</span>
-              <small>{packagingChoice.description}</small>
-              <em>Premium packaging is coming soon.</em>
+            <div style={{ marginBottom: 28 }}>
+              <p style={{ ...label, color: C.ink70, marginBottom: 10 }}>Packaging</p>
+              <div className="option-grid">
+                <div className="selection-card selected" aria-current="true">
+                  <span style={{ ...sans, fontSize: 13.5, color: C.ink, fontWeight: 500 }}>Standard Packaging</span>
+                  <span style={{ ...sans, fontSize: 12.5, color: C.ink70, marginTop: 5 }}>Included</span>
+                </div>
+                <div className="selection-card coming-soon" aria-disabled="true">
+                  <span style={{ ...sans, fontSize: 13.5, color: C.ink70, fontWeight: 500 }}>{PREMIUM_PACKAGING.label}</span>
+                  <span style={{ ...sans, fontSize: 12.5, color: C.rust, marginTop: 5 }}>Coming Soon</span>
+                </div>
+              </div>
+              <div className="packaging-note">
+                <strong style={{ ...serif, fontSize: 17, fontWeight: 500, color: C.ink }}>{packagingChoice.label}</strong>
+                <p style={{ ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.7, marginTop: 6 }}>{packagingChoice.description}</p>
+                <p className="premium-packaging-single-note">Premium Packaging — Coming Soon</p>
+              </div>
             </div>
           )}
 
           {giftWrapAvailable && (
-            <div style={{ marginBottom: 28, padding: "16px", border: `1px solid ${C.line}`, background: C.card }}>
-              <label style={{ display: "flex", alignItems: "flex-start", gap: 12, cursor: "pointer" }}>
-                <input
-                  type="checkbox"
-                  checked={giftWrap}
-                  onChange={(e) => setGiftWrap(e.target.checked)}
-                  style={{ marginTop: 3, accentColor: C.rust }}
-                />
-                <span>
-                  <strong style={{ ...serif, fontSize: 18, fontWeight: 500, color: C.ink }}>Gift wrapping</strong>
-                  <span style={{ ...sans, display: "block", fontSize: 13.5, color: C.ink70, lineHeight: 1.6, marginTop: 4 }}>
-                    Add gift wrapping for someone special · +{inr(giftWrapCharge)}
-                  </span>
+          <div style={{ marginBottom: 28, padding: "16px", border: `1px solid ${C.line}`, background: C.card }}>
+            <label style={{ display: "flex", alignItems: "flex-start", gap: 12, cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                checked={giftWrap}
+                onChange={(e) => setGiftWrap(e.target.checked)}
+                style={{ marginTop: 3, accentColor: C.rust }}
+              />
+              <span>
+                <strong style={{ ...serif, fontSize: 18, fontWeight: 500, color: C.ink }}>Gift wrapping</strong>
+                <span style={{ ...sans, display: "block", fontSize: 13.5, color: C.ink70, lineHeight: 1.6, marginTop: 4 }}>
+                  Add gift wrapping for someone special · +{inr(giftWrapCharge)}
                 </span>
-              </label>
-            </div>
+              </span>
+            </label>
+          </div>
           )}
 
           <div style={{ marginBottom: 28 }}>
@@ -1365,16 +1386,13 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             </button>
           )}
 
-          <div className="product-information-inline">
-            <h2 style={{ ...serif, fontSize: 21, color: C.ink, fontWeight: 500, marginBottom: 14 }}>Product Information</h2>
-            <div>
-              {infoRows.map(([k, v]) => (
-                <div key={k} className="product-information-row">
-                  <span style={{ ...label, color: C.ink70 }}>{k}</span>
-                  <span style={{ ...sans, fontSize: 13.5, color: C.ink, textAlign: "right" }}>{v}</span>
-                </div>
-              ))}
-            </div>
+          <div className="hairline-top" style={{ marginTop: 32 }}>
+            <h2 style={{ ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 }}>About this Product</h2>
+            <p style={{ ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75 }}>{product.about}</p>
+          </div>
+          <div className="policy-note">
+            <strong>Returns Policy</strong>
+            <span>{product.returnsPolicy || "This product cannot be returned unless the wrong product or a defective product is received."}</span>
           </div>
 
           {isDiscoverySet && (
@@ -1396,24 +1414,25 @@ function ProductDetailPage({ data, nav, slug, settings }) {
               </div>
             </div>
           )}
+
+          {hasPackagingOptions && null}
+        </div>
+      </div>
+
+      <div style={{ marginTop: 56 }}>
+        <h2 style={{ ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 20 }}>Product Information</h2>
+        <div>
+          {infoRows.map(([k, v]) => (
+            <div key={k} style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "space-between", padding: "14px 0", borderBottom: `1px solid ${C.line}` }}>
+              <span style={{ ...label, color: C.ink70 }}>{k}</span>
+              <span style={{ ...sans, fontSize: 14, color: C.ink, textAlign: "right" }}>{v}</span>
+            </div>
+          ))}
         </div>
       </div>
 
       <div style={{ marginTop: 64 }}>
         <HowToOrder steps={HOW_TO_ORDER_PRODUCT} />
-      </div>
-
-      <div className="candle-care-section" style={{ marginTop: 64 }}>
-        <SectionHeading eyebrow="Candle Care" title="A little care goes a long way." sub="Simple habits help your Mysaa Rituals candle burn cleanly, evenly and beautifully." />
-        <div className="steps-grid candle-care-steps" style={{ marginTop: 32 }}>
-          {candleCareSteps.map((step, i) => (
-            <div key={step.title} className="hairline-top candle-care-step">
-              <p style={{ ...label, color: C.rust, marginBottom: 14 }}>{String(i + 1).padStart(2, "0")}</p>
-              <h4 style={{ ...serif, fontSize: 18, color: C.ink, fontWeight: 500, marginBottom: 8 }}>{step.title}</h4>
-              <p style={{ ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.65 }}>{step.body}</p>
-            </div>
-          ))}
-        </div>
       </div>
 
       {related.length > 0 && (
@@ -1741,11 +1760,6 @@ function CartPage({ nav, settings }) {
           </div>
           <aside className="cart-summary">
             <div className="cart-summary-total"><span>Total</span><strong>{inr(total)}</strong></div>
-            <div className="cart-order-policy">
-              <p><strong>Delivery</strong><span>Estimated delivery time is confirmed with your order.</span></p>
-              <p><strong>Shipping</strong><span>Shipping cost is separate and will be shared while confirming payment.</span></p>
-              <p><strong>Returns</strong><span>Returns are accepted only if the wrong product or a defective product is received.</span></p>
-            </div>
             <p className="cart-email-note">Orders are placed through email only. Your email app will open with the order details already filled in.</p>
             <div className="cart-customer-fields">
               <label><span>Name</span><input value={customer.name} onChange={setCustomerField("name")} placeholder="Your name" /></label>

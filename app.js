@@ -64,7 +64,7 @@ function DiscountedPrice({ product, currentPrice, large = false }) {
         React.createElement("span", { className: large ? "price-current price-current-large" : "price-current" }, inr(current))));
 }
 // Product customisation pricing. Standard packaging is included in the base price.
-// Premium packaging is currently marked Coming Soon. Flower moulds are included by default on jar products.
+// Standard packaging is included where applicable. Flower moulds are included by default on jar products.
 const PACKAGING_OPTIONS = {
     standard: {
         label: "Standard Packaging",
@@ -72,10 +72,6 @@ const PACKAGING_OPTIONS = {
         priceDelta: 0,
         description: "Our carefully packed everyday presentation, keeping the Mysaa Rituals experience simple and beautiful."
     }
-};
-const PREMIUM_PACKAGING = {
-    label: "Premium Packaging — Coming Soon",
-    description: "Premium packaging is coming soon."
 };
 // Jar flower mould is now included by default on all jar products. There is no user-selectable jar finish option.
 const JAR_VARIANT_DEFAULT = {
@@ -745,15 +741,16 @@ function ProductGallery({ product, images }) {
         setActiveIndex((current) => (current + direction + total) % total);
     };
     return (React.createElement("div", { className: "product-gallery" },
-        React.createElement("div", { style: { position: "relative" } },
-            React.createElement(ImageOrPlaceholder, { src: gallery[activeIndex], label: product.name, ratio: "4 / 5" }),
-            total > 1 && (React.createElement(React.Fragment, null,
-                React.createElement("button", { className: "gallery-arrow gallery-arrow-left", onClick: () => move(-1), "aria-label": "Previous product image" }, "\u2039"),
-                React.createElement("button", { className: "gallery-arrow gallery-arrow-right", onClick: () => move(1), "aria-label": "Next product image" }, "\u203A"),
-                React.createElement("div", { className: "gallery-counter" },
-                    activeIndex + 1,
-                    " / ",
-                    total)))),
+        React.createElement("div", { className: "product-gallery-main" },
+            React.createElement("div", { className: "product-gallery-main-frame" },
+                React.createElement(ImageOrPlaceholder, { src: gallery[activeIndex], label: product.name, ratio: "4 / 5" }),
+                total > 1 && (React.createElement(React.Fragment, null,
+                    React.createElement("button", { className: "gallery-arrow gallery-arrow-left", onClick: () => move(-1), "aria-label": "Previous product image" }, "\u2039"),
+                    React.createElement("button", { className: "gallery-arrow gallery-arrow-right", onClick: () => move(1), "aria-label": "Next product image" }, "\u203A"),
+                    React.createElement("div", { className: "gallery-counter" },
+                        activeIndex + 1,
+                        " / ",
+                        total))))),
         total > 1 && (React.createElement("div", { className: "product-gallery-thumbs", "aria-label": "Product photographs" }, gallery.map((src, index) => (React.createElement("button", { key: src, className: `gallery-thumb${index === activeIndex ? " active" : ""}`, onClick: () => setActiveIndex(index), "aria-label": `View product image ${index + 1}`, "aria-current": index === activeIndex ? "true" : undefined },
             React.createElement("img", { src: src, alt: `${product.name} photograph ${index + 1}` }))))))));
 }
@@ -915,13 +912,11 @@ function ProductDetailPage({ data, nav, slug, settings }) {
     const hasPackagingOptions = supportsPackaging(product);
     const hasJarVariants = false;
     const packagingChoice = PACKAGING_OPTIONS.standard;
-    const jarChoice = JAR_VARIANT_DEFAULT;
     const minQty = isMold ? MOLD_CANDLE_MOQ : 1;
     const unitPrice = Number(product.price || 0);
     const subtotal = unitPrice * qty;
     const giftWrapTotal = giftWrap ? giftWrapCharge : 0;
     const totalPrice = subtotal + giftWrapTotal;
-    const enquiryMsg = `Hello Mysaa Rituals! I'd like to order:\n\n${product.name}\n${isMold ? `Mould shape: ${moldShape}\n` : ""}Quantity: ${qty}${isMold ? ` (MOQ ${MOLD_CANDLE_MOQ})` : ""}\nPackaging: ${isDiscoverySet ? "Discovery Set presentation" : (hasPackagingOptions ? packagingChoice.label : "Standard")}\nJar finish: ${isJarProduct(product) ? "Flower mould included by default" : ""}\nGift wrapping: ${giftWrap ? `Yes (+${inr(giftWrapCharge)})` : "No"}\nUnit price: ${unitPrice > 0 ? inr(unitPrice) : "Enquire"}\nSubtotal: ${subtotal > 0 ? inr(subtotal) : "Enquire"}\n${giftWrap ? `Gift wrapping: ${inr(giftWrapCharge)}\n` : ""}Total: ${totalPrice > 0 ? inr(totalPrice) : "Enquire"}\n\nCould you confirm availability and delivery details?`;
     const addCurrentProductToCart = () => {
         if (isOutOfStock(product))
             return;
@@ -941,13 +936,16 @@ function ProductDetailPage({ data, nav, slug, settings }) {
         ["Packaging", hasPackagingOptions ? packagingChoice.label : product.packaging],
         ["Jar Finish", isJarProduct(product) ? "Flower mould included by default" : ""],
         ["Burn Time", product.burnTime],
-        ["Care Instructions", product.careInstructions],
-        ["Delivery Time", product.deliveryTime],
-        ["Shipping", product.shippingNote],
-        ["Returns", product.returnsPolicy],
         ["Collection", category ? category.name : ""],
     ].filter(([, v]) => v);
-    return (React.createElement("div", { className: "container", style: { padding: "32px 20px 80px" } },
+    const candleCareSteps = [
+        { title: "Trim the wick", body: "Trim the wick to 5 mm before every burn." },
+        { title: "Let the first burn reach a full melt pool", body: "For the first burn, allow 2–3 hours so the wax melts evenly across the surface." },
+        { title: "Keep the flame calm", body: "Keep the candle away from drafts and direct sunlight." },
+        { title: "Know when to stop", body: "Stop burning when about 1 cm of wax remains at the base." },
+        { title: "Never leave it unattended", body: "Always extinguish the candle before leaving the room or going to sleep." },
+    ];
+    return (React.createElement("div", { className: "container product-detail-page", style: { padding: "32px 20px 80px" } },
         React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 28 } },
             React.createElement("button", { onClick: () => nav("catalogue", "all"), style: { ...label, color: C.ink70 } }, "Catalogue"),
             " / ",
@@ -956,25 +954,15 @@ function ProductDetailPage({ data, nav, slug, settings }) {
             React.createElement("span", { style: { color: C.ink } }, product.name)),
         React.createElement("div", { className: "product-detail-grid" },
             React.createElement(ProductGallery, { product: product, images: data.images }),
-            React.createElement("div", null,
+            React.createElement("div", { className: "product-detail-content" },
                 React.createElement("h1", { style: { ...serif, fontSize: "clamp(26px,4vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 14 } }, product.name),
                 React.createElement("div", { className: "product-detail-price", style: { marginBottom: 6 } },
                     React.createElement(DiscountedPrice, { product: product, currentPrice: unitPrice, large: true })),
-                (hasPackagingOptions || hasJarVariants || isMold) && (React.createElement("p", { style: { ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 } }, isMold ? `Minimum order ${MOLD_CANDLE_MOQ} pieces · price shared on enquiry` : `Discounted base price ${inr(product.price)} · final price updates with your selections`)),
-                React.createElement("p", { style: { ...sans, fontSize: 15, color: C.ink70, lineHeight: 1.75, marginBottom: 24 } }, product.description || product.shortDescription),
-                React.createElement("div", { className: "product-detail-highlights" },
-                    React.createElement("div", null,
-                        React.createElement("span", null, "Burn Time"),
-                        React.createElement("strong", null, product.burnTime || "Approx. burn time varies by format")),
-                    React.createElement("div", null,
-                        React.createElement("span", null, "Care"),
-                        React.createElement("strong", null, product.careInstructions || "Trim wick before each burn and keep away from drafts.")),
-                    React.createElement("div", null,
-                        React.createElement("span", null, "Delivery"),
-                        React.createElement("strong", null, product.deliveryTime || "Usually 3–7 business days; final estimate shared with your order.")),
-                    React.createElement("div", null,
-                        React.createElement("span", null, "Shipping"),
-                        React.createElement("strong", null, product.shippingNote || "Shipping cost is calculated separately and shared at payment."))),
+                isMold && (React.createElement("p", { style: { ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 } },
+                    "Minimum order ",
+                    MOLD_CANDLE_MOQ,
+                    " pieces \u00B7 price shared on enquiry")),
+                React.createElement("p", { className: "product-detail-description" }, product.description || product.shortDescription),
                 isMold && (React.createElement("div", { style: { marginBottom: 28 } },
                     React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Choose Your Mould"),
                     React.createElement("div", { className: "option-grid" }, MOLD_CANDLE_SHAPES.map((shape) => (React.createElement("button", { key: shape, onClick: () => setMoldShape(shape), className: `selection-card${moldShape === shape ? " selected" : ""}` },
@@ -986,19 +974,10 @@ function ProductDetailPage({ data, nav, slug, settings }) {
                 fragrance && (React.createElement("div", { style: { marginBottom: 24 } },
                     React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Variant"),
                     React.createElement("span", { style: { ...sans, fontSize: 13, padding: "9px 16px", border: `1px solid ${C.ink}`, display: "inline-block" } }, fragrance.name))),
-                hasPackagingOptions && (React.createElement("div", { style: { marginBottom: 28 } },
-                    React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Packaging"),
-                    React.createElement("div", { className: "option-grid" },
-                        React.createElement("div", { className: "selection-card selected", "aria-current": "true" },
-                            React.createElement("span", { style: { ...sans, fontSize: 13.5, color: C.ink, fontWeight: 500 } }, "Standard Packaging"),
-                            React.createElement("span", { style: { ...sans, fontSize: 12.5, color: C.ink70, marginTop: 5 } }, "Included")),
-                        React.createElement("div", { className: "selection-card coming-soon", "aria-disabled": "true" },
-                            React.createElement("span", { style: { ...sans, fontSize: 13.5, color: C.ink70, fontWeight: 500 } }, PREMIUM_PACKAGING.label),
-                            React.createElement("span", { style: { ...sans, fontSize: 12.5, color: C.rust, marginTop: 5 } }, "Coming Soon"))),
-                    React.createElement("div", { className: "packaging-note" },
-                        React.createElement("strong", { style: { ...serif, fontSize: 17, fontWeight: 500, color: C.ink } }, packagingChoice.label),
-                        React.createElement("p", { style: { ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.7, marginTop: 6 } }, packagingChoice.description),
-                        React.createElement("p", { className: "premium-packaging-single-note" }, "Premium Packaging \u2014 Coming Soon")))),
+                hasPackagingOptions && (React.createElement("div", { className: "standard-packaging-note" },
+                    React.createElement("span", null, "Standard Packaging \u00B7 Included"),
+                    React.createElement("small", null, packagingChoice.description),
+                    React.createElement("em", null, "Premium packaging is coming soon."))),
                 giftWrapAvailable && (React.createElement("div", { style: { marginBottom: 28, padding: "16px", border: `1px solid ${C.line}`, background: C.card } },
                     React.createElement("label", { style: { display: "flex", alignItems: "flex-start", gap: 12, cursor: "pointer" } },
                         React.createElement("input", { type: "checkbox", checked: giftWrap, onChange: (e) => setGiftWrap(e.target.checked), style: { marginTop: 3, accentColor: C.rust } }),
@@ -1015,12 +994,11 @@ function ProductDetailPage({ data, nav, slug, settings }) {
                         React.createElement("button", { onClick: () => setQty((q) => q + 1), style: { ...sans, fontSize: 16, padding: "10px 16px", color: C.ink }, "aria-label": "Increase quantity" }, "+"))),
                 isOutOfStock(product) ? (React.createElement("button", { className: "out-of-stock-button", disabled: true }, "Out of Stock")) : (React.createElement(Button, { onClick: addCurrentProductToCart, variant: "solid", style: { width: "100%", justifyContent: "center" } }, "Add to Cart")),
                 product.customizable && (React.createElement("button", { onClick: () => nav("create-ritual"), style: { ...label, color: C.rust, marginTop: 18, display: "block", textDecoration: "underline", textUnderlineOffset: "3px" } }, "Want this customized instead? \u2192")),
-                React.createElement("div", { className: "hairline-top", style: { marginTop: 32 } },
-                    React.createElement("h2", { style: { ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 } }, "About this Product"),
-                    React.createElement("p", { style: { ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75 } }, product.about)),
-                React.createElement("div", { className: "policy-note" },
-                    React.createElement("strong", null, "Returns Policy"),
-                    React.createElement("span", null, product.returnsPolicy || "This product cannot be returned unless the wrong product or a defective product is received.")),
+                React.createElement("div", { className: "product-information-inline" },
+                    React.createElement("h2", { style: { ...serif, fontSize: 21, color: C.ink, fontWeight: 500, marginBottom: 14 } }, "Product Information"),
+                    React.createElement("div", null, infoRows.map(([k, v]) => (React.createElement("div", { key: k, className: "product-information-row" },
+                        React.createElement("span", { style: { ...label, color: C.ink70 } }, k),
+                        React.createElement("span", { style: { ...sans, fontSize: 13.5, color: C.ink, textAlign: "right" } }, v)))))),
                 isDiscoverySet && (React.createElement("div", { className: "hairline-top", style: { marginTop: 32 } },
                     React.createElement("h2", { style: { ...serif, fontSize: 20, color: C.ink, fontWeight: 500, marginBottom: 12 } }, "What's Inside the Discovery Set"),
                     React.createElement("p", { style: { ...sans, fontSize: 14.5, color: C.ink70, lineHeight: 1.75, marginBottom: 14 } }, "Six 60 ml Mini Ritual candles, one in each Mysaa Rituals fragrance, so you can experience the full collection and discover the scent that feels most personal to you."),
@@ -1029,15 +1007,15 @@ function ProductDetailPage({ data, nav, slug, settings }) {
                         return f ? (React.createElement("div", { key: slug, className: "discovery-fragrance-item" },
                             React.createElement("span", { style: { ...label, color: C.rust } }, String(index + 1).padStart(2, "0")),
                             React.createElement("span", { style: { ...serif, fontSize: 17, color: C.ink } }, f.name))) : null;
-                    })))),
-                hasPackagingOptions && null)),
-        React.createElement("div", { style: { marginTop: 56 } },
-            React.createElement("h2", { style: { ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 20 } }, "Product Information"),
-            React.createElement("div", null, infoRows.map(([k, v]) => (React.createElement("div", { key: k, style: { display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "space-between", padding: "14px 0", borderBottom: `1px solid ${C.line}` } },
-                React.createElement("span", { style: { ...label, color: C.ink70 } }, k),
-                React.createElement("span", { style: { ...sans, fontSize: 14, color: C.ink, textAlign: "right" } }, v)))))),
+                    })))))),
         React.createElement("div", { style: { marginTop: 64 } },
             React.createElement(HowToOrder, { steps: HOW_TO_ORDER_PRODUCT })),
+        React.createElement("div", { className: "candle-care-section", style: { marginTop: 64 } },
+            React.createElement(SectionHeading, { eyebrow: "Candle Care", title: "A little care goes a long way.", sub: "Simple habits help your Mysaa Rituals candle burn cleanly, evenly and beautifully." }),
+            React.createElement("div", { className: "steps-grid candle-care-steps", style: { marginTop: 32 } }, candleCareSteps.map((step, i) => (React.createElement("div", { key: step.title, className: "hairline-top candle-care-step" },
+                React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 14 } }, String(i + 1).padStart(2, "0")),
+                React.createElement("h4", { style: { ...serif, fontSize: 18, color: C.ink, fontWeight: 500, marginBottom: 8 } }, step.title),
+                React.createElement("p", { style: { ...sans, fontSize: 13.5, color: C.ink70, lineHeight: 1.65 } }, step.body)))))),
         related.length > 0 && (React.createElement("div", { style: { marginTop: 64 } },
             React.createElement("h2", { style: { ...serif, fontSize: 22, color: C.ink, fontWeight: 500, marginBottom: 24 } }, "You May Also Like"),
             React.createElement("div", { className: "product-grid" }, [...related].sort((a, b) => Number(isOutOfStock(a)) - Number(isOutOfStock(b))).map((p) => (React.createElement(ProductCard, { key: p.slug, product: p, fragrance: data.fragrances.find((f) => f.slug === p.fragranceSlug), images: data.images, nav: nav }))))))));
@@ -1278,6 +1256,16 @@ function CartPage({ nav, settings }) {
                 React.createElement("div", { className: "cart-summary-total" },
                     React.createElement("span", null, "Total"),
                     React.createElement("strong", null, inr(total))),
+                React.createElement("div", { className: "cart-order-policy" },
+                    React.createElement("p", null,
+                        React.createElement("strong", null, "Delivery"),
+                        React.createElement("span", null, "Estimated delivery time is confirmed with your order.")),
+                    React.createElement("p", null,
+                        React.createElement("strong", null, "Shipping"),
+                        React.createElement("span", null, "Shipping cost is separate and will be shared while confirming payment.")),
+                    React.createElement("p", null,
+                        React.createElement("strong", null, "Returns"),
+                        React.createElement("span", null, "Returns are accepted only if the wrong product or a defective product is received."))),
                 React.createElement("p", { className: "cart-email-note" }, "Orders are placed through email only. Your email app will open with the order details already filled in."),
                 React.createElement("div", { className: "cart-customer-fields" },
                     React.createElement("label", null,
