@@ -428,6 +428,8 @@ button:hover, a:hover { opacity: .82; }
 .mold-shape-card.selected::after { content:'✓'; position:absolute; top:7px; right:7px; width:18px; height:18px; border-radius:50%; background:var(--ink); color:#fff; font:600 11px/18px 'Karla',sans-serif; text-align:center; }
 .mold-shape-card > span { font:500 12px 'Karla',sans-serif; }
 .mold-shape-art { flex:1; width:100%; display:flex; align-items:center; justify-content:center; color:#B9A891; }
+.mold-shape-art img { width:100%; height:110px; object-fit:contain; display:block; mix-blend-mode:multiply; }
+.mold-summary-art img { width:100%; height:76px; object-fit:contain; display:block; mix-blend-mode:multiply; }
 .mold-shape-visual { width:82px; height:82px; display:block; }
 .mold-fragrance-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
 .mold-fragrance-card { padding:0 0 10px; text-align:left; border:1px solid transparent; background:#f7f2e9; }

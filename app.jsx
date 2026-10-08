@@ -133,9 +133,15 @@ function supportsPackaging(product) {
 }
 
 function productImage(product, images, index = 0) {
+  if (isMoldCandle(product)) {
+    const moldImages = [
+      "assets/catalogue/mold-candles/01_mold%20candle.jpeg",
+    ];
+    return moldImages[index] || moldImages[0];
+  }
   const key = `${product.fragranceSlug}/${product.categorySlug}`;
   const list = (images && images.products && images.products[key]) || [];
-  return list[index];
+  return list[index] || (Array.isArray(product.images) ? product.images[index] : undefined);
 }
 function fragranceImage(fragrance, images, index = 0) {
   const list = (images && images.fragrances && images.fragrances[fragrance.slug]) || [];
@@ -145,7 +151,10 @@ function fragranceImage(fragrance, images, index = 0) {
 function ImageOrPlaceholder({ src, label: text, ratio = "4 / 5" }) {
   const [failed, setFailed] = React.useState(false);
   if (!src || failed) return <Placeholder label={text} ratio={ratio} />;
-  return <div style={{aspectRatio: ratio, background: C.card, border: `1px solid ${C.line}`, overflow: "hidden"}}><img src={src} alt={text || "Mysaa Rituals"} onError={() => setFailed(true)} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}} /></div>;
+  return <div style={{aspectRatio: ratio, background: C.card, border: `1px solid ${C.line}`, overflow: "hidden"}}>
+    <img src={src} alt={text || "Mysaa Rituals"} loading="lazy" decoding="async" onError={() => setFailed(true)}
+      style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}} />
+  </div>;
 }
 
 function waLink(number, message) {
@@ -1079,6 +1088,17 @@ function MoldShapeVisual({ shape }) {
   return <svg viewBox="0 0 100 100" className="mold-shape-visual" aria-hidden="true">{shapes[shape] || shapes.Daisy}</svg>;
 }
 
+const MOLD_IMAGE_MAP = {
+  Daisy: "assets/catalogue/mold-candles/daisy.jpeg",
+  Rose: "assets/catalogue/mold-candles/rose.jpeg",
+  Carnation: "assets/catalogue/mold-candles/carnation.jpeg",
+  Cactus: "assets/catalogue/mold-candles/cactus.jpeg",
+  Tortoise: "assets/catalogue/mold-candles/turtle.jpeg",
+  Laddu: "assets/catalogue/mold-candles/laddu%202.jpeg",
+  Chakli: "assets/catalogue/mold-candles/chakli.jpeg",
+};
+const moldImage = (shape) => MOLD_IMAGE_MAP[shape];
+
 const MOLD_COLORS = [
   { name: "Ivory", hex: "#EFE7D8" },
   { name: "Blush", hex: "#E9C4BD" },
@@ -1134,7 +1154,9 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
             <div className="mold-shape-grid">
               {MOLD_CANDLE_SHAPES.map((item) => (
                 <button key={item} onClick={() => setShape(item)} className={`mold-shape-card${shape === item ? " selected" : ""}`}>
-                  <div className="mold-shape-art"><div className="mold-image-placeholder">Add mold image</div></div>
+                  <div className="mold-shape-art">
+  <img src={moldImage(item)} alt={`${item} mould candle`} loading="lazy" decoding="async" />
+</div>
                   <span>{item}</span>
                 </button>
               ))}
@@ -1170,7 +1192,7 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
 
         <aside className="mold-summary">
           <p style={{ ...label, color: C.ink70, marginBottom: 16 }}>Your selection</p>
-          <div className="mold-summary-preview"><div className="mold-summary-art" style={{ background: colorData.hex }}><div className="mold-image-placeholder">Add mold image</div></div><div><strong>{shape}</strong><span>{fragrance ? fragrance.name : ""}</span><span>{color}</span></div></div>
+          <div className="mold-summary-preview"><div className="mold-summary-art" style={{ background: colorData.hex }}><img src={moldImage(shape)} alt={`${shape} mould candle`} decoding="async" /></div><div><strong>{shape}</strong><span>{fragrance ? fragrance.name : ""}</span><span>{color}</span></div></div>
           <div className="mold-summary-line"><span>Quantity</span><div className="mold-quantity"><button onClick={() => setQty((q) => Math.max(MOLD_CANDLE_MOQ, q - 1))}>−</button><strong>{qty}</strong><button onClick={() => setQty((q) => q + 1)}>+</button></div></div>
           <div className="mold-summary-price"><span>Current batch price</span><strong>{inr(subtotal)}</strong><small>Batch basis: ₹399 for the minimum 6 pieces</small></div>
           <div className="mold-moq-note">Minimum order: {MOLD_CANDLE_MOQ} pieces. Your selected mould, fragrance and colour will be made as one batch.</div>
@@ -1737,11 +1759,6 @@ function CartPage({ nav, settings }) {
           </div>
           <aside className="cart-summary">
             <div className="cart-summary-total"><span>Total</span><strong>{inr(total)}</strong></div>
-            <div className="cart-order-policy">
-              <p><strong>Delivery</strong><span>Estimated delivery time is confirmed with your order.</span></p>
-              <p><strong>Shipping</strong><span>Shipping cost is separate and will be shared while confirming payment.</span></p>
-              <p><strong>Returns</strong><span>Returns are accepted only if the wrong product or a defective product is received.</span></p>
-            </div>
             <p className="cart-email-note">Orders are placed through email only. Your email app will open with the order details already filled in.</p>
             <div className="cart-customer-fields">
               <label><span>Name</span><input value={customer.name} onChange={setCustomerField("name")} placeholder="Your name" /></label>
@@ -1759,6 +1776,11 @@ function CartPage({ nav, settings }) {
             </div>
             <a className="cart-email-button" href={emailHref}>Send Order by Email →</a>
             <p className="cart-small-note">To: {settings.email}</p>
+            <div className="cart-order-policy">
+              <p><strong>Delivery</strong><span>Estimated delivery time is confirmed with your order.</span></p>
+              <p><strong>Shipping</strong><span>Shipping cost is separate and will be shared while confirming payment.</span></p>
+              <p><strong>Returns</strong><span>Returns are accepted only if the wrong product or a defective product is received.</span></p>
+            </div>
           </aside>
         </div>
       )}

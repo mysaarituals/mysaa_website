@@ -121,9 +121,15 @@ function supportsPackaging(product) {
     return product && ["hero-jar-candle", "wide-jar-candle", "wax-melts"].includes(product.categorySlug);
 }
 function productImage(product, images, index = 0) {
+    if (isMoldCandle(product)) {
+        const moldImages = [
+            "assets/catalogue/mold-candles/01_mold%20candle.jpeg",
+        ];
+        return moldImages[index] || moldImages[0];
+    }
     const key = `${product.fragranceSlug}/${product.categorySlug}`;
     const list = (images && images.products && images.products[key]) || [];
-    return list[index];
+    return list[index] || (Array.isArray(product.images) ? product.images[index] : undefined);
 }
 function fragranceImage(fragrance, images, index = 0) {
     const list = (images && images.fragrances && images.fragrances[fragrance.slug]) || [];
@@ -134,7 +140,7 @@ function ImageOrPlaceholder({ src, label: text, ratio = "4 / 5" }) {
     if (!src || failed)
         return React.createElement(Placeholder, { label: text, ratio: ratio });
     return React.createElement("div", { style: { aspectRatio: ratio, background: C.card, border: `1px solid ${C.line}`, overflow: "hidden" } },
-        React.createElement("img", { src: src, alt: text || "Mysaa Rituals", onError: () => setFailed(true), style: { width: "100%", height: "100%", objectFit: "cover", display: "block" } }));
+        React.createElement("img", { src: src, alt: text || "Mysaa Rituals", loading: "lazy", decoding: "async", onError: () => setFailed(true), style: { width: "100%", height: "100%", objectFit: "cover", display: "block" } }));
 }
 function waLink(number, message) {
     const clean = (number || "").replace(/[^0-9]/g, "");
@@ -768,6 +774,16 @@ function MoldShapeVisual({ shape }) {
     };
     return React.createElement("svg", { viewBox: "0 0 100 100", className: "mold-shape-visual", "aria-hidden": "true" }, shapes[shape] || shapes.Daisy);
 }
+const MOLD_IMAGE_MAP = {
+    Daisy: "assets/catalogue/mold-candles/daisy.jpeg",
+    Rose: "assets/catalogue/mold-candles/rose.jpeg",
+    Carnation: "assets/catalogue/mold-candles/carnation.jpeg",
+    Cactus: "assets/catalogue/mold-candles/cactus.jpeg",
+    Tortoise: "assets/catalogue/mold-candles/turtle.jpeg",
+    Laddu: "assets/catalogue/mold-candles/laddu%202.jpeg",
+    Chakli: "assets/catalogue/mold-candles/chakli.jpeg",
+};
+const moldImage = (shape) => MOLD_IMAGE_MAP[shape];
 const MOLD_COLORS = [
     { name: "Ivory", hex: "#EFE7D8" },
     { name: "Blush", hex: "#E9C4BD" },
@@ -821,7 +837,7 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
                         React.createElement("h2", null, "Choose your mould")),
                     React.createElement("div", { className: "mold-shape-grid" }, MOLD_CANDLE_SHAPES.map((item) => (React.createElement("button", { key: item, onClick: () => setShape(item), className: `mold-shape-card${shape === item ? " selected" : ""}` },
                         React.createElement("div", { className: "mold-shape-art" },
-                            React.createElement("div", { className: "mold-image-placeholder" }, "Add mold image")),
+                            React.createElement("img", { src: moldImage(item), alt: `${item} mould candle`, loading: "lazy", decoding: "async" })),
                         React.createElement("span", null, item)))))),
                 React.createElement("section", { className: "mold-step" },
                     React.createElement("div", { className: "mold-step-heading" },
@@ -844,7 +860,7 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
                 React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 16 } }, "Your selection"),
                 React.createElement("div", { className: "mold-summary-preview" },
                     React.createElement("div", { className: "mold-summary-art", style: { background: colorData.hex } },
-                        React.createElement("div", { className: "mold-image-placeholder" }, "Add mold image")),
+                        React.createElement("img", { src: moldImage(shape), alt: `${shape} mould candle`, decoding: "async" })),
                     React.createElement("div", null,
                         React.createElement("strong", null, shape),
                         React.createElement("span", null, fragrance ? fragrance.name : ""),
@@ -1255,16 +1271,6 @@ function CartPage({ nav, settings }) {
                 React.createElement("div", { className: "cart-summary-total" },
                     React.createElement("span", null, "Total"),
                     React.createElement("strong", null, inr(total))),
-                React.createElement("div", { className: "cart-order-policy" },
-                    React.createElement("p", null,
-                        React.createElement("strong", null, "Delivery"),
-                        React.createElement("span", null, "Estimated delivery time is confirmed with your order.")),
-                    React.createElement("p", null,
-                        React.createElement("strong", null, "Shipping"),
-                        React.createElement("span", null, "Shipping cost is separate and will be shared while confirming payment.")),
-                    React.createElement("p", null,
-                        React.createElement("strong", null, "Returns"),
-                        React.createElement("span", null, "Returns are accepted only if the wrong product or a defective product is received."))),
                 React.createElement("p", { className: "cart-email-note" }, "Orders are placed through email only. Your email app will open with the order details already filled in."),
                 React.createElement("div", { className: "cart-customer-fields" },
                     React.createElement("label", null,
@@ -1296,7 +1302,17 @@ function CartPage({ nav, settings }) {
                 React.createElement("a", { className: "cart-email-button", href: emailHref }, "Send Order by Email \u2192"),
                 React.createElement("p", { className: "cart-small-note" },
                     "To: ",
-                    settings.email))))));
+                    settings.email),
+                React.createElement("div", { className: "cart-order-policy" },
+                    React.createElement("p", null,
+                        React.createElement("strong", null, "Delivery"),
+                        React.createElement("span", null, "Estimated delivery time is confirmed with your order.")),
+                    React.createElement("p", null,
+                        React.createElement("strong", null, "Shipping"),
+                        React.createElement("span", null, "Shipping cost is separate and will be shared while confirming payment.")),
+                    React.createElement("p", null,
+                        React.createElement("strong", null, "Returns"),
+                        React.createElement("span", null, "Returns are accepted only if the wrong product or a defective product is received."))))))));
 }
 /* ============================================================
    App root
