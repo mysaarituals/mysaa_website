@@ -555,7 +555,7 @@ function ProductCard({ product, fragrance, images, nav }) {
         <p style={{ ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }} className="line-clamp-2">{product.shortDescription}</p>
         <div className="product-card-actions" style={{ marginTop: "auto" }}>
           <div className="product-card-price"><DiscountedPrice product={product} currentPrice={product.price} /></div>
-          <span className="product-card-details-link" style={{ ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" }}>View Details →</span>
+          
         </div>
       </div>
     </button>
@@ -640,11 +640,11 @@ function FestivalBanner({ nav, settings }) {
           <p style={{ ...label, color: C.rust, marginBottom: 12 }}>{eyebrow}</p>
           <h2 style={{ ...serif, fontSize: "clamp(28px,4vw,42px)", color: C.ink, fontWeight: 500, lineHeight: 1.05, marginBottom: 12 }}>{title}</h2>
           <p style={{ ...sans, color: C.ink70, fontSize: 15, lineHeight: 1.7, maxWidth: 560, marginBottom: 22 }}>{text}</p>
-          <Button variant="rust" onClick={action}>Shop Festive Diya & Laddu Hamper · ₹699 →</Button>
+          <Button variant="rust" onClick={action}>Shop Festive Ritual · ₹699 →</Button>
         </div>
-        <button className="festival-product-card" onClick={action} aria-label="View Festive Diya and Laddu Hamper product">
+        <button className="festival-product-card" onClick={action} aria-label="View Festive Ritual product">
           <img src={productImageSrc} alt="Festive hamper with two large diya candles and two laddu candles" loading="lazy" decoding="async" />
-          <span className="festival-product-card-copy"><strong>Festive Diya & Laddu Hamper</strong><span>2 diya candles + 2 laddu candles</span><b>₹699 · View product →</b></span>
+          <span className="festival-product-card-copy"><strong>Festive Ritual</strong><span>2 diya candles + 2 laddu candles</span><b>₹699 · View product →</b></span>
         </button>
       </div>
     </section>
@@ -1024,7 +1024,7 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
 }
 
 function ProductGallery({ product, images }) {
-  const gallery = (images && images.products && images.products[`${product.fragranceSlug}/${product.categorySlug}`]) || [];
+  const gallery = ((images && images.products && images.products[`${product.fragranceSlug}/${product.categorySlug}`]) || []).length ? images.products[`${product.fragranceSlug}/${product.categorySlug}`] : (product.images || []);
   const [activeIndex, setActiveIndex] = useState(0);
   const total = gallery.length;
 

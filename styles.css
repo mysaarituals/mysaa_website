@@ -656,3 +656,6 @@ button:hover, a:hover { opacity: .82; }
 .cart-order-policy p:first-child { padding-top: 0; }
 .cart-order-policy strong { display:block; color:var(--ink); font:500 11px/1.4 'Karla',sans-serif; letter-spacing:.1em; text-transform:uppercase; }
 .cart-order-policy span { display:block; margin-top:3px; color:var(--muted); font:400 12px/1.55 'Karla',sans-serif; }
+
+/* Keep the Festive Ritual product visual aligned beside the banner copy on desktop. */
+@media (min-width: 761px) { .festival-product-card { align-self: start; transform: translateY(-18px); } }

@@ -736,7 +736,7 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
                 React.createElement("div", { className: "product-grid" }, [...filtered].sort((a, b) => Number(isOutOfStock(a)) - Number(isOutOfStock(b))).map((p) => (React.createElement(ProductCard, { key: p.slug, product: p, fragrance: fragranceById[p.fragranceSlug], images: data.images, nav: nav }))))))))));
 }
 function ProductGallery({ product, images }) {
-    const gallery = (images && images.products && images.products[`${product.fragranceSlug}/${product.categorySlug}`]) || [];
+    const gallery = ((images && images.products && images.products[`${product.fragranceSlug}/${product.categorySlug}`]) || []).length ? images.products[`${product.fragranceSlug}/${product.categorySlug}`] : (product.images || []);
     const [activeIndex, setActiveIndex] = useState(0);
     const total = gallery.length;
     useEffect(() => {
