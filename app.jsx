@@ -115,7 +115,7 @@ const FEELING_FILTERS = [
 ];
 const OCCASION_FILTERS = [
   { slug: "festivals-celebrations", title: "Festivals & Celebrations", description: "Recommended fragrances: Dhoop & Chandan and Madhuban." },
-  { slug: "weddings-return-gifts", title: "Weddings & Return Gifts", description: "Recommended fragrances: Gajre Ka Shringar and Gulab Ki Chitthi." },
+  { slug: "weddings-return-gifts", title: "Weddings and Corporate Gifting", description: "Recommended fragrances: Gajre Ka Shringar and Gulab Ki Chitthi." },
   { slug: "birthdays-just-because", title: "Birthdays & Just Because", description: "Recommended fragrances: Raat Ki Rani and Saanjh." },
 ];
 
@@ -554,10 +554,8 @@ function ProductCard({ product, fragrance, images, nav }) {
         <h3 style={{ ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 }}>{product.name}</h3>
         <p style={{ ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }} className="line-clamp-2">{product.shortDescription}</p>
         <div className="product-card-actions" style={{ marginTop: "auto" }}>
-          <div className="product-card-price">
-            <DiscountedPrice product={product} currentPrice={product.price} />
-          </div>
-          <span className="product-card-details-link" style={{ ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" }}>View Details</span>
+          <div className="product-card-price"><DiscountedPrice product={product} currentPrice={product.price} /></div>
+          <span className="product-card-details-link" style={{ ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" }}>View Details →</span>
         </div>
       </div>
     </button>
@@ -629,26 +627,25 @@ function FestivalBanner({ nav, settings }) {
   if (!enabled) return null;
   const eyebrow = settings.festivalBannerEyebrow || "Festive Collection";
   const title = settings.festivalBannerTitle || "Light up the season. Gift a little warmth.";
-  const text = settings.festivalBannerText || "Our festive edit brings together candles and thoughtful gifts for Navratri, Dussehra and the celebrations ahead.";
-  const buttonText = settings.festivalBannerButtonText || "Shop the Festive Collection";
+  const text = settings.festivalBannerText || "Our festive edit brings together candles and thoughtful gifts for the celebrations ahead.";
   const image = settings.festivalBannerImage || "";
-  const action = () => {
-    const category = settings.festivalBannerCategory || "festivals-celebrations";
-    nav("catalogue", "occasion", { value: category });
-  };
+  const productSlug = "festive-diya-laddu-hamper";
+  const productImageSrc = "assets/catalogue/festive-gift-hampers/01_festive-diya-laddu-hamper.jpeg";
+  const action = () => nav("product", productSlug);
   return (
-    <section
-      className="festival-banner"
-      aria-label={eyebrow}
-      style={image ? { backgroundImage: `linear-gradient(90deg, rgba(250,247,240,.96) 0%, rgba(250,247,240,.82) 46%, rgba(250,247,240,.16) 100%), url("${image}")` } : undefined}
-    >
+    <section className="festival-banner" aria-label={eyebrow}
+      style={image ? { backgroundImage: `linear-gradient(90deg, rgba(250,247,240,.96) 0%, rgba(250,247,240,.82) 46%, rgba(250,247,240,.16) 100%), url("${image}")` } : undefined}>
       <div className="container festival-banner-inner">
         <div className="festival-banner-copy">
           <p style={{ ...label, color: C.rust, marginBottom: 12 }}>{eyebrow}</p>
           <h2 style={{ ...serif, fontSize: "clamp(28px,4vw,42px)", color: C.ink, fontWeight: 500, lineHeight: 1.05, marginBottom: 12 }}>{title}</h2>
           <p style={{ ...sans, color: C.ink70, fontSize: 15, lineHeight: 1.7, maxWidth: 560, marginBottom: 22 }}>{text}</p>
-          <Button variant="rust" onClick={action}>{buttonText} →</Button>
+          <Button variant="rust" onClick={action}>Shop Festive Diya & Laddu Hamper · ₹699 →</Button>
         </div>
+        <button className="festival-product-card" onClick={action} aria-label="View Festive Diya and Laddu Hamper product">
+          <img src={productImageSrc} alt="Festive hamper with two large diya candles and two laddu candles" loading="lazy" decoding="async" />
+          <span className="festival-product-card-copy"><strong>Festive Diya & Laddu Hamper</strong><span>2 diya candles + 2 laddu candles</span><b>₹699 · View product →</b></span>
+        </button>
       </div>
     </section>
   );
@@ -824,7 +821,7 @@ function HomePage({ data, nav, settings }) {
             </p>
             <div className="gifting-list gifting-recommendations">
               <button onClick={() => nav("catalogue", "occasion", { value: "festivals-celebrations" })}><strong>Festivals</strong><span>Dhoop & Chandan · Madhuban</span></button>
-              <button onClick={() => nav("catalogue", "occasion", { value: "weddings-return-gifts" })}><strong>Weddings</strong><span>Gajre Ka Shringar · Gulab Ki Chitthi</span></button>
+              <button onClick={() => nav("catalogue", "occasion", { value: "weddings-return-gifts" })}><strong>Weddings and Corporate Gifting</strong><span>Gajre Ka Shringar · Gulab Ki Chitthi</span></button>
               <button onClick={() => nav("catalogue", "occasion", { value: "birthdays-just-because" })}><strong>Birthdays & Just Because</strong><span>Raat Ki Rani · Saanjh</span></button>
             </div>
             <Button variant="link" onClick={() => nav("catalogue", "category", { value: "gift-hampers" })} style={{ marginTop: 26, color: C.rust, fontWeight: 600, letterSpacing: "0.11em", textTransform: "uppercase", textDecoration: "underline", textUnderlineOffset: "4px" }}>Explore Gifting →</Button>
@@ -863,7 +860,7 @@ function HomePage({ data, nav, settings }) {
         <HowToOrder
           steps={[
             { title: "Choose", body: "Pick your fragrance, format or gift." },
-            { title: "Enquire", body: "Send us your order through the cart by email." },
+            { title: "Enquire", body: "Chat with us on WhatsApp to discuss your order." },
             { title: "Personalize", body: "Share quantity, occasion and preferences." },
             { title: "Confirm", body: "We confirm availability, final price and delivery details." },
           ]}
@@ -880,8 +877,8 @@ function HomePage({ data, nav, settings }) {
             Tell us what you're looking for and we'll help you create the right ritual.
           </p>
           <div style={{ display: "flex", justifyContent: "center", gap: 22, flexWrap: "wrap" }}>
-            <a href={`mailto:${settings.email}`} style={{ ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" }}>
-              Order by Email
+            <a href={waLink(settings.whatsapp, "Hello Mysaa Rituals! I have something special in mind.")} target="_blank" rel="noreferrer" style={{ ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" }}>
+              Chat on WhatsApp
             </a>
             <a href={settings.instagram} target="_blank" rel="noreferrer" style={{ ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" }}>
               Follow @mysaarituals
@@ -1164,7 +1161,7 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
           </section>
 
           <section className="mold-step">
-            <div className="mold-step-heading"><span>2</span><h2>Choose your fragrance</h2></div>
+            <div className="mold-step-heading"><span>2</span><h2>Choose your own fragrance</h2></div>
             <div className="mold-fragrance-grid">
               {data.fragrances.filter((f) => f.active).map((f) => (
                 <button key={f.slug} onClick={() => setFragranceSlug(f.slug)} className={`mold-fragrance-card${fragranceSlug === f.slug ? " selected" : ""}`}>

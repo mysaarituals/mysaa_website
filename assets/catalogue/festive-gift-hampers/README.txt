@@ -1,0 +1,1 @@
+Festive Gift Hampers image folder. Add additional product photos here (for example 02_detail.jpeg, 03_packaging.jpeg). Register image paths in data/images.json under products/madhuban/festive-gift-hampers.

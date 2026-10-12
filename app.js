@@ -105,7 +105,7 @@ const FEELING_FILTERS = [
 ];
 const OCCASION_FILTERS = [
     { slug: "festivals-celebrations", title: "Festivals & Celebrations", description: "Recommended fragrances: Dhoop & Chandan and Madhuban." },
-    { slug: "weddings-return-gifts", title: "Weddings & Return Gifts", description: "Recommended fragrances: Gajre Ka Shringar and Gulab Ki Chitthi." },
+    { slug: "weddings-return-gifts", title: "Weddings and Corporate Gifting", description: "Recommended fragrances: Gajre Ka Shringar and Gulab Ki Chitthi." },
     { slug: "birthdays-just-because", title: "Birthdays & Just Because", description: "Recommended fragrances: Raat Ki Rani and Saanjh." },
 ];
 function isJarProduct(product) {
@@ -440,7 +440,7 @@ function ProductCard({ product, fragrance, images, nav }) {
             React.createElement("div", { className: "product-card-actions", style: { marginTop: "auto" } },
                 React.createElement("div", { className: "product-card-price" },
                     React.createElement(DiscountedPrice, { product: product, currentPrice: product.price })),
-                React.createElement("span", { className: "product-card-details-link", style: { ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" } }, "View Details")))));
+                React.createElement("span", { className: "product-card-details-link", style: { ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" } }, "View Details \u2192")))));
 }
 function FragranceCard({ fragrance, images, nav }) {
     return (React.createElement("button", { onClick: () => nav("catalogue", "fragrance", { value: fragrance.slug }), style: { textAlign: "left", display: "block" } },
@@ -489,22 +489,24 @@ function FestivalBanner({ nav, settings }) {
         return null;
     const eyebrow = settings.festivalBannerEyebrow || "Festive Collection";
     const title = settings.festivalBannerTitle || "Light up the season. Gift a little warmth.";
-    const text = settings.festivalBannerText || "Our festive edit brings together candles and thoughtful gifts for Navratri, Dussehra and the celebrations ahead.";
-    const buttonText = settings.festivalBannerButtonText || "Shop the Festive Collection";
+    const text = settings.festivalBannerText || "Our festive edit brings together candles and thoughtful gifts for the celebrations ahead.";
     const image = settings.festivalBannerImage || "";
-    const action = () => {
-        const category = settings.festivalBannerCategory || "festivals-celebrations";
-        nav("catalogue", "occasion", { value: category });
-    };
+    const productSlug = "festive-diya-laddu-hamper";
+    const productImageSrc = "assets/catalogue/festive-gift-hampers/01_festive-diya-laddu-hamper.jpeg";
+    const action = () => nav("product", productSlug);
     return (React.createElement("section", { className: "festival-banner", "aria-label": eyebrow, style: image ? { backgroundImage: `linear-gradient(90deg, rgba(250,247,240,.96) 0%, rgba(250,247,240,.82) 46%, rgba(250,247,240,.16) 100%), url("${image}")` } : undefined },
         React.createElement("div", { className: "container festival-banner-inner" },
             React.createElement("div", { className: "festival-banner-copy" },
                 React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 12 } }, eyebrow),
                 React.createElement("h2", { style: { ...serif, fontSize: "clamp(28px,4vw,42px)", color: C.ink, fontWeight: 500, lineHeight: 1.05, marginBottom: 12 } }, title),
                 React.createElement("p", { style: { ...sans, color: C.ink70, fontSize: 15, lineHeight: 1.7, maxWidth: 560, marginBottom: 22 } }, text),
-                React.createElement(Button, { variant: "rust", onClick: action },
-                    buttonText,
-                    " \u2192")))));
+                React.createElement(Button, { variant: "rust", onClick: action }, "Shop Festive Diya & Laddu Hamper \u00B7 \u20B9699 \u2192")),
+            React.createElement("button", { className: "festival-product-card", onClick: action, "aria-label": "View Festive Diya and Laddu Hamper product" },
+                React.createElement("img", { src: productImageSrc, alt: "Festive hamper with two large diya candles and two laddu candles", loading: "lazy", decoding: "async" }),
+                React.createElement("span", { className: "festival-product-card-copy" },
+                    React.createElement("strong", null, "Festive Diya & Laddu Hamper"),
+                    React.createElement("span", null, "2 diya candles + 2 laddu candles"),
+                    React.createElement("b", null, "\u20B9699 \u00B7 View product \u2192"))))));
 }
 function HomePage({ data, nav, settings }) {
     var _a, _b, _c, _d, _e, _f;
@@ -603,7 +605,7 @@ function HomePage({ data, nav, settings }) {
                             React.createElement("strong", null, "Festivals"),
                             React.createElement("span", null, "Dhoop & Chandan \u00B7 Madhuban")),
                         React.createElement("button", { onClick: () => nav("catalogue", "occasion", { value: "weddings-return-gifts" }) },
-                            React.createElement("strong", null, "Weddings"),
+                            React.createElement("strong", null, "Weddings and Corporate Gifting"),
                             React.createElement("span", null, "Gajre Ka Shringar \u00B7 Gulab Ki Chitthi")),
                         React.createElement("button", { onClick: () => nav("catalogue", "occasion", { value: "birthdays-just-because" }) },
                             React.createElement("strong", null, "Birthdays & Just Because"),
@@ -628,7 +630,7 @@ function HomePage({ data, nav, settings }) {
         React.createElement("section", { className: "container", style: { padding: "72px 20px" } },
             React.createElement(HowToOrder, { steps: [
                     { title: "Choose", body: "Pick your fragrance, format or gift." },
-                    { title: "Enquire", body: "Send us your order through the cart by email." },
+                    { title: "Enquire", body: "Chat with us on WhatsApp to discuss your order." },
                     { title: "Personalize", body: "Share quantity, occasion and preferences." },
                     { title: "Confirm", body: "We confirm availability, final price and delivery details." },
                 ], title: "Simple, personal, unhurried." })),
@@ -638,7 +640,7 @@ function HomePage({ data, nav, settings }) {
                 React.createElement("h2", { style: { ...serif, fontSize: "clamp(26px,3.4vw,34px)", fontWeight: 500, marginBottom: 12 } }, "Have something special in mind?"),
                 React.createElement("p", { style: { ...sans, fontSize: 14, color: "#D8CFC3", maxWidth: 460, margin: "0 auto 24px", lineHeight: 1.7 } }, "Tell us what you're looking for and we'll help you create the right ritual."),
                 React.createElement("div", { style: { display: "flex", justifyContent: "center", gap: 22, flexWrap: "wrap" } },
-                    React.createElement("a", { href: `mailto:${settings.email}`, style: { ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" } }, "Order by Email"),
+                    React.createElement("a", { href: waLink(settings.whatsapp, "Hello Mysaa Rituals! I have something special in mind."), target: "_blank", rel: "noreferrer", style: { ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" } }, "Chat on WhatsApp"),
                     React.createElement("a", { href: settings.instagram, target: "_blank", rel: "noreferrer", style: { ...label, color: "#fff", textDecoration: "underline", textUnderlineOffset: "4px" } }, "Follow @mysaarituals"))))));
 }
 function CataloguePage({ data, nav, initialType, initialQuery }) {
@@ -842,7 +844,7 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
                 React.createElement("section", { className: "mold-step" },
                     React.createElement("div", { className: "mold-step-heading" },
                         React.createElement("span", null, "2"),
-                        React.createElement("h2", null, "Choose your fragrance")),
+                        React.createElement("h2", null, "Choose your own fragrance")),
                     React.createElement("div", { className: "mold-fragrance-grid" }, data.fragrances.filter((f) => f.active).map((f) => (React.createElement("button", { key: f.slug, onClick: () => setFragranceSlug(f.slug), className: `mold-fragrance-card${fragranceSlug === f.slug ? " selected" : ""}` },
                         React.createElement("strong", null, f.name))))),
                     React.createElement("button", { className: "mold-more-link", onClick: () => nav("catalogue", "fragrance", { value: fragranceSlug }) }, "View fragrance notes \u2192")),

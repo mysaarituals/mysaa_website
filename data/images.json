@@ -1,7 +1,7 @@
 {
   "products": {
     "all-fragrances/discovery-set": [
-      "assets/catalogue/all-fragrances/discovery-set/01_discovery.jpg",
+      "assets/catalogue/all-fragrances/discovery-set/01_discovery%20set%20new.jpeg",
       "assets/catalogue/all-fragrances/discovery-set/02-gulab-ki-chitthi.jpg",
       "assets/catalogue/all-fragrances/discovery-set/03-dhoop-chandan.jpg",
       "assets/catalogue/all-fragrances/discovery-set/04-gajre-ka-shringar.jpg",
@@ -11,13 +11,10 @@
       "assets/catalogue/all-fragrances/discovery-set/08_gulab.jpeg"
     ],
     "dhoop-chandan/gift-hampers": [
-      "assets/catalogue/dhoop-chandan/gift-hampers/01_dhoop%20and%20chandan%20gift%20hamper.jpeg",
-      "assets/catalogue/dhoop-chandan/gift-hampers/01_gift%20hamper%201.jpeg",
-      "assets/catalogue/dhoop-chandan/gift-hampers/02_dhoop.jpeg",
+      "assets/catalogue/dhoop-chandan/gift-hampers/01_gift%20hamper%20for%20all.jpeg",
       "assets/catalogue/dhoop-chandan/gift-hampers/02_gift%20hamper%201_2.jpeg",
-      "assets/catalogue/dhoop-chandan/gift-hampers/03_dhoop%20and%20chandan%20fragrance2.jpeg",
       "assets/catalogue/dhoop-chandan/gift-hampers/03_gift%20hamper%202.jpeg",
-      "assets/catalogue/dhoop-chandan/gift-hampers/04_dhoop%20and%20chandan%20shot%20glass.jpeg"
+      "assets/catalogue/dhoop-chandan/gift-hampers/04_gift%20hamper%201.jpeg"
     ],
     "dhoop-chandan/hero-jar-candle": [
       "assets/catalogue/dhoop-chandan/hero-jar-candle/01%20dhoop%20signatur.jpeg",
@@ -28,19 +25,18 @@
       "assets/catalogue/dhoop-chandan/shot-glass-candle/02_%20dhoop%20and%20c.jpeg"
     ],
     "dhoop-chandan/wax-melts": [
-      "assets/catalogue/dhoop-chandan/wax-melts/01_dhoop%20and%20chandan%20sachets.jpeg"
+      "assets/catalogue/dhoop-chandan/wax-melts/01_wax%20sachet.jpeg",
+      "assets/catalogue/dhoop-chandan/wax-melts/02_dhoop%20and%20chandan%20sachets.jpeg"
     ],
     "dhoop-chandan/wide-jar-candle": [
       "assets/catalogue/dhoop-chandan/wide-jar-candle/01_dhoop%20everyday.jpeg",
       "assets/catalogue/dhoop-chandan/wide-jar-candle/02_%20wide.jpeg"
     ],
     "gajre-ka-shringar/gift-hampers": [
-      "assets/catalogue/gajre-ka-shringar/gift-hampers/01_gajre%20ka%20shringar%20fragrance%202.jpeg",
-      "assets/catalogue/gajre-ka-shringar/gift-hampers/01_gift%20hamper%201.jpeg",
-      "assets/catalogue/gajre-ka-shringar/gift-hampers/02_gajre%20ka%20shringar%20fragrance.jpeg",
+      "assets/catalogue/gajre-ka-shringar/gift-hampers/01_gift%20hamper%20for%20all.jpeg",
       "assets/catalogue/gajre-ka-shringar/gift-hampers/02_gift%20hamper%201_2.jpeg",
-      "assets/catalogue/gajre-ka-shringar/gift-hampers/03_gajre%20ka%20shringar%20shot%20glass.jpeg",
-      "assets/catalogue/gajre-ka-shringar/gift-hampers/03_gift%20hamper%202.jpeg"
+      "assets/catalogue/gajre-ka-shringar/gift-hampers/03_gift%20hamper%202.jpeg",
+      "assets/catalogue/gajre-ka-shringar/gift-hampers/04_gift%20hamper%201.jpeg"
     ],
     "gajre-ka-shringar/hero-jar-candle": [
       "assets/catalogue/gajre-ka-shringar/hero-jar-candle/01_gajre%20signature.jpeg",
@@ -51,19 +47,17 @@
       "assets/catalogue/gajre-ka-shringar/shot-glass-candle/02_gajre%20ka%20shringar%20shot%20glass.jpeg"
     ],
     "gajre-ka-shringar/wax-melts": [
-      "assets/catalogue/gajre-ka-shringar/wax-melts/01_gajre%20ka%20shringar%20fragrance.jpeg"
+      "assets/catalogue/gajre-ka-shringar/wax-melts/01_wax%20sachet.jpeg"
     ],
     "gajre-ka-shringar/wide-jar-candle": [
       "assets/catalogue/gajre-ka-shringar/wide-jar-candle/01_gajre%20wide%20jar.jpeg",
       "assets/catalogue/gajre-ka-shringar/wide-jar-candle/01_gajre_wide_jar.jpeg"
     ],
     "gulab-ki-chitthi/gift-hampers": [
-      "assets/catalogue/gulab-ki-chitthi/gift-hampers/01_gift%20hamper%201.jpeg",
-      "assets/catalogue/gulab-ki-chitthi/gift-hampers/01_gulab.jpeg",
+      "assets/catalogue/gulab-ki-chitthi/gift-hampers/01_gift%20hamper%20for%20all.jpeg",
       "assets/catalogue/gulab-ki-chitthi/gift-hampers/02_gift%20hamper%201_2.jpeg",
-      "assets/catalogue/gulab-ki-chitthi/gift-hampers/02_gulab%20ki%20chitthi%20fragrance.jpeg",
       "assets/catalogue/gulab-ki-chitthi/gift-hampers/03_gift%20hamper%202.jpeg",
-      "assets/catalogue/gulab-ki-chitthi/gift-hampers/04_gulab.jpeg"
+      "assets/catalogue/gulab-ki-chitthi/gift-hampers/04_gift%20hamper%201.jpeg"
     ],
     "gulab-ki-chitthi/hero-jar-candle": [
       "assets/catalogue/gulab-ki-chitthi/hero-jar-candle/01_gulab%20signature%201.jpeg",
@@ -74,15 +68,18 @@
       "assets/catalogue/gulab-ki-chitthi/shot-glass-candle/01_gulab%20mini%201.jpeg",
       "assets/catalogue/gulab-ki-chitthi/shot-glass-candle/02_gulab_shot.jpeg"
     ],
+    "gulab-ki-chitthi/wax-melts": [
+      "assets/catalogue/gulab-ki-chitthi/wax-melts/01_wax%20sachet.jpeg"
+    ],
     "gulab-ki-chitthi/wide-jar-candle": [
       "assets/catalogue/gulab-ki-chitthi/wide-jar-candle/01_gulab%20everyday%201.jpeg",
       "assets/catalogue/gulab-ki-chitthi/wide-jar-candle/02_gulab_wideja.jpeg"
     ],
     "madhuban/gift-hampers": [
-      "assets/catalogue/madhuban/gift-hampers/01_gift%20hamper%201.jpeg",
-      "assets/catalogue/madhuban/gift-hampers/01_madhuban%20fragrance.jpeg",
+      "assets/catalogue/madhuban/gift-hampers/01_gift%20hamper%20for%20all.jpeg",
       "assets/catalogue/madhuban/gift-hampers/02_gift%20hamper%201_2.jpeg",
-      "assets/catalogue/madhuban/gift-hampers/03_gift%20hamper%202.jpeg"
+      "assets/catalogue/madhuban/gift-hampers/03_gift%20hamper%202.jpeg",
+      "assets/catalogue/madhuban/gift-hampers/04_gift%20hamper%201.jpeg"
     ],
     "madhuban/hero-jar-candle": [
       "assets/catalogue/madhuban/hero-jar-candle/01_madhuban%20signature%201.jpeg",
@@ -90,7 +87,7 @@
       "assets/catalogue/madhuban/hero-jar-candle/03_%20madhu.jpeg"
     ],
     "madhuban/wax-melts": [
-      "assets/catalogue/madhuban/wax-melts/01_madhuban%20fragrance.jpeg"
+      "assets/catalogue/madhuban/wax-melts/01_wax%20sachet.jpeg"
     ],
     "madhuban/wide-jar-candle": [
       "assets/catalogue/madhuban/wide-jar-candle/maddhuban%20everyday%204.jpeg",
@@ -98,10 +95,10 @@
       "assets/catalogue/madhuban/wide-jar-candle/madhuban%20everyday%203.jpeg"
     ],
     "raat-ki-rani/gift-hampers": [
-      "assets/catalogue/raat-ki-rani/gift-hampers/01_gift%20hamper%201.jpeg",
-      "assets/catalogue/raat-ki-rani/gift-hampers/01_raat%20ki%20rani%20fragrance.jpeg",
+      "assets/catalogue/raat-ki-rani/gift-hampers/01_gift%20hamper%20for%20all.jpeg",
       "assets/catalogue/raat-ki-rani/gift-hampers/02_gift%20hamper%201_2.jpeg",
-      "assets/catalogue/raat-ki-rani/gift-hampers/03_gift%20hamper%202.jpeg"
+      "assets/catalogue/raat-ki-rani/gift-hampers/03_gift%20hamper%202.jpeg",
+      "assets/catalogue/raat-ki-rani/gift-hampers/04_gift%20hamper%201.jpeg"
     ],
     "raat-ki-rani/hero-jar-candle": [
       "assets/catalogue/raat-ki-rani/hero-jar-candle/raat%201.jpeg",
@@ -114,16 +111,17 @@
       "assets/catalogue/raat-ki-rani/shot-glass-candle/raat%20mini%203.jpeg"
     ],
     "raat-ki-rani/wax-melts": [
-      "assets/catalogue/raat-ki-rani/wax-melts/01_raat%20ki%20rani%20fragrance.jpeg"
+      "assets/catalogue/raat-ki-rani/wax-melts/01_wax%20sachet.jpeg"
     ],
     "raat-ki-rani/wide-jar-candle": [
       "assets/catalogue/raat-ki-rani/wide-jar-candle/01_%20raat%20ki%20rani.jpeg",
       "assets/catalogue/raat-ki-rani/wide-jar-candle/02_raat%20ki%20rani%20wide%20jar.jpeg"
     ],
     "saanjh/gift-hampers": [
-      "assets/catalogue/saanjh/gift-hampers/01_gift%20hamper%201.jpeg",
+      "assets/catalogue/saanjh/gift-hampers/01_gift%20hamper%20for%20all.jpeg",
       "assets/catalogue/saanjh/gift-hampers/02_gift%20hamper%201_2.jpeg",
-      "assets/catalogue/saanjh/gift-hampers/03_gift%20hamper%202.jpeg"
+      "assets/catalogue/saanjh/gift-hampers/03_gift%20hamper%202.jpeg",
+      "assets/catalogue/saanjh/gift-hampers/04_gift%20hamper%201.jpeg"
     ],
     "saanjh/hero-jar-candle": [
       "assets/catalogue/saanjh/hero-jar-candle/01_rsaanjh%20signature.jpeg",
@@ -133,6 +131,9 @@
     "saanjh/shot-glass-candle": [
       "assets/catalogue/saanjh/shot-glass-candle/saanjh%20mini%201.jpeg",
       "assets/catalogue/saanjh/shot-glass-candle/saanjh%20mini%202.jpeg"
+    ],
+    "saanjh/wax-melts": [
+      "assets/catalogue/saanjh/wax-melts/01_wax%20sachet.jpeg"
     ],
     "saanjh/wide-jar-candle": [
       "assets/catalogue/saanjh/wide-jar-candle/01_saanjh%20wide%20jar.jpeg",

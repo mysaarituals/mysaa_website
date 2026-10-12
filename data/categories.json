@@ -46,5 +46,11 @@
     "name": "Mold Candles",
     "subtitle": "MOQ 6 pieces · ₹399 for 6 pieces",
     "active": true
+  },
+  {
+    "slug": "festive-gift-hampers",
+    "name": "Festive Gift Hampers",
+    "subtitle": "Diya & laddu candle hamper",
+    "active": true
   }
 ]
