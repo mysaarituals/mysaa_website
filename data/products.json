@@ -8,7 +8,7 @@
     "price": 799,
     "discountPercent": 20,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "weddings-return-gifts"
     ],
@@ -45,7 +45,7 @@
     "price": 549,
     "discountPercent": 15,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "weddings-return-gifts"
     ],
@@ -82,7 +82,7 @@
     "price": 299,
     "discountPercent": 10,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "weddings-return-gifts"
     ],
@@ -119,7 +119,7 @@
     "price": 350,
     "discountPercent": 0,
     "moq": 1,
-    "availability": "out-of-stock",
+    "availability": "in-stock",
     "occasionSlugs": [
       "weddings-return-gifts"
     ],
@@ -156,7 +156,7 @@
     "price": 0,
     "discountPercent": 0,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "weddings-return-gifts"
     ],
@@ -193,7 +193,7 @@
     "price": 799,
     "discountPercent": 20,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "festivals-celebrations"
     ],
@@ -230,7 +230,7 @@
     "price": 549,
     "discountPercent": 15,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "festivals-celebrations"
     ],
@@ -267,7 +267,7 @@
     "price": 299,
     "discountPercent": 10,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "festivals-celebrations"
     ],
@@ -304,7 +304,7 @@
     "price": 350,
     "discountPercent": 0,
     "moq": 1,
-    "availability": "out-of-stock",
+    "availability": "in-stock",
     "occasionSlugs": [
       "festivals-celebrations"
     ],
@@ -341,7 +341,7 @@
     "price": 0,
     "discountPercent": 0,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "festivals-celebrations"
     ],
@@ -378,7 +378,7 @@
     "price": 799,
     "discountPercent": 20,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "weddings-return-gifts"
     ],
@@ -415,7 +415,7 @@
     "price": 549,
     "discountPercent": 15,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "weddings-return-gifts"
     ],
@@ -452,7 +452,7 @@
     "price": 299,
     "discountPercent": 10,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "weddings-return-gifts"
     ],
@@ -489,7 +489,7 @@
     "price": 350,
     "discountPercent": 0,
     "moq": 1,
-    "availability": "out-of-stock",
+    "availability": "in-stock",
     "occasionSlugs": [
       "weddings-return-gifts"
     ],
@@ -526,7 +526,7 @@
     "price": 0,
     "discountPercent": 0,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "weddings-return-gifts"
     ],
@@ -563,7 +563,7 @@
     "price": 799,
     "discountPercent": 20,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "festivals-celebrations"
     ],
@@ -600,7 +600,7 @@
     "price": 549,
     "discountPercent": 15,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "festivals-celebrations"
     ],
@@ -637,7 +637,7 @@
     "price": 299,
     "discountPercent": 10,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "festivals-celebrations"
     ],
@@ -674,7 +674,7 @@
     "price": 350,
     "discountPercent": 0,
     "moq": 1,
-    "availability": "out-of-stock",
+    "availability": "in-stock",
     "occasionSlugs": [
       "festivals-celebrations"
     ],
@@ -711,7 +711,7 @@
     "price": 0,
     "discountPercent": 0,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "festivals-celebrations"
     ],
@@ -748,7 +748,7 @@
     "price": 799,
     "discountPercent": 20,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "birthdays-just-because"
     ],
@@ -785,7 +785,7 @@
     "price": 549,
     "discountPercent": 15,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "birthdays-just-because"
     ],
@@ -822,7 +822,7 @@
     "price": 299,
     "discountPercent": 10,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "birthdays-just-because"
     ],
@@ -859,7 +859,7 @@
     "price": 350,
     "discountPercent": 0,
     "moq": 1,
-    "availability": "out-of-stock",
+    "availability": "in-stock",
     "occasionSlugs": [
       "birthdays-just-because"
     ],
@@ -896,7 +896,7 @@
     "price": 0,
     "discountPercent": 0,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "birthdays-just-because"
     ],
@@ -933,7 +933,7 @@
     "price": 799,
     "discountPercent": 20,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "birthdays-just-because"
     ],
@@ -970,7 +970,7 @@
     "price": 549,
     "discountPercent": 15,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "birthdays-just-because"
     ],
@@ -1007,7 +1007,7 @@
     "price": 299,
     "discountPercent": 10,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "birthdays-just-because"
     ],
@@ -1044,7 +1044,7 @@
     "price": 350,
     "discountPercent": 0,
     "moq": 1,
-    "availability": "out-of-stock",
+    "availability": "in-stock",
     "occasionSlugs": [
       "birthdays-just-because"
     ],
@@ -1081,7 +1081,7 @@
     "price": 0,
     "discountPercent": 0,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "birthdays-just-because"
     ],
@@ -1118,7 +1118,7 @@
     "price": 1699,
     "discountPercent": 20,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "festivals-celebrations",
       "weddings-return-gifts",
@@ -1157,7 +1157,7 @@
     "price": 1499,
     "discountPercent": 25,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "weddings-return-gifts"
     ],
@@ -1194,7 +1194,7 @@
     "price": 1499,
     "discountPercent": 25,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "festivals-celebrations"
     ],
@@ -1231,7 +1231,7 @@
     "price": 1499,
     "discountPercent": 25,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "weddings-return-gifts"
     ],
@@ -1268,7 +1268,7 @@
     "price": 1499,
     "discountPercent": 25,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "festivals-celebrations"
     ],
@@ -1305,7 +1305,7 @@
     "price": 1499,
     "discountPercent": 25,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "birthdays-just-because"
     ],
@@ -1342,7 +1342,7 @@
     "price": 1499,
     "discountPercent": 25,
     "moq": 1,
-    "availability": "",
+    "availability": "in-stock",
     "occasionSlugs": [
       "birthdays-just-because"
     ],
