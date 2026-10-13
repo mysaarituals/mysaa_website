@@ -451,7 +451,7 @@ function FragranceCard({ fragrance, images, nav }) {
     // Landscape, self-explanatory banner (text is part of the image) - the whole card is the click target.
     const src = (images && images.fragranceBanners && images.fragranceBanners[fragrance.slug]) || `assets/fragrance-banners/${fragrance.slug}.jpg`;
     return (React.createElement("button", { className: "fragrance-banner", onClick: () => nav("catalogue", "fragrance", { value: fragrance.slug }), "aria-label": `Shop ${fragrance.name}` },
-        React.createElement(ImageOrPlaceholder, { src: src, label: fragrance.name, ratio: "16 / 9" })));
+        React.createElement(ImageOrPlaceholder, { src: src, label: fragrance.name, ratio: "1599 / 899" })));
 }
 function FilterChip({ active, onClick, children }) {
     return (React.createElement("button", { onClick: onClick, style: {

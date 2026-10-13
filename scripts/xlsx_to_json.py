@@ -100,6 +100,10 @@ def main():
     dump("categories", categories)
     dump("settings", settings)
 
+    # Keep the static SEO product pages (stock status) in step with the data.
+    import sync_static_pages
+    sync_static_pages.main()
+
 
 if __name__ == "__main__":
     main()

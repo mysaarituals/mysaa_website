@@ -570,7 +570,7 @@ function FragranceCard({ fragrance, images, nav }) {
   const src = (images && images.fragranceBanners && images.fragranceBanners[fragrance.slug]) || `assets/fragrance-banners/${fragrance.slug}.jpg`;
   return (
     <button className="fragrance-banner" onClick={() => nav("catalogue", "fragrance", { value: fragrance.slug })} aria-label={`Shop ${fragrance.name}`}>
-      <ImageOrPlaceholder src={src} label={fragrance.name} ratio="16 / 9" />
+      <ImageOrPlaceholder src={src} label={fragrance.name} ratio="1599 / 899" />
     </button>
   );
 }
