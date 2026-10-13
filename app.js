@@ -223,12 +223,12 @@ function useCatalogueData() {
         async function load() {
             try {
                 const files = ["products", "fragrances", "categories", "settings"];
-                const results = await Promise.all(files.map((f) => fetch(`data/${f}.json`).then((r) => {
+                const results = await Promise.all(files.map((f) => fetch(`data/${f}.json`, { cache: "no-cache" }).then((r) => {
                     if (!r.ok)
                         throw new Error(`Failed to load ${f}.json`);
                     return r.json();
                 })));
-                const images = await fetch("data/images.json").then((r) => r.ok ? r.json() : { products: {}, fragrances: {} }).catch(() => ({ products: {}, fragrances: {} }));
+                const images = await fetch("data/images.json", { cache: "no-cache" }).then((r) => r.ok ? r.json() : { products: {}, fragrances: {} }).catch(() => ({ products: {}, fragrances: {} }));
                 if (!alive)
                     return;
                 const [products, fragrances, categories, settings] = results;
@@ -448,12 +448,10 @@ function ProductCard({ product, fragrance, images, nav }) {
                     React.createElement(DiscountedPrice, { product: product, currentPrice: product.price, hideBadge: true }))))));
 }
 function FragranceCard({ fragrance, images, nav }) {
-    return (React.createElement("button", { onClick: () => nav("catalogue", "fragrance", { value: fragrance.slug }), style: { textAlign: "left", display: "block" } },
-        React.createElement(ImageOrPlaceholder, { src: fragranceImage(fragrance, images, 0), label: fragrance.name, ratio: "4 / 5" }),
-        React.createElement("div", { style: { paddingTop: 14 } },
-            React.createElement("h3", { style: { ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 6 } }, fragrance.name),
-            React.createElement("p", { style: { ...sans, fontSize: 13, color: C.ink70, lineHeight: 1.6, marginBottom: 8 }, className: "line-clamp-2" }, fragrance.description),
-            React.createElement("p", { style: { ...label, color: C.ink70, fontSize: 10.5 } }, (fragrance.mood || "").split(",").map((m) => m.trim()).join(" · ")))));
+    // Landscape, self-explanatory banner (text is part of the image) - the whole card is the click target.
+    const src = (images && images.fragranceBanners && images.fragranceBanners[fragrance.slug]) || `assets/fragrance-banners/${fragrance.slug}.jpg`;
+    return (React.createElement("button", { className: "fragrance-banner", onClick: () => nav("catalogue", "fragrance", { value: fragrance.slug }), "aria-label": `Shop ${fragrance.name}` },
+        React.createElement(ImageOrPlaceholder, { src: src, label: fragrance.name, ratio: "16 / 9" })));
 }
 function FilterChip({ active, onClick, children }) {
     return (React.createElement("button", { onClick: onClick, style: {
@@ -546,7 +544,7 @@ function HomePage({ data, nav, settings }) {
         React.createElement("section", { className: "container", style: { padding: "72px 20px 24px" } },
             React.createElement(SectionHeading, { eyebrow: "The Fragrances", title: "Every fragrance holds a feeling.", sub: "From the warmth of sandalwood to the romance of jasmine and the mystery of night-blooming flowers, each Mysaa Ritual is created to evoke something personal." })),
         React.createElement("section", { className: "container", style: { padding: "24px 20px 72px" } },
-            React.createElement("div", { className: "fragrance-grid" }, activeFragrances.map((f) => (React.createElement(FragranceCard, { key: f.slug, fragrance: f, images: data.images, nav: nav }))))),
+            React.createElement("div", { className: "fragrance-banner-grid" }, activeFragrances.map((f) => (React.createElement(FragranceCard, { key: f.slug, fragrance: f, images: data.images, nav: nav }))))),
         discoverySet && (React.createElement("section", { className: "container", style: { padding: "8px 20px 72px" } },
             React.createElement("div", { className: "discovery-set-feature" },
                 React.createElement(ImageOrPlaceholder, { src: productImage(discoverySet, data.images, 0), label: discoverySet.name, ratio: "4 / 3" }),

@@ -105,7 +105,14 @@ def main():
         if os.path.isfile(path) and os.path.splitext(filename)[1].lower() in IMAGE_EXT:
             site[key] = url_for("assets", filename)
 
-    manifest = {"products": products, "fragrances": fragrances, "site": site}
+    # Landscape banners for the homepage fragrance section:
+    # assets/fragrance-banners/<fragrance-slug>.jpg
+    banners = {}
+    banner_dir = os.path.join(ASSETS, "fragrance-banners")
+    for name in list_images(banner_dir):
+        banners[os.path.splitext(name)[0]] = url_for("assets", "fragrance-banners", name)
+
+    manifest = {"products": products, "fragrances": fragrances, "fragranceBanners": banners, "site": site}
     with open(OUT, "w", encoding="utf-8") as fh:
         json.dump(manifest, fh, indent=2, ensure_ascii=False)
 

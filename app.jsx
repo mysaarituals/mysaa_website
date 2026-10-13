@@ -231,12 +231,12 @@ function useCatalogueData() {
       try {
         const files = ["products", "fragrances", "categories", "settings"];
         const results = await Promise.all(
-          files.map((f) => fetch(`data/${f}.json`).then((r) => {
+          files.map((f) => fetch(`data/${f}.json`, { cache: "no-cache" }).then((r) => {
             if (!r.ok) throw new Error(`Failed to load ${f}.json`);
             return r.json();
           }))
         );
-        const images = await fetch("data/images.json").then((r) => r.ok ? r.json() : { products: {}, fragrances: {} }).catch(() => ({ products: {}, fragrances: {} }));
+        const images = await fetch("data/images.json", { cache: "no-cache" }).then((r) => r.ok ? r.json() : { products: {}, fragrances: {} }).catch(() => ({ products: {}, fragrances: {} }));
         if (!alive) return;
         const [products, fragrances, categories, settings] = results;
         setState({ loading: false, error: null, data: { products, fragrances, categories, settings, images } });
@@ -566,14 +566,11 @@ function ProductCard({ product, fragrance, images, nav }) {
 }
 
 function FragranceCard({ fragrance, images, nav }) {
+  // Landscape, self-explanatory banner (text is part of the image) - the whole card is the click target.
+  const src = (images && images.fragranceBanners && images.fragranceBanners[fragrance.slug]) || `assets/fragrance-banners/${fragrance.slug}.jpg`;
   return (
-    <button onClick={() => nav("catalogue", "fragrance", { value: fragrance.slug })} style={{ textAlign: "left", display: "block" }}>
-      <ImageOrPlaceholder src={fragranceImage(fragrance, images, 0)} label={fragrance.name} ratio="4 / 5" />
-      <div style={{ paddingTop: 14 }}>
-        <h3 style={{ ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 6 }}>{fragrance.name}</h3>
-        <p style={{ ...sans, fontSize: 13, color: C.ink70, lineHeight: 1.6, marginBottom: 8 }} className="line-clamp-2">{fragrance.description}</p>
-        <p style={{ ...label, color: C.ink70, fontSize: 10.5 }}>{(fragrance.mood || "").split(",").map((m) => m.trim()).join(" · ")}</p>
-      </div>
+    <button className="fragrance-banner" onClick={() => nav("catalogue", "fragrance", { value: fragrance.slug })} aria-label={`Shop ${fragrance.name}`}>
+      <ImageOrPlaceholder src={src} label={fragrance.name} ratio="16 / 9" />
     </button>
   );
 }
@@ -712,7 +709,7 @@ function HomePage({ data, nav, settings }) {
 
       {/* Fragrance collection */}
       <section className="container" style={{ padding: "24px 20px 72px" }}>
-        <div className="fragrance-grid">
+        <div className="fragrance-banner-grid">
           {activeFragrances.map((f) => (
             <FragranceCard key={f.slug} fragrance={f} images={data.images} nav={nav} />
           ))}
