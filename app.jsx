@@ -54,7 +54,7 @@ function discountPercent(product) {
   return Number(product.discountPercent || DISCOUNT_RATES[product.categorySlug] || 0);
 }
 
-function DiscountedPrice({ product, currentPrice, large = false }) {
+function DiscountedPrice({ product, currentPrice, large = false, hideBadge = false }) {
   const regular = regularPrice(product);
   const current = Number(currentPrice || product?.price || 0);
   const discount = discountPercent(product);
@@ -62,7 +62,7 @@ function DiscountedPrice({ product, currentPrice, large = false }) {
     <div className={large ? "price-stack price-stack-large" : "price-stack"}>
       {regular > current && current > 0 && <div className="price-original-row">
         <span className="price-original">{inr(regular)}</span>
-        {discount > 0 && <span className="price-discount">-{discount}%</span>}
+        {discount > 0 && !hideBadge && <span className="price-discount">-{discount}%</span>}
       </div>}
       <span className={large ? "price-current price-current-large" : "price-current"}>{inr(current)}</span>
     </div>
@@ -548,13 +548,16 @@ function ProductCard({ product, fragrance, images, nav }) {
         <p style={{ ...label, color: C.ink70, marginBottom: 8, minHeight: 14 }}>
           {outOfStock ? "Out of Stock" : product.bestseller ? "Bestseller" : product.isNew ? "New" : product.customizable ? "Customizable" : "\u00A0"}
         </p>
-        <ImageOrPlaceholder src={productImage(product, images, 0)} label={product.name} />
+        <div className="product-card-media">
+          <ImageOrPlaceholder src={productImage(product, images, 0)} label={product.name} />
+          {discountPercent(product) > 0 && regularPrice(product) > Number(product.price || 0) && <span className="product-card-discount">-{discountPercent(product)}%</span>}
+        </div>
       </div>
       <div className="product-card-body" style={{ paddingTop: 14 }}>
         <h3 style={{ ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 }}>{product.name}</h3>
         <p style={{ ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }} className="line-clamp-2">{product.shortDescription}</p>
         <div className="product-card-actions" style={{ marginTop: "auto" }}>
-          <div className="product-card-price"><DiscountedPrice product={product} currentPrice={product.price} /></div>
+          <div className="product-card-price"><DiscountedPrice product={product} currentPrice={product.price} hideBadge /></div>
           
         </div>
       </div>

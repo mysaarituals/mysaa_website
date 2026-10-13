@@ -1,3 +1,4 @@
+"use strict";
 /* ============================================================
    MYSAA RITUALS — Digital Catalogue
    Static, single-page React app (no build step; runs on GitHub Pages).
@@ -50,14 +51,14 @@ function discountPercent(product) {
         return 0;
     return Number(product.discountPercent || DISCOUNT_RATES[product.categorySlug] || 0);
 }
-function DiscountedPrice({ product, currentPrice, large = false }) {
+function DiscountedPrice({ product, currentPrice, large = false, hideBadge = false }) {
     const regular = regularPrice(product);
     const current = Number(currentPrice || (product === null || product === void 0 ? void 0 : product.price) || 0);
     const discount = discountPercent(product);
     return (React.createElement("div", { className: large ? "price-stack price-stack-large" : "price-stack" },
         regular > current && current > 0 && React.createElement("div", { className: "price-original-row" },
             React.createElement("span", { className: "price-original" }, inr(regular)),
-            discount > 0 && React.createElement("span", { className: "price-discount" },
+            discount > 0 && !hideBadge && React.createElement("span", { className: "price-discount" },
                 "-",
                 discount,
                 "%")),
@@ -433,14 +434,18 @@ function ProductCard({ product, fragrance, images, nav }) {
     return (React.createElement("button", { className: `product-card${outOfStock ? " product-card-out-of-stock" : ""}`, onClick: () => nav("product", product.slug), style: { textAlign: "left", display: "flex", flexDirection: "column", width: "100%", height: "100%" } },
         React.createElement("div", { className: "hairline-top", style: { paddingTop: 0 } },
             React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 8, minHeight: 14 } }, outOfStock ? "Out of Stock" : product.bestseller ? "Bestseller" : product.isNew ? "New" : product.customizable ? "Customizable" : "\u00A0"),
-            React.createElement(ImageOrPlaceholder, { src: productImage(product, images, 0), label: product.name })),
+            React.createElement("div", { className: "product-card-media" },
+                React.createElement(ImageOrPlaceholder, { src: productImage(product, images, 0), label: product.name }),
+                discountPercent(product) > 0 && regularPrice(product) > Number(product.price || 0) && React.createElement("span", { className: "product-card-discount" },
+                    "-",
+                    discountPercent(product),
+                    "%"))),
         React.createElement("div", { className: "product-card-body", style: { paddingTop: 14 } },
             React.createElement("h3", { style: { ...serif, fontSize: 17, color: C.ink, fontWeight: 500, marginBottom: 4 } }, product.name),
             React.createElement("p", { style: { ...sans, fontSize: 13, color: C.ink70, marginBottom: 12 }, className: "line-clamp-2" }, product.shortDescription),
             React.createElement("div", { className: "product-card-actions", style: { marginTop: "auto" } },
                 React.createElement("div", { className: "product-card-price" },
-                    React.createElement(DiscountedPrice, { product: product, currentPrice: product.price })),
-                React.createElement("span", { className: "product-card-details-link", style: { ...label, color: C.rust, textDecoration: "underline", textUnderlineOffset: "3px" } }, "View Details \u2192")))));
+                    React.createElement(DiscountedPrice, { product: product, currentPrice: product.price, hideBadge: true }))))));
 }
 function FragranceCard({ fragrance, images, nav }) {
     return (React.createElement("button", { onClick: () => nav("catalogue", "fragrance", { value: fragrance.slug }), style: { textAlign: "left", display: "block" } },
@@ -500,11 +505,11 @@ function FestivalBanner({ nav, settings }) {
                 React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 12 } }, eyebrow),
                 React.createElement("h2", { style: { ...serif, fontSize: "clamp(28px,4vw,42px)", color: C.ink, fontWeight: 500, lineHeight: 1.05, marginBottom: 12 } }, title),
                 React.createElement("p", { style: { ...sans, color: C.ink70, fontSize: 15, lineHeight: 1.7, maxWidth: 560, marginBottom: 22 } }, text),
-                React.createElement(Button, { variant: "rust", onClick: action }, "Shop Festive Diya & Laddu Hamper \u00B7 \u20B9699 \u2192")),
-            React.createElement("button", { className: "festival-product-card", onClick: action, "aria-label": "View Festive Diya and Laddu Hamper product" },
+                React.createElement(Button, { variant: "rust", onClick: action }, "Shop Festive Ritual \u00B7 \u20B9699 \u2192")),
+            React.createElement("button", { className: "festival-product-card", onClick: action, "aria-label": "View Festive Ritual product" },
                 React.createElement("img", { src: productImageSrc, alt: "Festive hamper with two large diya candles and two laddu candles", loading: "lazy", decoding: "async" }),
                 React.createElement("span", { className: "festival-product-card-copy" },
-                    React.createElement("strong", null, "Festive Diya & Laddu Hamper"),
+                    React.createElement("strong", null, "Festive Ritual"),
                     React.createElement("span", null, "2 diya candles + 2 laddu candles"),
                     React.createElement("b", null, "\u20B9699 \u00B7 View product \u2192"))))));
 }

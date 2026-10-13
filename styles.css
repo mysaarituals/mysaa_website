@@ -658,4 +658,9 @@ button:hover, a:hover { opacity: .82; }
 .cart-order-policy span { display:block; margin-top:3px; color:var(--muted); font:400 12px/1.55 'Karla',sans-serif; }
 
 /* Keep the Festive Ritual product visual aligned beside the banner copy on desktop. */
-@media (min-width: 761px) { .festival-product-card { align-self: start; transform: translateY(-18px); } }
+@media (min-width: 761px) {
+  .festival-banner-inner { grid-template-columns: minmax(0, 1fr) minmax(280px, 360px); align-items: center; gap: 48px; }
+  .festival-product-card { align-self: center; justify-self: end; transform: none; }
+}
+.product-card-media { position: relative; }
+.product-card-discount { position: absolute; top: 10px; right: 10px; z-index: 2; padding: 5px 9px; background: var(--ink, #44372F); color: #FAF7F0; font: 600 12px/1 'Karla', sans-serif; letter-spacing: .04em; pointer-events: none; }
