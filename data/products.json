@@ -1412,7 +1412,9 @@
     "customizable": true,
     "active": true,
     "images": [
-      "assets/catalogue/mold-candles/01_mold%20candle.jpeg"
+      "assets/catalogue/mold-candles/01_mold%20candle.jpeg",
+      "",
+      ""
     ]
   },
   {
@@ -1447,7 +1449,9 @@
     "customizable": false,
     "active": true,
     "images": [
-      "assets/catalogue/festive-gift-hampers/01_festive-diya-laddu-hamper.jpeg"
+      "assets/catalogue/festive-gift-hampers/01_festive-diya-laddu-hamper.jpeg",
+      "",
+      ""
     ]
   }
 ]
