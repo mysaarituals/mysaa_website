@@ -448,10 +448,11 @@ function ProductCard({ product, fragrance, images, nav }) {
                     React.createElement(DiscountedPrice, { product: product, currentPrice: product.price, hideBadge: true }))))));
 }
 function FragranceCard({ fragrance, images, nav }) {
-    // Landscape, self-explanatory banner (text is part of the image) - the whole card is the click target.
+    // Landscape, self-explanatory banner (text is part of the image). The image keeps its own
+    // aspect ratio (never cropped); the whole card is the click target.
     const src = (images && images.fragranceBanners && images.fragranceBanners[fragrance.slug]) || `assets/fragrance-banners/${fragrance.slug}.jpg`;
     return (React.createElement("button", { className: "fragrance-banner", onClick: () => nav("catalogue", "fragrance", { value: fragrance.slug }), "aria-label": `Shop ${fragrance.name}` },
-        React.createElement(ImageOrPlaceholder, { src: src, label: fragrance.name, ratio: "1599 / 899" })));
+        React.createElement("img", { src: src, alt: fragrance.name, loading: "lazy", decoding: "async" })));
 }
 function FilterChip({ active, onClick, children }) {
     return (React.createElement("button", { onClick: onClick, style: {
