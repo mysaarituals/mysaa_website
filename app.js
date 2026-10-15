@@ -80,16 +80,13 @@ const JAR_VARIANT_DEFAULT = {
     shortLabel: "Flower mould included",
     priceDelta: 0,
 };
-const MOLD_CANDLE_SHAPES = [
-    "Daisy",
-    "Rose",
-    "Carnation",
-    "Cactus",
-    "Tortoise",
-    "Laddu",
-    "Chakli",
-];
+// Custom-batch products (Mold Candles, Wax Sachet Combo). The shapes, default
+// minimum order (`moq`) and any per-shape minimum (`variantMoqs`, e.g. Cactus: 3)
+// come from data/products.json; these are only fallbacks if the data is missing.
+const MOLD_CANDLE_SHAPES = ["Daisy", "Rose", "Carnation", "Cactus", "Laddu", "Chakli"];
 const MOLD_CANDLE_MOQ = 6;
+const WAX_SACHET_SHAPES = ["Turtle", "Tablet Sachet"];
+const WAX_SACHET_MOQ = 2;
 const DISCOVERY_SET_SLUG = "discover-set-6-shot-glass-candles";
 const DISCOVERY_SET_FRAGRANCES = [
     "gulab-ki-chitthi",
@@ -115,11 +112,27 @@ function isJarProduct(product) {
 function isMoldCandle(product) {
     return product && product.categorySlug === "mold-candles";
 }
+function isWaxSachet(product) {
+    return product && product.categorySlug === "wax-sachet-combo";
+}
+// Products sold as a custom "batch": one shape + one fragrance (+ colour for moulds).
+function isCustomBatch(product) {
+    return isMoldCandle(product) || isWaxSachet(product);
+}
+function customShapes(product) {
+    const fallback = isWaxSachet(product) ? WAX_SACHET_SHAPES : MOLD_CANDLE_SHAPES;
+    return Array.isArray(product && product.optionValues) && product.optionValues.length ? product.optionValues : fallback;
+}
+// Minimum order for a given shape: its own entry in variantMoqs, else the product's moq.
+function shapeMoq(product, shape) {
+    const own = product && product.variantMoqs && Number(product.variantMoqs[shape]);
+    return own > 0 ? own : Number((product && product.moq) || (isWaxSachet(product) ? WAX_SACHET_MOQ : MOLD_CANDLE_MOQ));
+}
 function isOutOfStock(product) {
     return product && String(product.availability || "").toLowerCase() === "out-of-stock";
 }
 function supportsPackaging(product) {
-    return product && ["hero-jar-candle", "wide-jar-candle", "wax-melts"].includes(product.categorySlug);
+    return product && ["hero-jar-candle", "wide-jar-candle"].includes(product.categorySlug);
 }
 function productImage(product, images, index = 0) {
     if (isMoldCandle(product)) {
@@ -350,7 +363,7 @@ function Header({ nav, settings, route }) {
     const discoverLinks = [
         ["Shop by Fragrance", "catalogue", "fragrance", null],
         ["Shop by Candle", "catalogue", "candle", null],
-        ["Wax Melts & Sachets", "catalogue", "category", { value: "wax-melts" }],
+        ["Wax Sachet Combo", "product", "wax-sachet-combo", null],
         ["Gift Hampers", "catalogue", "category", { value: "gift-hampers" }],
         ["Create Your Ritual", "create-ritual", null, null],
     ];
@@ -396,7 +409,7 @@ function Footer({ nav, settings }) {
                         React.createElement(Logo, { size: 66 })),
                     React.createElement("p", { style: { ...sans, color: C.ink70, fontSize: 14, lineHeight: 1.7, maxWidth: 300, marginBottom: 16 } },
                         settings.tagline || "Every flame remembers.",
-                        " Small-batch candles, wax melts and gift hampers, made slowly and in limited quantity."),
+                        " Small-batch candles, wax sachets and gift hampers, made slowly and in limited quantity."),
                     React.createElement("div", { style: { display: "flex", gap: 10 } },
                         React.createElement("a", { href: settings.instagram, target: "_blank", rel: "noreferrer", "aria-label": "Instagram", style: { width: 34, height: 34, border: `1px solid ${C.line}`, display: "flex", alignItems: "center", justifyContent: "center", color: C.ink } },
                             React.createElement(InstagramIcon, null)),
@@ -768,28 +781,28 @@ function ProductGallery({ product, images }) {
 function MoldShapeVisual({ shape }) {
     const common = { fill: "none", stroke: "currentColor", strokeWidth: 1.4, strokeLinecap: "round", strokeLinejoin: "round" };
     const shapes = {
-        Daisy: React.createElement(React.Fragment, null,
-            React.createElement("circle", { cx: "50", cy: "50", r: "10", ...common }),
-            Array.from({ length: 8 }).map((_, i) => { const a = i * Math.PI / 4; return React.createElement("ellipse", { key: i, cx: 50 + 28 * Math.cos(a), cy: 50 + 28 * Math.sin(a), rx: "9", ry: "16", transform: `rotate(${i * 45} ${50 + 28 * Math.cos(a)} ${50 + 28 * Math.sin(a)})`, ...common }); })),
-        Rose: React.createElement("path", { d: "M50 78c-20-2-30-15-26-29 3-10 13-17 25-17 11 0 22 6 25 16 5 15-7 29-24 30ZM35 50c9-8 23-8 31 0M39 42c7-6 16-6 22 0M44 35c4-3 8-3 12 0", ...common }),
-        Carnation: React.createElement("path", { d: "M30 55c5-14 14-22 20-18 6-4 15 4 20 18 2 8-1 17-8 22H38c-7-5-10-14-8-22Zm6-8c5 4 10 4 14 0 5 4 10 4 14 0M38 58c8 5 16 5 24 0M41 67c6 3 12 3 18 0", ...common }),
-        Cactus: React.createElement("path", { d: "M42 78V39c0-9 6-15 12-15s12 6 12 15v8h6v-8c0-4 3-7 7-7s7 3 7 7v12c0 9-7 16-16 16h-4v11H42ZM42 52H34c-5 0-9-4-9-9V35c0-4 3-7 7-7s7 3 7 7v6h3", ...common }),
-        Tortoise: React.createElement("path", { d: "M24 58c4-16 17-25 31-25s27 9 31 25c-5 12-17 19-31 19S29 70 24 58Zm8-2c8 8 16 12 23 12 8 0 16-4 23-12M50 34v38M33 48c12 6 24 6 34 0M31 72l-8 5M69 72l8 5M26 55l-8-4M74 55l8-4", ...common }),
-        Laddu: React.createElement("circle", { cx: "50", cy: "54", r: "28", ...common }),
-        Chakli: React.createElement("path", { d: "M50 79c-18 0-31-10-31-24 0-16 14-28 31-28s31 12 31 28c0 14-13 24-31 24Zm0-8c-12 0-21-6-21-16 0-10 9-18 21-18s21 8 21 18c0 10-9 16-21 16Zm0-8c-6 0-11-3-11-8s5-10 11-10 11 5 11 10-5 8-11 8Z", ...common })
+        Turtle: React.createElement("path", { d: "M24 58c4-16 17-25 31-25s27 9 31 25c-5 12-17 19-31 19S29 70 24 58Zm8-2c8 8 16 12 23 12 8 0 16-4 23-12M50 34v38M33 48c12 6 24 6 34 0M31 72l-8 5M69 72l8 5M26 55l-8-4M74 55l8-4", ...common }),
+        "Tablet Sachet": React.createElement(React.Fragment, null,
+            React.createElement("rect", { x: "22", y: "30", width: "56", height: "40", rx: "7", ...common }),
+            React.createElement("circle", { cx: "50", cy: "50", r: "11", ...common }),
+            React.createElement("path", { d: "M36 38h6M58 62h6", ...common })),
     };
-    return React.createElement("svg", { viewBox: "0 0 100 100", className: "mold-shape-visual", "aria-hidden": "true" }, shapes[shape] || shapes.Daisy);
+    return React.createElement("svg", { viewBox: "0 0 100 100", className: "mold-shape-visual", "aria-hidden": "true" }, shapes[shape] || shapes["Tablet Sachet"]);
 }
 const MOLD_IMAGE_MAP = {
     Daisy: "assets/catalogue/mold-candles/daisy.jpeg",
     Rose: "assets/catalogue/mold-candles/rose.jpeg",
     Carnation: "assets/catalogue/mold-candles/carnation.jpeg",
     Cactus: "assets/catalogue/mold-candles/cactus.jpeg",
-    Tortoise: "assets/catalogue/mold-candles/turtle.jpeg",
     Laddu: "assets/catalogue/mold-candles/laddu%202.jpeg",
     Chakli: "assets/catalogue/mold-candles/chakli.jpeg",
 };
-const moldImage = (shape) => MOLD_IMAGE_MAP[shape];
+// Tablet Sachet uses a dummy placeholder: replace assets/catalogue/wax-sachet-combo/tablet-sachet.jpeg
+// with the real photo (keep the same file name) and it updates everywhere.
+const WAX_SACHET_IMAGE_MAP = {
+    Turtle: "assets/catalogue/wax-sachet-combo/turtle.jpeg",
+    "Tablet Sachet": "assets/catalogue/wax-sachet-combo/tablet-sachet.jpeg",
+};
 const MOLD_COLORS = [
     { name: "Ivory", hex: "#EFE7D8" },
     { name: "Blush", hex: "#E9C4BD" },
@@ -800,91 +813,142 @@ const MOLD_COLORS = [
     { name: "Mocha", hex: "#8A6652" },
     { name: "Charcoal", hex: "#4A4744" },
 ];
-function MoldCandleProductPage({ data, nav, product, settings }) {
-    const [shape, setShape] = useState(MOLD_CANDLE_SHAPES[0]);
+const CUSTOM_BATCH_CONFIG = {
+    "mold-candles": {
+        title: "Mold Candles", eyebrow: "Custom Candle Studio", shapeNoun: "mould", itemNoun: "mould candle",
+        intro: "Create your own batch by choosing a mould, fragrance and primary colour.",
+        images: MOLD_IMAGE_MAP, hasColor: true,
+        batchRule: "One batch = one mould + one fragrance + one primary colour.",
+    },
+    "wax-sachet-combo": {
+        title: "Wax Sachet Combo", eyebrow: "Flame-free Fragrance", shapeNoun: "shape", itemNoun: "wax sachet",
+        intro: "Create your own batch by choosing a sachet shape and a fragrance.",
+        images: WAX_SACHET_IMAGE_MAP, hasColor: false,
+        batchRule: "One batch = one sachet shape + one fragrance.",
+    },
+};
+function ShapeArt({ cfg, shape, alt }) {
+    const src = cfg.images[shape];
+    const [failed, setFailed] = React.useState(false);
+    React.useEffect(() => setFailed(false), [src]);
+    if (!src || failed)
+        return React.createElement(MoldShapeVisual, { shape: shape });
+    return React.createElement("img", { src: src, alt: alt, loading: "lazy", decoding: "async", onError: () => setFailed(true) });
+}
+function CustomBatchProductPage({ data, nav, product, settings }) {
+    const cfg = CUSTOM_BATCH_CONFIG[product.categorySlug] || CUSTOM_BATCH_CONFIG["mold-candles"];
+    const shapes = customShapes(product);
+    const [shape, setShape] = useState(shapes[0]);
     const [fragranceSlug, setFragranceSlug] = useState("raat-ki-rani");
     const [color, setColor] = useState("Dusty Rose");
-    const [qty, setQty] = useState(MOLD_CANDLE_MOQ);
+    const [qty, setQty] = useState(shapeMoq(product, shapes[0]));
     const [giftWrap, setGiftWrap] = useState(false);
     const fragrance = data.fragrances.find((f) => f.slug === fragranceSlug);
     const colorData = MOLD_COLORS.find((c) => c.name === color) || MOLD_COLORS[2];
-    const batchPrice = Number(product.price || 399);
-    const baseQty = MOLD_CANDLE_MOQ;
-    const unitPiecePrice = batchPrice / baseQty;
+    const minQty = shapeMoq(product, shape); // minimum for the selected shape
+    const batchPrice = Number(product.price || 0); // price of one minimum batch
+    const unitPiecePrice = batchPrice / minQty;
     const subtotal = Math.round(unitPiecePrice * qty);
     const giftWrapCharge = Number(settings.giftWrapCharge || GIFT_WRAP_CHARGE);
-    const total = subtotal + (giftWrap ? giftWrapCharge : 0);
-    const enquiryMsg = `Hello Mysaa Rituals! I'd like to order a custom Mold Candle batch:\n\nMould: ${shape}\nFragrance: ${fragrance ? fragrance.name : fragranceSlug}\nPrimary colour: ${color}\nQuantity: ${qty} pieces (MOQ ${MOLD_CANDLE_MOQ})\nBatch price basis: ${inr(batchPrice)} for ${baseQty} pieces\n${giftWrap ? `Gift wrapping: Yes (+${inr(giftWrapCharge)})\n` : "Gift wrapping: No\n"}Total: ${inr(total)}\n\nPlease confirm availability and delivery details.`;
-    const addMoldToCart = () => {
+    const pickShape = (item) => { setShape(item); setQty(shapeMoq(product, item)); };
+    const defaultMoq = Number(product.moq || minQty);
+    const exceptions = Object.entries(product.variantMoqs || {}).filter(([, v]) => Number(v) !== defaultMoq);
+    const priceLine = `${inr(batchPrice)} for ${defaultMoq} pieces`;
+    const exceptionLine = exceptions.map(([k, v]) => `${k}: ${inr(batchPrice)} for ${v} pieces`).join(" · ");
+    const addToCart = () => {
+        const details = `${cfg.shapeNoun[0].toUpperCase() + cfg.shapeNoun.slice(1)}: ${shape}; Fragrance: ${fragrance ? fragrance.name : fragranceSlug}` + (cfg.hasColor ? `; Primary colour: ${color}` : "");
         addCartItem({
-            slug: product.slug, name: product.name, unitPrice: unitPiecePrice, qty, moq: MOLD_CANDLE_MOQ,
-            shape, fragranceSlug, fragranceName: fragrance ? fragrance.name : fragranceSlug, color, giftWrap, giftWrapCharge,
-            details: `Mould: ${shape}; Fragrance: ${fragrance ? fragrance.name : fragranceSlug}; Primary colour: ${color}`,
+            slug: product.slug, name: product.name, unitPrice: unitPiecePrice, qty, moq: minQty,
+            shape, fragranceSlug, fragranceName: fragrance ? fragrance.name : fragranceSlug, color: cfg.hasColor ? color : "", giftWrap, giftWrapCharge,
+            details,
         });
     };
+    const fragranceStep = 2;
+    const colorStep = 3;
     return (React.createElement("div", { className: "container mold-page", style: { padding: "32px 20px 80px" } },
         React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 24 } },
             React.createElement("button", { onClick: () => nav("catalogue", "all"), style: { ...label, color: C.ink70 } }, "Catalogue"),
             " / ",
-            React.createElement("span", { style: { color: C.ink } }, "Mold Candles")),
+            React.createElement("span", { style: { color: C.ink } }, cfg.title)),
         React.createElement("div", { className: "mold-page-heading" },
             React.createElement("div", null,
-                React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 10 } }, "Custom Candle Studio"),
-                React.createElement("h1", { style: { ...serif, color: C.ink, fontSize: "clamp(34px,5vw,52px)", fontWeight: 500, lineHeight: 1.02, marginBottom: 10 } }, "Mold Candles"),
+                React.createElement("p", { style: { ...label, color: C.rust, marginBottom: 10 } }, cfg.eyebrow),
+                React.createElement("h1", { style: { ...serif, color: C.ink, fontSize: "clamp(34px,5vw,52px)", fontWeight: 500, lineHeight: 1.02, marginBottom: 10 } }, cfg.title),
                 React.createElement("p", { style: { ...sans, color: C.ink70, fontSize: 14.5, lineHeight: 1.7, maxWidth: 680 } },
-                    "Minimum order 6 pieces \u00B7 ",
-                    React.createElement("strong", { style: { color: C.ink } }, "\u20B9399 for 6 pieces"),
-                    ". Create your own batch by choosing a mould, fragrance and primary colour."))),
+                    "Minimum order ",
+                    defaultMoq,
+                    " pieces \u00B7 ",
+                    React.createElement("strong", { style: { color: C.ink } }, priceLine),
+                    exceptionLine ? React.createElement(React.Fragment, null,
+                        " (",
+                        exceptionLine,
+                        ")") : null,
+                    ". ",
+                    cfg.intro))),
         React.createElement("div", { className: "mold-builder-grid" },
             React.createElement("div", { className: "mold-builder" },
                 React.createElement("section", { className: "mold-step" },
                     React.createElement("div", { className: "mold-step-heading" },
                         React.createElement("span", null, "1"),
-                        React.createElement("h2", null, "Choose your mould")),
-                    React.createElement("div", { className: "mold-shape-grid" }, MOLD_CANDLE_SHAPES.map((item) => (React.createElement("button", { key: item, onClick: () => setShape(item), className: `mold-shape-card${shape === item ? " selected" : ""}` },
+                        React.createElement("h2", null, cfg.shapeNoun === "mould" ? "Choose your mould" : "Choose your shape")),
+                    React.createElement("div", { className: "mold-shape-grid" }, shapes.map((item) => (React.createElement("button", { key: item, onClick: () => pickShape(item), className: `mold-shape-card${shape === item ? " selected" : ""}` },
                         React.createElement("div", { className: "mold-shape-art" },
-                            React.createElement("img", { src: moldImage(item), alt: `${item} mould candle`, loading: "lazy", decoding: "async" })),
+                            React.createElement(ShapeArt, { cfg: cfg, shape: item, alt: `${item} ${cfg.itemNoun}` })),
                         React.createElement("span", null, item)))))),
                 React.createElement("section", { className: "mold-step" },
                     React.createElement("div", { className: "mold-step-heading" },
-                        React.createElement("span", null, "2"),
+                        React.createElement("span", null, fragranceStep),
                         React.createElement("h2", null, "Choose your own fragrance")),
                     React.createElement("div", { className: "mold-fragrance-grid" }, data.fragrances.filter((f) => f.active).map((f) => (React.createElement("button", { key: f.slug, onClick: () => setFragranceSlug(f.slug), className: `mold-fragrance-card${fragranceSlug === f.slug ? " selected" : ""}` },
                         React.createElement("strong", null, f.name))))),
                     React.createElement("button", { className: "mold-more-link", onClick: () => nav("catalogue", "fragrance", { value: fragranceSlug }) }, "View fragrance notes \u2192")),
-                React.createElement("section", { className: "mold-step" },
+                cfg.hasColor && (React.createElement("section", { className: "mold-step" },
                     React.createElement("div", { className: "mold-step-heading" },
-                        React.createElement("span", null, "3"),
+                        React.createElement("span", null, colorStep),
                         React.createElement("h2", null, "Choose your primary colour")),
                     React.createElement("div", { className: "mold-color-grid" }, MOLD_COLORS.map((c) => (React.createElement("button", { key: c.name, onClick: () => setColor(c.name), className: `mold-color-card${color === c.name ? " selected" : ""}` },
                         React.createElement("span", { className: "mold-color-swatch", style: { background: c.hex } }),
-                        React.createElement("span", null, c.name)))))),
+                        React.createElement("span", null, c.name))))))),
                 React.createElement("div", { className: "mold-note" },
-                    React.createElement("strong", null, "One batch = one mould + one fragrance + one primary colour."),
-                    React.createElement("span", null, "Minimum order is 6 pieces. You can increase the quantity after selecting your batch."))),
+                    React.createElement("strong", null, cfg.batchRule),
+                    React.createElement("span", null,
+                        "Minimum order is ",
+                        minQty,
+                        " pieces for ",
+                        shape,
+                        ". You can increase the quantity after selecting your batch."))),
             React.createElement("aside", { className: "mold-summary" },
                 React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 16 } }, "Your selection"),
                 React.createElement("div", { className: "mold-summary-preview" },
-                    React.createElement("div", { className: "mold-summary-art", style: { background: colorData.hex } },
-                        React.createElement("img", { src: moldImage(shape), alt: `${shape} mould candle`, decoding: "async" })),
+                    React.createElement("div", { className: "mold-summary-art", style: { background: cfg.hasColor ? colorData.hex : "#f1eadf" } },
+                        React.createElement(ShapeArt, { cfg: cfg, shape: shape, alt: `${shape} ${cfg.itemNoun}` })),
                     React.createElement("div", null,
                         React.createElement("strong", null, shape),
                         React.createElement("span", null, fragrance ? fragrance.name : ""),
-                        React.createElement("span", null, color))),
+                        cfg.hasColor && React.createElement("span", null, color))),
                 React.createElement("div", { className: "mold-summary-line" },
                     React.createElement("span", null, "Quantity"),
                     React.createElement("div", { className: "mold-quantity" },
-                        React.createElement("button", { onClick: () => setQty((q) => Math.max(MOLD_CANDLE_MOQ, q - 1)) }, "\u2212"),
+                        React.createElement("button", { onClick: () => setQty((q) => Math.max(minQty, q - 1)) }, "\u2212"),
                         React.createElement("strong", null, qty),
                         React.createElement("button", { onClick: () => setQty((q) => q + 1) }, "+"))),
                 React.createElement("div", { className: "mold-summary-price" },
                     React.createElement("span", null, "Current batch price"),
                     React.createElement("strong", null, inr(subtotal)),
-                    React.createElement("small", null, "Batch basis: \u20B9399 for the minimum 6 pieces")),
+                    React.createElement("small", null,
+                        "Batch basis: ",
+                        inr(batchPrice),
+                        " for the minimum ",
+                        minQty,
+                        " pieces")),
                 React.createElement("div", { className: "mold-moq-note" },
                     "Minimum order: ",
-                    MOLD_CANDLE_MOQ,
-                    " pieces. Your selected mould, fragrance and colour will be made as one batch."),
+                    minQty,
+                    " pieces. Your selected ",
+                    cfg.shapeNoun,
+                    ", fragrance",
+                    cfg.hasColor ? " and colour" : "",
+                    " will be made as one batch."),
                 React.createElement("div", { className: "mold-gift-wrap" },
                     React.createElement("label", null,
                         React.createElement("input", { type: "checkbox", checked: giftWrap, onChange: (e) => setGiftWrap(e.target.checked) }),
@@ -893,47 +957,40 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
                             React.createElement("small", null,
                                 "+",
                                 inr(giftWrapCharge))))),
-                React.createElement("button", { className: "mold-create-button", onClick: addMoldToCart },
+                React.createElement("button", { className: "mold-create-button", onClick: addToCart },
                     "Add batch to cart ",
                     React.createElement("span", null, "\u2192")),
-                React.createElement("button", { className: "mold-enquiry-button", onClick: addMoldToCart }, "Add to cart")))));
+                React.createElement("button", { className: "mold-enquiry-button", onClick: addToCart }, "Add to cart")))));
 }
 function ProductDetailPage({ data, nav, slug, settings }) {
     const productForState = data.products.find((p) => p.slug === slug);
-    const isMoldForState = isMoldCandle(productForState);
-    const [qty, setQty] = useState(isMoldForState ? MOLD_CANDLE_MOQ : 1);
+    const isCustomForState = isCustomBatch(productForState);
+    const [qty, setQty] = useState(1);
     const [giftWrap, setGiftWrap] = useState(false);
-    const [moldShape, setMoldShape] = useState(MOLD_CANDLE_SHAPES[0]);
-    const [moldFragrance, setMoldFragrance] = useState("raat-ki-rani");
-    const [moldColor, setMoldColor] = useState("Dusty Rose");
     const product = data.products.find((p) => p.slug === slug);
     useEffect(() => {
-        const mold = isMoldCandle(product);
-        setQty(mold ? MOLD_CANDLE_MOQ : 1);
+        setQty(1);
         setGiftWrap(false);
-        setMoldShape(MOLD_CANDLE_SHAPES[0]);
-        setMoldFragrance("raat-ki-rani");
-        setMoldColor("Dusty Rose");
     }, [slug]);
     if (!product) {
         return (React.createElement("div", { className: "container", style: { padding: "80px 20px", textAlign: "center" } },
             React.createElement("p", { style: { ...sans, color: C.ink70, marginBottom: 20 } }, "We couldn't find that product."),
             React.createElement(Button, { onClick: () => nav("catalogue", "all") }, "Back to Catalogue")));
     }
-    if (isMoldForState) {
-        return React.createElement(MoldCandleProductPage, { data: data, nav: nav, product: product, settings: settings });
+    if (isCustomForState) {
+        // key forces a fresh builder (shape/qty reset) when moving between custom products
+        return React.createElement(CustomBatchProductPage, { key: product.slug, data: data, nav: nav, product: product, settings: settings });
     }
     const category = data.categories.find((c) => c.slug === product.categorySlug);
     const fragrance = data.fragrances.find((f) => f.slug === product.fragranceSlug);
     const isDiscoverySet = product.slug === DISCOVERY_SET_SLUG;
-    const isMold = isMoldCandle(product);
     const giftWrapAvailable = settings.giftWrapEnabled !== false && String(settings.giftWrapEnabled).toLowerCase() !== "false";
     const giftWrapCharge = Number(settings.giftWrapCharge || GIFT_WRAP_CHARGE);
     const related = data.products.filter((p) => p.active && p.categorySlug === product.categorySlug && p.slug !== product.slug).slice(0, 4);
     const hasPackagingOptions = supportsPackaging(product);
     const hasJarVariants = false;
     const packagingChoice = PACKAGING_OPTIONS.standard;
-    const minQty = isMold ? MOLD_CANDLE_MOQ : 1;
+    const minQty = 1;
     const unitPrice = Number(product.price || 0);
     const subtotal = unitPrice * qty;
     const giftWrapTotal = giftWrap ? giftWrapCharge : 0;
@@ -979,19 +1036,7 @@ function ProductDetailPage({ data, nav, slug, settings }) {
                 React.createElement("h1", { style: { ...serif, fontSize: "clamp(26px,4vw,36px)", color: C.ink, fontWeight: 500, marginBottom: 14 } }, product.name),
                 React.createElement("div", { className: "product-detail-price", style: { marginBottom: 6 } },
                     React.createElement(DiscountedPrice, { product: product, currentPrice: unitPrice, large: true })),
-                isMold && (React.createElement("p", { style: { ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 } },
-                    "Minimum order ",
-                    MOLD_CANDLE_MOQ,
-                    " pieces \u00B7 price shared on enquiry")),
                 React.createElement("p", { className: "product-detail-description" }, product.description || product.shortDescription),
-                isMold && (React.createElement("div", { style: { marginBottom: 28 } },
-                    React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Choose Your Mould"),
-                    React.createElement("div", { className: "option-grid" }, MOLD_CANDLE_SHAPES.map((shape) => (React.createElement("button", { key: shape, onClick: () => setMoldShape(shape), className: `selection-card${moldShape === shape ? " selected" : ""}` },
-                        React.createElement("span", { style: { ...sans, fontSize: 13.5, color: C.ink, fontWeight: 500 } }, shape))))),
-                    React.createElement("p", { style: { ...sans, fontSize: 12.5, color: C.rust, lineHeight: 1.6, marginTop: 10 } },
-                        "Minimum order: ",
-                        MOLD_CANDLE_MOQ,
-                        " pieces. Select one mould style for your batch."))),
                 fragrance && (React.createElement("div", { style: { marginBottom: 24 } },
                     React.createElement("p", { style: { ...label, color: C.ink70, marginBottom: 10 } }, "Variant"),
                     React.createElement("span", { style: { ...sans, fontSize: 13, padding: "9px 16px", border: `1px solid ${C.ink}`, display: "inline-block" } }, fragrance.name))),

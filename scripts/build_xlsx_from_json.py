@@ -49,7 +49,7 @@ def main():
     ws.title = "Products"
     headers = [
         "slug", "name", "categorySlug", "fragranceSlug", "mrp", "price", "discountPercent", "moq",
-        "availability", "occasionSlugs", "optionValues", "volume", "weight", "materials", "packaging", "shortDescription", "about",
+        "availability", "occasionSlugs", "optionValues", "variantMoqs", "volume", "weight", "materials", "packaging", "shortDescription", "about",
         "description", "burnTime", "careInstructions", "deliveryTime", "shippingNote", "returnsPolicy", "seoKeywords",
         "bestseller", "isNew", "customizable", "active", "image1", "image2", "image3",
     ]
@@ -60,6 +60,7 @@ def main():
             p.get("mrp", 0), p.get("price", 0), p.get("discountPercent", 0), p.get("moq", 1),
             p.get("availability", ""), "|".join(p.get("occasionSlugs", []) or []),
             "|".join(p.get("optionValues", []) or []),
+            "|".join(f"{k}:{v}" for k, v in (p.get("variantMoqs") or {}).items()),
             p.get("volume", ""), p.get("weight", ""), p.get("materials", ""),
             p.get("packaging", ""), p.get("shortDescription", ""), p.get("about", ""),
             p.get("description", ""), p.get("burnTime", ""), p.get("careInstructions", ""),
@@ -92,8 +93,11 @@ def main():
         ["   Keep the 'slug' column unique on each sheet — it is how a"],
         ["   product links to its fragrance and category."],
         ["2. Categories are: hero-jar-candle, wide-jar-candle, shot-glass-candle,"],
-        ["   mold-candles, wax-melts, gift-hampers, discovery-set, grand-ritual. A product's categorySlug must match one"],
+        ["   mold-candles, wax-sachet-combo, gift-hampers, discovery-set, grand-ritual. A product's categorySlug must match one"],
         ["   of these exactly."],
+        ["   Custom-batch products (mold-candles, wax-sachet-combo): 'optionValues' lists the shapes, 'moq' is the"],
+        ["   default minimum, and 'variantMoqs' sets a different minimum per shape, e.g. Cactus:3. The"],
+        ["   'price' is the batch price for each shape's minimum quantity."],
         ["3. Save this file as mysaa_products.xlsx in the data/ folder."],
         ["4. From a terminal in the project folder, run:"],
         ["      python3 scripts/xlsx_to_json.py"],

@@ -1,14 +1,7 @@
 # Mold Candle Images
 
-Replace the placeholder boxes on the Mold Candles page with product photographs here.
+Mould photos used on the Mold Candles page:
+- daisy.jpeg, rose.jpeg, carnation.jpeg, cactus.jpeg, laddu 2.jpeg, chakli.jpeg
+- 01_mold candle.jpeg = cover photo
 
-Recommended files:
-- daisy.jpg
-- rose.jpg
-- carnation.jpg
-- cactus.jpg
-- tortoise.jpg
-- laddu.jpg
-- chakli.jpg
-
-Keep one clean front/3-quarter photograph per mould. After adding images, update `data/images.json` or the image manifest script if you want the catalogue to use them automatically.
+(The Turtle mould was moved to the separate Wax Sachet Combo product: assets/catalogue/wax-sachet-combo/.)

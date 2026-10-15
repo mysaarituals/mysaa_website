@@ -18,7 +18,7 @@ Each product has a dedicated crawlable page under `/products/<product-slug>/`, w
 - https://mysaarituals.github.io/mysaa_website/collections/grand-ritual/
 - https://mysaarituals.github.io/mysaa_website/collections/discovery-set/
 - https://mysaarituals.github.io/mysaa_website/collections/gift-hampers/
-- https://mysaarituals.github.io/mysaa_website/collections/wax-melts/
+- https://mysaarituals.github.io/mysaa_website/collections/wax-sachet-combo/
 - https://mysaarituals.github.io/mysaa_website/collections/mold-candles/
 
 ## Fragrances

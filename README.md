@@ -18,7 +18,7 @@ assets/logo.png      your logo (transparent background)
 data/
   products.json      every product shown on the site
   fragrances.json    the 5 signature fragrances
-  categories.json    Hero Jar / Wide Jar / Shot Glass / Wax Melts / Hampers
+  categories.json    Hero Jar / Wide Jar / Shot Glass / Wax Sachet Combo / Mold Candles / Hampers
   settings.json      brand name, WhatsApp number, email, Instagram, etc.
   images.json        auto-generated map of which photos exist (see §6)
   mysaa_products.xlsx   an Excel copy of everything above, for easy editing
@@ -52,7 +52,7 @@ The UI follows the supplied Mysaa Rituals reference CSS: warm ivory grounds, ink
    Keep `slug` unique on each sheet — it's how a product links to its
    fragrance and category. A product's `categorySlug` must be one of:
    `hero-jar-candle`, `wide-jar-candle`, `shot-glass-candle`,
-   `wax-melts`, `gift-hampers`.
+   `wax-sachet-combo`, `mold-candles`, `gift-hampers`.
 3. Save, then from a terminal in the project folder run:
    ```bash
    pip install openpyxl
@@ -162,9 +162,11 @@ The catalogue now includes:
   madhuban, raat-ki-rani, saanjh
 - Candle formats: Signature (220 ml), Everyday Ritual (120 ml),
   Mini Ritual (60 ml), Grand Ritual (450 ml / 3 wick)
-- Wax Sachet Combo, Gift Hampers, Discovery Set
-- Mold Candles with selectable Daisy, Rose, Carnation, Cactus, Tortoise,
-  Laddu or Chakli shapes and a minimum order quantity of 6 pieces
+- Gift Hampers, Discovery Set
+- Wax Sachet Combo: one separate product (`wax-sachet-combo`) with a Turtle or
+  Tablet Sachet shape, any fragrance, and a minimum order of 2 pieces
+- Mold Candles with selectable Daisy, Rose, Carnation, Cactus, Laddu or Chakli
+  shapes; minimum order 6 pieces (Cactus: 3 pieces at the same ₹399 batch price)
 
 ### Pricing
 
@@ -174,9 +176,9 @@ The final selling prices remain unchanged:
 - Everyday Ritual: ₹549 with a 15% launch discount; crossed-out pre-discount price ₹649
 - Mini Ritual: ₹299 with a 10% launch discount; crossed-out pre-discount price ₹349
 - Discovery Set: ₹1,699 with a 20% launch discount; crossed-out pre-discount price ₹2,099
-- Wax Sachet Combo: ₹350
+- Wax Sachet Combo: ₹350 for the minimum 2 pieces (₹175 per piece at the minimum batch)
 - Gift Hampers and Grand Rituals: Enquire
-- Mold Candles: ₹399 for 6 pieces (₹66.50 per piece at the minimum batch); crossed-out pre-discount reference price ₹499; MOQ 6 pieces
+- Mold Candles: ₹399 per minimum batch — 6 pieces (₹66.50 per piece), or 3 pieces for Cactus (₹133 per piece); crossed-out pre-discount reference price ₹499
 
 Gift wrapping is an optional ₹50 add-on on product detail pages.
 
@@ -190,8 +192,11 @@ the final selling price remains the same as the current catalogue price.
   Coming Soon and cannot currently be selected.
 - Every product detail page can offer optional Gift Wrapping for +₹50.
   The selected wrapping is included in the cart order total and email order summary.
-- Mold Candles have a minimum order quantity of 6 pieces and a selectable shape:
-  Daisy, Rose, Carnation, Cactus, Tortoise, Laddu or Chakli.
+- Mold Candles and the Wax Sachet Combo use the custom-batch product page
+  (one shape + one fragrance, plus a colour for Mold Candles). Shapes are the
+  product's `optionValues`; `moq` is the default minimum and `variantMoqs`
+  (e.g. `{"Cactus": 3}`, or `Cactus:3` in the Excel column) overrides it per shape.
+  `price` is the batch price for each shape's minimum quantity.
 - Product detail galleries show every photograph found in the corresponding
   `assets/catalogue/<fragrance>/<category>/` folder, with previous/next
   controls, a counter and thumbnails.

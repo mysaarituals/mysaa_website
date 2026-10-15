@@ -53,6 +53,7 @@ def main():
             "availability": r.get("availability", "") or "",
             "occasionSlugs": [x.strip() for x in str(r.get("occasionSlugs", "") or "").split("|") if x.strip()],
             "optionValues": [x.strip() for x in str(r.get("optionValues", "") or "").split("|") if x.strip()],
+            "variantMoqs": {k.strip(): int(v) for k, v in (x.split(":", 1) for x in str(r.get("variantMoqs", "") or "").split("|") if ":" in x)},
             "volume": r.get("volume", "") or "",
             "weight": r.get("weight", "") or "",
             "materials": r.get("materials", "") or "",

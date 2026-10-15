@@ -87,16 +87,13 @@ const JAR_VARIANT_DEFAULT = {
   priceDelta: 0,
 };
 
-const MOLD_CANDLE_SHAPES = [
-  "Daisy",
-  "Rose",
-  "Carnation",
-  "Cactus",
-  "Tortoise",
-  "Laddu",
-  "Chakli",
-];
+// Custom-batch products (Mold Candles, Wax Sachet Combo). The shapes, default
+// minimum order (`moq`) and any per-shape minimum (`variantMoqs`, e.g. Cactus: 3)
+// come from data/products.json; these are only fallbacks if the data is missing.
+const MOLD_CANDLE_SHAPES = ["Daisy", "Rose", "Carnation", "Cactus", "Laddu", "Chakli"];
 const MOLD_CANDLE_MOQ = 6;
+const WAX_SACHET_SHAPES = ["Turtle", "Tablet Sachet"];
+const WAX_SACHET_MOQ = 2;
 
 const DISCOVERY_SET_SLUG = "discover-set-6-shot-glass-candles";
 const DISCOVERY_SET_FRAGRANCES = [
@@ -125,11 +122,27 @@ function isJarProduct(product) {
 function isMoldCandle(product) {
   return product && product.categorySlug === "mold-candles";
 }
+function isWaxSachet(product) {
+  return product && product.categorySlug === "wax-sachet-combo";
+}
+// Products sold as a custom "batch": one shape + one fragrance (+ colour for moulds).
+function isCustomBatch(product) {
+  return isMoldCandle(product) || isWaxSachet(product);
+}
+function customShapes(product) {
+  const fallback = isWaxSachet(product) ? WAX_SACHET_SHAPES : MOLD_CANDLE_SHAPES;
+  return Array.isArray(product && product.optionValues) && product.optionValues.length ? product.optionValues : fallback;
+}
+// Minimum order for a given shape: its own entry in variantMoqs, else the product's moq.
+function shapeMoq(product, shape) {
+  const own = product && product.variantMoqs && Number(product.variantMoqs[shape]);
+  return own > 0 ? own : Number((product && product.moq) || (isWaxSachet(product) ? WAX_SACHET_MOQ : MOLD_CANDLE_MOQ));
+}
 function isOutOfStock(product) {
   return product && String(product.availability || "").toLowerCase() === "out-of-stock";
 }
 function supportsPackaging(product) {
-  return product && ["hero-jar-candle", "wide-jar-candle", "wax-melts"].includes(product.categorySlug);
+  return product && ["hero-jar-candle", "wide-jar-candle"].includes(product.categorySlug);
 }
 
 function productImage(product, images, index = 0) {
@@ -407,7 +420,7 @@ function Header({ nav, settings, route }) {
   const discoverLinks = [
     ["Shop by Fragrance", "catalogue", "fragrance", null],
     ["Shop by Candle", "catalogue", "candle", null],
-    ["Wax Melts & Sachets", "catalogue", "category", { value: "wax-melts" }],
+    ["Wax Sachet Combo", "product", "wax-sachet-combo", null],
     ["Gift Hampers", "catalogue", "category", { value: "gift-hampers" }],
     ["Create Your Ritual", "create-ritual", null, null],
   ];
@@ -494,7 +507,7 @@ function Footer({ nav, settings }) {
           <div>
             <div style={{ marginBottom: 16 }}><Logo size={66} /></div>
             <p style={{ ...sans, color: C.ink70, fontSize: 14, lineHeight: 1.7, maxWidth: 300, marginBottom: 16 }}>
-              {settings.tagline || "Every flame remembers."} Small-batch candles, wax melts and gift hampers, made slowly and in limited quantity.
+              {settings.tagline || "Every flame remembers."} Small-batch candles, wax sachets and gift hampers, made slowly and in limited quantity.
             </p>
             <div style={{ display: "flex", gap: 10 }}>
               <a href={settings.instagram} target="_blank" rel="noreferrer" aria-label="Instagram"
@@ -1075,15 +1088,10 @@ function ProductGallery({ product, images }) {
 function MoldShapeVisual({ shape }) {
   const common = { fill: "none", stroke: "currentColor", strokeWidth: 1.4, strokeLinecap: "round", strokeLinejoin: "round" };
   const shapes = {
-    Daisy: <><circle cx="50" cy="50" r="10" {...common}/>{Array.from({length:8}).map((_,i)=>{const a=i*Math.PI/4; return <ellipse key={i} cx={50+28*Math.cos(a)} cy={50+28*Math.sin(a)} rx="9" ry="16" transform={`rotate(${i*45} ${50+28*Math.cos(a)} ${50+28*Math.sin(a)})`} {...common}/>})}</>,
-    Rose: <path d="M50 78c-20-2-30-15-26-29 3-10 13-17 25-17 11 0 22 6 25 16 5 15-7 29-24 30ZM35 50c9-8 23-8 31 0M39 42c7-6 16-6 22 0M44 35c4-3 8-3 12 0" {...common}/>,
-    Carnation: <path d="M30 55c5-14 14-22 20-18 6-4 15 4 20 18 2 8-1 17-8 22H38c-7-5-10-14-8-22Zm6-8c5 4 10 4 14 0 5 4 10 4 14 0M38 58c8 5 16 5 24 0M41 67c6 3 12 3 18 0" {...common}/>,
-    Cactus: <path d="M42 78V39c0-9 6-15 12-15s12 6 12 15v8h6v-8c0-4 3-7 7-7s7 3 7 7v12c0 9-7 16-16 16h-4v11H42ZM42 52H34c-5 0-9-4-9-9V35c0-4 3-7 7-7s7 3 7 7v6h3" {...common}/>,
-    Tortoise: <path d="M24 58c4-16 17-25 31-25s27 9 31 25c-5 12-17 19-31 19S29 70 24 58Zm8-2c8 8 16 12 23 12 8 0 16-4 23-12M50 34v38M33 48c12 6 24 6 34 0M31 72l-8 5M69 72l8 5M26 55l-8-4M74 55l8-4" {...common}/>,
-    Laddu: <circle cx="50" cy="54" r="28" {...common}/>,
-    Chakli: <path d="M50 79c-18 0-31-10-31-24 0-16 14-28 31-28s31 12 31 28c0 14-13 24-31 24Zm0-8c-12 0-21-6-21-16 0-10 9-18 21-18s21 8 21 18c0 10-9 16-21 16Zm0-8c-6 0-11-3-11-8s5-10 11-10 11 5 11 10-5 8-11 8Z" {...common}/>
+    Turtle: <path d="M24 58c4-16 17-25 31-25s27 9 31 25c-5 12-17 19-31 19S29 70 24 58Zm8-2c8 8 16 12 23 12 8 0 16-4 23-12M50 34v38M33 48c12 6 24 6 34 0M31 72l-8 5M69 72l8 5M26 55l-8-4M74 55l8-4" {...common}/>,
+    "Tablet Sachet": <><rect x="22" y="30" width="56" height="40" rx="7" {...common}/><circle cx="50" cy="50" r="11" {...common}/><path d="M36 38h6M58 62h6" {...common}/></>,
   };
-  return <svg viewBox="0 0 100 100" className="mold-shape-visual" aria-hidden="true">{shapes[shape] || shapes.Daisy}</svg>;
+  return <svg viewBox="0 0 100 100" className="mold-shape-visual" aria-hidden="true">{shapes[shape] || shapes["Tablet Sachet"]}</svg>;
 }
 
 const MOLD_IMAGE_MAP = {
@@ -1091,11 +1099,15 @@ const MOLD_IMAGE_MAP = {
   Rose: "assets/catalogue/mold-candles/rose.jpeg",
   Carnation: "assets/catalogue/mold-candles/carnation.jpeg",
   Cactus: "assets/catalogue/mold-candles/cactus.jpeg",
-  Tortoise: "assets/catalogue/mold-candles/turtle.jpeg",
   Laddu: "assets/catalogue/mold-candles/laddu%202.jpeg",
   Chakli: "assets/catalogue/mold-candles/chakli.jpeg",
 };
-const moldImage = (shape) => MOLD_IMAGE_MAP[shape];
+// Tablet Sachet uses a dummy placeholder: replace assets/catalogue/wax-sachet-combo/tablet-sachet.jpeg
+// with the real photo (keep the same file name) and it updates everywhere.
+const WAX_SACHET_IMAGE_MAP = {
+  Turtle: "assets/catalogue/wax-sachet-combo/turtle.jpeg",
+  "Tablet Sachet": "assets/catalogue/wax-sachet-combo/tablet-sachet.jpeg",
+};
 
 const MOLD_COLORS = [
   { name: "Ivory", hex: "#EFE7D8" },
@@ -1108,53 +1120,84 @@ const MOLD_COLORS = [
   { name: "Charcoal", hex: "#4A4744" },
 ];
 
-function MoldCandleProductPage({ data, nav, product, settings }) {
-  const [shape, setShape] = useState(MOLD_CANDLE_SHAPES[0]);
+const CUSTOM_BATCH_CONFIG = {
+  "mold-candles": {
+    title: "Mold Candles", eyebrow: "Custom Candle Studio", shapeNoun: "mould", itemNoun: "mould candle",
+    intro: "Create your own batch by choosing a mould, fragrance and primary colour.",
+    images: MOLD_IMAGE_MAP, hasColor: true,
+    batchRule: "One batch = one mould + one fragrance + one primary colour.",
+  },
+  "wax-sachet-combo": {
+    title: "Wax Sachet Combo", eyebrow: "Flame-free Fragrance", shapeNoun: "shape", itemNoun: "wax sachet",
+    intro: "Create your own batch by choosing a sachet shape and a fragrance.",
+    images: WAX_SACHET_IMAGE_MAP, hasColor: false,
+    batchRule: "One batch = one sachet shape + one fragrance.",
+  },
+};
+
+function ShapeArt({ cfg, shape, alt }) {
+  const src = cfg.images[shape];
+  const [failed, setFailed] = React.useState(false);
+  React.useEffect(() => setFailed(false), [src]);
+  if (!src || failed) return <MoldShapeVisual shape={shape} />;
+  return <img src={src} alt={alt} loading="lazy" decoding="async" onError={() => setFailed(true)} />;
+}
+
+function CustomBatchProductPage({ data, nav, product, settings }) {
+  const cfg = CUSTOM_BATCH_CONFIG[product.categorySlug] || CUSTOM_BATCH_CONFIG["mold-candles"];
+  const shapes = customShapes(product);
+  const [shape, setShape] = useState(shapes[0]);
   const [fragranceSlug, setFragranceSlug] = useState("raat-ki-rani");
   const [color, setColor] = useState("Dusty Rose");
-  const [qty, setQty] = useState(MOLD_CANDLE_MOQ);
+  const [qty, setQty] = useState(shapeMoq(product, shapes[0]));
   const [giftWrap, setGiftWrap] = useState(false);
   const fragrance = data.fragrances.find((f) => f.slug === fragranceSlug);
   const colorData = MOLD_COLORS.find((c) => c.name === color) || MOLD_COLORS[2];
-  const batchPrice = Number(product.price || 399);
-  const baseQty = MOLD_CANDLE_MOQ;
-  const unitPiecePrice = batchPrice / baseQty;
+  const minQty = shapeMoq(product, shape);          // minimum for the selected shape
+  const batchPrice = Number(product.price || 0);    // price of one minimum batch
+  const unitPiecePrice = batchPrice / minQty;
   const subtotal = Math.round(unitPiecePrice * qty);
   const giftWrapCharge = Number(settings.giftWrapCharge || GIFT_WRAP_CHARGE);
-  const total = subtotal + (giftWrap ? giftWrapCharge : 0);
-  const enquiryMsg = `Hello Mysaa Rituals! I'd like to order a custom Mold Candle batch:\n\nMould: ${shape}\nFragrance: ${fragrance ? fragrance.name : fragranceSlug}\nPrimary colour: ${color}\nQuantity: ${qty} pieces (MOQ ${MOLD_CANDLE_MOQ})\nBatch price basis: ${inr(batchPrice)} for ${baseQty} pieces\n${giftWrap ? `Gift wrapping: Yes (+${inr(giftWrapCharge)})\n` : "Gift wrapping: No\n"}Total: ${inr(total)}\n\nPlease confirm availability and delivery details.`;
-  const addMoldToCart = () => {
+  const pickShape = (item) => { setShape(item); setQty(shapeMoq(product, item)); };
+  const defaultMoq = Number(product.moq || minQty);
+  const exceptions = Object.entries(product.variantMoqs || {}).filter(([, v]) => Number(v) !== defaultMoq);
+  const priceLine = `${inr(batchPrice)} for ${defaultMoq} pieces`;
+  const exceptionLine = exceptions.map(([k, v]) => `${k}: ${inr(batchPrice)} for ${v} pieces`).join(" · ");
+  const addToCart = () => {
+    const details = `${cfg.shapeNoun[0].toUpperCase() + cfg.shapeNoun.slice(1)}: ${shape}; Fragrance: ${fragrance ? fragrance.name : fragranceSlug}` + (cfg.hasColor ? `; Primary colour: ${color}` : "");
     addCartItem({
-      slug: product.slug, name: product.name, unitPrice: unitPiecePrice, qty, moq: MOLD_CANDLE_MOQ,
-      shape, fragranceSlug, fragranceName: fragrance ? fragrance.name : fragranceSlug, color, giftWrap, giftWrapCharge,
-      details: `Mould: ${shape}; Fragrance: ${fragrance ? fragrance.name : fragranceSlug}; Primary colour: ${color}`,
+      slug: product.slug, name: product.name, unitPrice: unitPiecePrice, qty, moq: minQty,
+      shape, fragranceSlug, fragranceName: fragrance ? fragrance.name : fragranceSlug, color: cfg.hasColor ? color : "", giftWrap, giftWrapCharge,
+      details,
     });
   };
+  const fragranceStep = 2;
+  const colorStep = 3;
 
   return (
     <div className="container mold-page" style={{ padding: "32px 20px 80px" }}>
       <p style={{ ...label, color: C.ink70, marginBottom: 24 }}>
-        <button onClick={() => nav("catalogue", "all")} style={{ ...label, color: C.ink70 }}>Catalogue</button>{" / "}<span style={{ color: C.ink }}>Mold Candles</span>
+        <button onClick={() => nav("catalogue", "all")} style={{ ...label, color: C.ink70 }}>Catalogue</button>{" / "}<span style={{ color: C.ink }}>{cfg.title}</span>
       </p>
 
       <div className="mold-page-heading">
         <div>
-          <p style={{ ...label, color: C.rust, marginBottom: 10 }}>Custom Candle Studio</p>
-          <h1 style={{ ...serif, color: C.ink, fontSize: "clamp(34px,5vw,52px)", fontWeight: 500, lineHeight: 1.02, marginBottom: 10 }}>Mold Candles</h1>
-          <p style={{ ...sans, color: C.ink70, fontSize: 14.5, lineHeight: 1.7, maxWidth: 680 }}>Minimum order 6 pieces · <strong style={{ color: C.ink }}>₹399 for 6 pieces</strong>. Create your own batch by choosing a mould, fragrance and primary colour.</p>
+          <p style={{ ...label, color: C.rust, marginBottom: 10 }}>{cfg.eyebrow}</p>
+          <h1 style={{ ...serif, color: C.ink, fontSize: "clamp(34px,5vw,52px)", fontWeight: 500, lineHeight: 1.02, marginBottom: 10 }}>{cfg.title}</h1>
+          <p style={{ ...sans, color: C.ink70, fontSize: 14.5, lineHeight: 1.7, maxWidth: 680 }}>Minimum order {defaultMoq} pieces · <strong style={{ color: C.ink }}>{priceLine}</strong>{exceptionLine ? <> ({exceptionLine})</> : null}. {cfg.intro}</p>
         </div>
       </div>
 
       <div className="mold-builder-grid">
         <div className="mold-builder">
           <section className="mold-step">
-            <div className="mold-step-heading"><span>1</span><h2>Choose your mould</h2></div>
+            <div className="mold-step-heading"><span>1</span><h2>{cfg.shapeNoun === "mould" ? "Choose your mould" : "Choose your shape"}</h2></div>
             <div className="mold-shape-grid">
-              {MOLD_CANDLE_SHAPES.map((item) => (
-                <button key={item} onClick={() => setShape(item)} className={`mold-shape-card${shape === item ? " selected" : ""}`}>
+              {shapes.map((item) => (
+                <button key={item} onClick={() => pickShape(item)} className={`mold-shape-card${shape === item ? " selected" : ""}`}>
                   <div className="mold-shape-art">
-  <img src={moldImage(item)} alt={`${item} mould candle`} loading="lazy" decoding="async" />
-</div>
+                    <ShapeArt cfg={cfg} shape={item} alt={`${item} ${cfg.itemNoun}`} />
+                  </div>
                   <span>{item}</span>
                 </button>
               ))}
@@ -1162,7 +1205,7 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
           </section>
 
           <section className="mold-step">
-            <div className="mold-step-heading"><span>2</span><h2>Choose your own fragrance</h2></div>
+            <div className="mold-step-heading"><span>{fragranceStep}</span><h2>Choose your own fragrance</h2></div>
             <div className="mold-fragrance-grid">
               {data.fragrances.filter((f) => f.active).map((f) => (
                 <button key={f.slug} onClick={() => setFragranceSlug(f.slug)} className={`mold-fragrance-card${fragranceSlug === f.slug ? " selected" : ""}`}>
@@ -1173,32 +1216,34 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
             <button className="mold-more-link" onClick={() => nav("catalogue", "fragrance", { value: fragranceSlug })}>View fragrance notes →</button>
           </section>
 
-          <section className="mold-step">
-            <div className="mold-step-heading"><span>3</span><h2>Choose your primary colour</h2></div>
-            <div className="mold-color-grid">
-              {MOLD_COLORS.map((c) => (
-                <button key={c.name} onClick={() => setColor(c.name)} className={`mold-color-card${color === c.name ? " selected" : ""}`}>
-                  <span className="mold-color-swatch" style={{ background: c.hex }} />
-                  <span>{c.name}</span>
-                </button>
-              ))}
-            </div>
-          </section>
+          {cfg.hasColor && (
+            <section className="mold-step">
+              <div className="mold-step-heading"><span>{colorStep}</span><h2>Choose your primary colour</h2></div>
+              <div className="mold-color-grid">
+                {MOLD_COLORS.map((c) => (
+                  <button key={c.name} onClick={() => setColor(c.name)} className={`mold-color-card${color === c.name ? " selected" : ""}`}>
+                    <span className="mold-color-swatch" style={{ background: c.hex }} />
+                    <span>{c.name}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
 
-          <div className="mold-note"><strong>One batch = one mould + one fragrance + one primary colour.</strong><span>Minimum order is 6 pieces. You can increase the quantity after selecting your batch.</span></div>
+          <div className="mold-note"><strong>{cfg.batchRule}</strong><span>Minimum order is {minQty} pieces for {shape}. You can increase the quantity after selecting your batch.</span></div>
         </div>
 
         <aside className="mold-summary">
           <p style={{ ...label, color: C.ink70, marginBottom: 16 }}>Your selection</p>
-          <div className="mold-summary-preview"><div className="mold-summary-art" style={{ background: colorData.hex }}><img src={moldImage(shape)} alt={`${shape} mould candle`} decoding="async" /></div><div><strong>{shape}</strong><span>{fragrance ? fragrance.name : ""}</span><span>{color}</span></div></div>
-          <div className="mold-summary-line"><span>Quantity</span><div className="mold-quantity"><button onClick={() => setQty((q) => Math.max(MOLD_CANDLE_MOQ, q - 1))}>−</button><strong>{qty}</strong><button onClick={() => setQty((q) => q + 1)}>+</button></div></div>
-          <div className="mold-summary-price"><span>Current batch price</span><strong>{inr(subtotal)}</strong><small>Batch basis: ₹399 for the minimum 6 pieces</small></div>
-          <div className="mold-moq-note">Minimum order: {MOLD_CANDLE_MOQ} pieces. Your selected mould, fragrance and colour will be made as one batch.</div>
+          <div className="mold-summary-preview"><div className="mold-summary-art" style={{ background: cfg.hasColor ? colorData.hex : "#f1eadf" }}><ShapeArt cfg={cfg} shape={shape} alt={`${shape} ${cfg.itemNoun}`} /></div><div><strong>{shape}</strong><span>{fragrance ? fragrance.name : ""}</span>{cfg.hasColor && <span>{color}</span>}</div></div>
+          <div className="mold-summary-line"><span>Quantity</span><div className="mold-quantity"><button onClick={() => setQty((q) => Math.max(minQty, q - 1))}>−</button><strong>{qty}</strong><button onClick={() => setQty((q) => q + 1)}>+</button></div></div>
+          <div className="mold-summary-price"><span>Current batch price</span><strong>{inr(subtotal)}</strong><small>Batch basis: {inr(batchPrice)} for the minimum {minQty} pieces</small></div>
+          <div className="mold-moq-note">Minimum order: {minQty} pieces. Your selected {cfg.shapeNoun}, fragrance{cfg.hasColor ? " and colour" : ""} will be made as one batch.</div>
           <div className="mold-gift-wrap">
             <label><input type="checkbox" checked={giftWrap} onChange={(e) => setGiftWrap(e.target.checked)} /><span><strong>Gift wrapping</strong><small>+{inr(giftWrapCharge)}</small></span></label>
           </div>
-          <button className="mold-create-button" onClick={addMoldToCart}>Add batch to cart <span>→</span></button>
-          <button className="mold-enquiry-button" onClick={addMoldToCart}>Add to cart</button>
+          <button className="mold-create-button" onClick={addToCart}>Add batch to cart <span>→</span></button>
+          <button className="mold-enquiry-button" onClick={addToCart}>Add to cart</button>
         </aside>
       </div>
     </div>
@@ -1207,21 +1252,14 @@ function MoldCandleProductPage({ data, nav, product, settings }) {
 
 function ProductDetailPage({ data, nav, slug, settings }) {
   const productForState = data.products.find((p) => p.slug === slug);
-  const isMoldForState = isMoldCandle(productForState);
-  const [qty, setQty] = useState(isMoldForState ? MOLD_CANDLE_MOQ : 1);
+  const isCustomForState = isCustomBatch(productForState);
+  const [qty, setQty] = useState(1);
   const [giftWrap, setGiftWrap] = useState(false);
-  const [moldShape, setMoldShape] = useState(MOLD_CANDLE_SHAPES[0]);
-  const [moldFragrance, setMoldFragrance] = useState("raat-ki-rani");
-  const [moldColor, setMoldColor] = useState("Dusty Rose");
   const product = data.products.find((p) => p.slug === slug);
 
   useEffect(() => {
-    const mold = isMoldCandle(product);
-    setQty(mold ? MOLD_CANDLE_MOQ : 1);
+    setQty(1);
     setGiftWrap(false);
-    setMoldShape(MOLD_CANDLE_SHAPES[0]);
-    setMoldFragrance("raat-ki-rani");
-    setMoldColor("Dusty Rose");
   }, [slug]);
 
   if (!product) {
@@ -1233,21 +1271,21 @@ function ProductDetailPage({ data, nav, slug, settings }) {
     );
   }
 
-  if (isMoldForState) {
-    return <MoldCandleProductPage data={data} nav={nav} product={product} settings={settings} />;
+  if (isCustomForState) {
+    // key forces a fresh builder (shape/qty reset) when moving between custom products
+    return <CustomBatchProductPage key={product.slug} data={data} nav={nav} product={product} settings={settings} />;
   }
 
   const category = data.categories.find((c) => c.slug === product.categorySlug);
   const fragrance = data.fragrances.find((f) => f.slug === product.fragranceSlug);
   const isDiscoverySet = product.slug === DISCOVERY_SET_SLUG;
-  const isMold = isMoldCandle(product);
   const giftWrapAvailable = settings.giftWrapEnabled !== false && String(settings.giftWrapEnabled).toLowerCase() !== "false";
   const giftWrapCharge = Number(settings.giftWrapCharge || GIFT_WRAP_CHARGE);
   const related = data.products.filter((p) => p.active && p.categorySlug === product.categorySlug && p.slug !== product.slug).slice(0, 4);
   const hasPackagingOptions = supportsPackaging(product);
   const hasJarVariants = false;
   const packagingChoice = PACKAGING_OPTIONS.standard;
-  const minQty = isMold ? MOLD_CANDLE_MOQ : 1;
+  const minQty = 1;
   const unitPrice = Number(product.price || 0);
   const subtotal = unitPrice * qty;
   const giftWrapTotal = giftWrap ? giftWrapCharge : 0;
@@ -1301,28 +1339,7 @@ function ProductDetailPage({ data, nav, slug, settings }) {
           <div className="product-detail-price" style={{ marginBottom: 6 }}>
             <DiscountedPrice product={product} currentPrice={unitPrice} large />
           </div>
-          {isMold && (
-            <p style={{ ...sans, fontSize: 12.5, color: C.ink70, marginBottom: 16 }}>
-              Minimum order {MOLD_CANDLE_MOQ} pieces · price shared on enquiry
-            </p>
-          )}
           <p className="product-detail-description">{product.description || product.shortDescription}</p>
-
-          {isMold && (
-            <div style={{ marginBottom: 28 }}>
-              <p style={{ ...label, color: C.ink70, marginBottom: 10 }}>Choose Your Mould</p>
-              <div className="option-grid">
-                {MOLD_CANDLE_SHAPES.map((shape) => (
-                  <button key={shape} onClick={() => setMoldShape(shape)} className={`selection-card${moldShape === shape ? " selected" : ""}`}>
-                    <span style={{ ...sans, fontSize: 13.5, color: C.ink, fontWeight: 500 }}>{shape}</span>
-                  </button>
-                ))}
-              </div>
-              <p style={{ ...sans, fontSize: 12.5, color: C.rust, lineHeight: 1.6, marginTop: 10 }}>
-                Minimum order: {MOLD_CANDLE_MOQ} pieces. Select one mould style for your batch.
-              </p>
-            </div>
-          )}
 
           {fragrance && (
             <div style={{ marginBottom: 24 }}>
