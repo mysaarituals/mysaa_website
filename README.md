@@ -217,3 +217,23 @@ relying only on hash URLs such as `#/product/...` for search discovery.
 - `llms.txt` gives machine-readable context about the brand, collections, fragrances and policies.
 - Product pages include Product + BreadcrumbList structured data, detailed descriptions, prices, availability, burn time, care, delivery, shipping and returns.
 - `index.html` and product routes use keyword-focused titles/descriptions without relying on keyword stuffing.
+
+## Google search appearance (site name & icon)
+
+Google takes the **site name and icon from the root of the host**, not from a
+sub-folder. While the site lives at `mysaarituals.github.io/mysaa_website/`, the
+host root (`mysaarituals.github.io/`) is empty, so Google falls back to
+"GitHub Pages documentation" and a globe icon. The page-level fixes are already
+in this repo (WebSite + Organization structured data, `og:site_name`, favicon set
+in `assets/icons/` + `favicon.ico`, `site.webmanifest`, brand in every page title).
+To make Google actually use them, serve the site from the root of its address:
+
+1. **Option A – rename the repo to `mysaarituals.github.io`** (Settings → General →
+   Repository name). The site is then at `https://mysaarituals.github.io/`.
+2. **Option B – custom domain** (e.g. `www.mysaarituals.com`): Settings → Pages →
+   Custom domain, and add the DNS records GitHub shows.
+
+Then run `python3 scripts/set_site_url.py https://mysaarituals.github.io/mysaa_website <NEW ADDRESS>`
+(no trailing slash), commit, and in Google Search Console add the new address,
+submit `sitemap.xml` and use URL Inspection → Request indexing on the homepage.
+Icon/name changes usually take a few days to a few weeks to show.
