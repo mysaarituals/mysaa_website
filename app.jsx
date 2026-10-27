@@ -154,7 +154,7 @@ function productImage(product, images, index = 0) {
   }
   const key = `${product.fragranceSlug}/${product.categorySlug}`;
   const list = (images && images.products && images.products[key]) || [];
-  return list[index] || (Array.isArray(product.images) ? product.images[index] : undefined);
+  return list[index] || (Array.isArray(product.images) ? product.images.filter(Boolean)[index] : undefined);
 }
 function fragranceImage(fragrance, images, index = 0) {
   const list = (images && images.fragrances && images.fragrances[fragrance.slug]) || [];
@@ -1038,7 +1038,7 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
 }
 
 function ProductGallery({ product, images }) {
-  const gallery = ((images && images.products && images.products[`${product.fragranceSlug}/${product.categorySlug}`]) || []).length ? images.products[`${product.fragranceSlug}/${product.categorySlug}`] : (product.images || []);
+  const gallery = ((images && images.products && images.products[`${product.fragranceSlug}/${product.categorySlug}`]) || []).length ? images.products[`${product.fragranceSlug}/${product.categorySlug}`] : (product.images || []).filter(Boolean);
   const [activeIndex, setActiveIndex] = useState(0);
   const total = gallery.length;
 
@@ -1503,7 +1503,7 @@ function CreateRitualPage({ settings, data }) {
           options={["Birthday", "Anniversary", "Wedding / Wedding Favour", "Festival", "Housewarming", "Corporate / Gifting", "Other"]}
         />
         <FieldArea label="Anything else we should know?" value={form.notes} onChange={set("notes")} />
-        <Button href={waLink(settings.whatsapp, `MYSAA RITUALS — CUSTOM ORDER REQUEST\\n\\n${message}`)} style={{ marginTop: 8, width: "fit-content" }}>Send Custom Request on WhatsApp</Button>
+        <Button href={waLink(settings.whatsapp, `🕯️ *MYSAA RITUALS — Custom Request*\n\n${message}`)} style={{ marginTop: 8, width: "fit-content" }}>Send Custom Request on WhatsApp</Button>
       </div>
     </div>
   );
@@ -1705,37 +1705,90 @@ function WelcomePopup() {
 
 function CartPage({ nav, settings }) {
   const [items, setItems] = useState(() => readCart());
-  const [customer, setCustomer] = useState({ name: "", email: "", address: "", city: "", state: "", pincode: "", landmark: "", note: "" });
+  const CUSTOMER_KEY = "mysaa-customer-v1";
+  const [customer, setCustomer] = useState(() => {
+    const blank = { name: "", address: "", pincode: "", note: "" };
+    try { return { ...blank, ...(JSON.parse(window.localStorage.getItem(CUSTOMER_KEY) || "{}")), note: "" }; } catch (_) { return blank; }
+  });
+  const [showNote, setShowNote] = useState(false);
+  const [place, setPlace] = useState(null); // { city, state } looked up from the PIN code
+  const [touched, setTouched] = useState(false);
   useEffect(() => {
     const refresh = () => setItems(readCart());
     window.addEventListener("mysaa-cart-updated", refresh);
     return () => window.removeEventListener("mysaa-cart-updated", refresh);
   }, []);
+  // Remember delivery details on this device so repeat orders are one tap.
+  useEffect(() => {
+    try { window.localStorage.setItem(CUSTOMER_KEY, JSON.stringify({ name: customer.name, address: customer.address, pincode: customer.pincode })); } catch (_) { }
+  }, [customer.name, customer.address, customer.pincode]);
+  // Auto-fill city & state from the PIN code (best effort; the order works without it).
+  useEffect(() => {
+    setPlace(null);
+    if (!/^\d{6}$/.test(customer.pincode)) return;
+    let cancelled = false;
+    fetch(`https://api.postalpincode.in/pincode/${customer.pincode}`)
+      .then((r) => r.json())
+      .then((res) => {
+        const office = res && res[0] && res[0].Status === "Success" && res[0].PostOffice && res[0].PostOffice[0];
+        if (!cancelled && office) setPlace({ city: office.District, state: office.State });
+      })
+      .catch(() => { });
+    return () => { cancelled = true; };
+  }, [customer.pincode]);
   const total = cartTotal(items);
-  const setCustomerField = (key) => (e) => setCustomer((v) => ({ ...v, [key]: e.target.value }));
-  const orderBody = [
-    "Hello Mysaa Rituals, I'd like to place the following order:",
-    "",
-    ...items.map((item, i) => `${i + 1}. ${item.name}\n   Quantity: ${item.qty}${item.moq ? ` (MOQ ${item.moq})` : ""}\n   Unit price: ${inr(item.unitPrice)}\n   ${item.details || ""}${item.giftWrap ? `\n   Gift wrapping: +${inr(item.giftWrapCharge || GIFT_WRAP_CHARGE)}` : ""}\n   Line total: ${inr(Number(item.unitPrice) * Number(item.qty) + (item.giftWrap ? Number(item.giftWrapCharge || GIFT_WRAP_CHARGE) : 0))}`),
-    "",
-    `Order total: ${inr(total)}`,
-    "",
-    `Name: ${customer.name || ""}`,
-    `Email: ${customer.email || ""}`,
-    `Address: ${customer.address || ""}`,
-    `City: ${customer.city || ""}`,
-    `State: ${customer.state || ""}`,
-    `PIN / Postal Code: ${customer.pincode || ""}`,
-    customer.landmark ? `Landmark: ${customer.landmark}` : "",
-    customer.note ? `Notes: ${customer.note}` : "",
-    "",
-    "Please confirm availability, delivery charges and final delivery details."
-  ].filter(Boolean).join("\n");
+  const setCustomerField = (key) => (e) => {
+    const value = key === "pincode" ? e.target.value.replace(/\D/g, "").slice(0, 6) : e.target.value;
+    setCustomer((v) => ({ ...v, [key]: value }));
+  };
+  const errors = {
+    name: customer.name.trim().length < 2 ? "Please tell us your name" : "",
+    address: customer.address.trim().length < 6 ? "Please add your delivery address" : "",
+    pincode: /^\d{6}$/.test(customer.pincode) ? "" : "Enter a 6-digit PIN code"
+  };
+  const hasErrors = Object.values(errors).some(Boolean);
+  const lineTotalOf = (item) => Number(item.unitPrice) * Number(item.qty) + (item.giftWrap ? Number(item.giftWrapCharge || GIFT_WRAP_CHARGE) : 0);
+  const buildOrderMessage = (orderId) => {
+    const hr = "━━━━━━━━━━━━━━━━";
+    const lines = [];
+    items.forEach((item, i) => {
+      lines.push(`*${i + 1}. ${item.name}*`);
+      if (item.fragranceName && !String(item.name).includes(item.fragranceName)) lines.push(`Fragrance: ${item.fragranceName}`);
+      lines.push(`Qty ${item.qty} × ${inr(item.unitPrice)} = ${inr(Number(item.unitPrice) * Number(item.qty))}`);
+      String(item.details || "").split(/\n|·|\|/).map((d) => d.trim()).filter(Boolean).forEach((d) => lines.push(`• ${d}`));
+      if (item.giftWrap) lines.push(`• Gift wrapping +${inr(item.giftWrapCharge || GIFT_WRAP_CHARGE)}`);
+      if (items.length > 1 || item.giftWrap) lines.push(`Subtotal: *${inr(lineTotalOf(item))}*`);
+      lines.push("");
+    });
+    const cityState = place ? `${place.city}, ${place.state}` : "";
+    return [
+      "🕯️ *MYSAA RITUALS — New Order*",
+      `Order ID: *${orderId}*`,
+      hr,
+      "",
+      ...lines,
+      hr,
+      `*Order total: ${inr(total)}*`,
+      "_Shipping is extra and will be shared at payment._",
+      "",
+      "📦 *Deliver to*",
+      customer.name.trim(),
+      customer.address.trim(),
+      `${cityState ? cityState + " – " : "PIN "}${customer.pincode}`,
+      customer.note.trim() ? "" : null,
+      customer.note.trim() ? `📝 *Note:* ${customer.note.trim()}` : null,
+      "",
+      "Please confirm availability and share the payment details. Thank you! 🙏"
+    ].filter((l) => l !== null).join("\n");
+  };
   const sendOrderOnWhatsApp = () => {
     if (!items.length) return;
-    const orderId = `MYS-${(window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`).toUpperCase()}`;
-    const message = `MYSAA RITUALS — NEW ORDER\\nOrder ID: ${orderId}\\n\\n${orderBody}`;
-    window.open(waLink(settings.whatsapp, message), "_blank", "noopener,noreferrer");
+    setTouched(true);
+    if (hasErrors) return;
+    const d = new Date();
+    const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+    const orderId = `MYS-${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}-${rand}`;
+    window.open(waLink(settings.whatsapp, buildOrderMessage(orderId)), "_blank", "noopener,noreferrer");
   };
   const changeQty = (item, delta) => {
     const next = Math.max(item.moq || 1, Number(item.qty || 1) + delta);
@@ -1779,22 +1832,32 @@ function CartPage({ nav, settings }) {
           </div>
           <aside className="cart-summary">
             <div className="cart-summary-total"><span>Total</span><strong>{inr(total)}</strong></div>
-            <p className="cart-email-note">Your order will be prepared with a unique order ID and sent to us directly on WhatsApp.</p>
+            <p className="cart-email-note">Just 3 quick details — we'll confirm everything with you on WhatsApp before you pay.</p>
             <div className="cart-customer-fields">
-              <label><span>Name</span><input value={customer.name} onChange={setCustomerField("name")} placeholder="Your name" /></label>
-              <label><span>Email</span><input type="email" value={customer.email} onChange={setCustomerField("email")} placeholder="your@email.com" /></label>
-              <label><span>Full Address</span><textarea value={customer.address} onChange={setCustomerField("address")} placeholder="House / flat, street, area" /></label>
-              <div className="cart-address-row">
-                <label><span>City</span><input value={customer.city} onChange={setCustomerField("city")} placeholder="City" /></label>
-                <label><span>State</span><input value={customer.state} onChange={setCustomerField("state")} placeholder="State" /></label>
-              </div>
-              <div className="cart-address-row">
-                <label><span>PIN / Postal Code</span><input value={customer.pincode} onChange={setCustomerField("pincode")} placeholder="PIN code" /></label>
-                <label><span>Landmark</span><input value={customer.landmark} onChange={setCustomerField("landmark")} placeholder="Nearby landmark (optional)" /></label>
-              </div>
-              <label><span>Order notes</span><textarea value={customer.note} onChange={setCustomerField("note")} placeholder="Occasion, delivery notes, gifting details…" /></label>
+              <label className={touched && errors.name ? "has-error" : ""}>
+                <span>Your name</span>
+                <input value={customer.name} onChange={setCustomerField("name")} placeholder="e.g. Ananya Sharma" autoComplete="name" />
+                {touched && errors.name && <em>{errors.name}</em>}
+              </label>
+              <label className={touched && errors.address ? "has-error" : ""}>
+                <span>Delivery address</span>
+                <textarea rows={2} value={customer.address} onChange={setCustomerField("address")} placeholder="House / flat no., street, area" autoComplete="street-address" />
+                {touched && errors.address && <em>{errors.address}</em>}
+              </label>
+              <label className={touched && errors.pincode ? "has-error" : ""}>
+                <span>PIN code</span>
+                <input value={customer.pincode} onChange={setCustomerField("pincode")} placeholder="6-digit PIN code" inputMode="numeric" maxLength={6} autoComplete="postal-code" />
+                {place && <small className="pin-place">✓ {place.city}, {place.state}</small>}
+                {touched && errors.pincode && <em>{errors.pincode}</em>}
+              </label>
+              {showNote ? (
+                <label><span>Note (optional)</span><textarea rows={2} value={customer.note} onChange={setCustomerField("note")} placeholder="Occasion, gift message, delivery timing…" /></label>
+              ) : (
+                <button type="button" className="cart-add-note" onClick={() => setShowNote(true)}>+ Add a note or gift message</button>
+              )}
             </div>
             <button className="cart-email-button" type="button" onClick={sendOrderOnWhatsApp}>Place Order on WhatsApp →</button>
+            <p className="cart-small-note">Opens WhatsApp with your order ready to send.</p>
             <div className="cart-order-policy">
               <p><strong>Delivery</strong><span>Estimated delivery time is confirmed with your order.</span></p>
               <p><strong>Shipping</strong><span>Shipping cost is separate and will be shared while confirming payment.</span></p>

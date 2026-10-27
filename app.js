@@ -143,7 +143,7 @@ function productImage(product, images, index = 0) {
     }
     const key = `${product.fragranceSlug}/${product.categorySlug}`;
     const list = (images && images.products && images.products[key]) || [];
-    return list[index] || (Array.isArray(product.images) ? product.images[index] : undefined);
+    return list[index] || (Array.isArray(product.images) ? product.images.filter(Boolean)[index] : undefined);
 }
 function fragranceImage(fragrance, images, index = 0) {
     const list = (images && images.fragrances && images.fragrances[fragrance.slug]) || [];
@@ -753,7 +753,7 @@ function CataloguePage({ data, nav, initialType, initialQuery }) {
                 React.createElement("div", { className: "product-grid" }, [...filtered].sort((a, b) => Number(isOutOfStock(a)) - Number(isOutOfStock(b))).map((p) => (React.createElement(ProductCard, { key: p.slug, product: p, fragrance: fragranceById[p.fragranceSlug], images: data.images, nav: nav }))))))))));
 }
 function ProductGallery({ product, images }) {
-    const gallery = ((images && images.products && images.products[`${product.fragranceSlug}/${product.categorySlug}`]) || []).length ? images.products[`${product.fragranceSlug}/${product.categorySlug}`] : (product.images || []);
+    const gallery = ((images && images.products && images.products[`${product.fragranceSlug}/${product.categorySlug}`]) || []).length ? images.products[`${product.fragranceSlug}/${product.categorySlug}`] : (product.images || []).filter(Boolean);
     const [activeIndex, setActiveIndex] = useState(0);
     const total = gallery.length;
     useEffect(() => {
@@ -1105,7 +1105,7 @@ function CreateRitualPage({ settings, data }) {
             React.createElement(SelectField, { label: "Format", value: form.format, onChange: set("format"), placeholder: "Not sure", options: (data.categories || []).filter((c) => c.active !== false).map((c) => c.name) }),
             React.createElement(SelectField, { label: "Occasion", value: form.occasion, onChange: set("occasion"), placeholder: "Not sure yet", options: ["Birthday", "Anniversary", "Wedding / Wedding Favour", "Festival", "Housewarming", "Corporate / Gifting", "Other"] }),
             React.createElement(FieldArea, { label: "Anything else we should know?", value: form.notes, onChange: set("notes") }),
-            React.createElement(Button, { href: waLink(settings.whatsapp, `MYSAA RITUALS — CUSTOM ORDER REQUEST\\n\\n${message}`), style: { marginTop: 8, width: "fit-content" } }, "Send Custom Request on WhatsApp"))));
+            React.createElement(Button, { href: waLink(settings.whatsapp, `🕯️ *MYSAA RITUALS — Custom Request*\n\n${message}`), style: { marginTop: 8, width: "fit-content" } }, "Send Custom Request on WhatsApp"))));
 }
 function Field({ label: text, ...props }) {
     return (React.createElement("label", { style: { display: "block" } },
@@ -1256,37 +1256,105 @@ function WelcomePopup() {
 }
 function CartPage({ nav, settings }) {
     const [items, setItems] = useState(() => readCart());
-    const [customer, setCustomer] = useState({ name: "", email: "", address: "", city: "", state: "", pincode: "", landmark: "", note: "" });
+    const CUSTOMER_KEY = "mysaa-customer-v1";
+    const [customer, setCustomer] = useState(() => {
+        const blank = { name: "", address: "", pincode: "", note: "" };
+        try {
+            return { ...blank, ...(JSON.parse(window.localStorage.getItem(CUSTOMER_KEY) || "{}")), note: "" };
+        }
+        catch (_) {
+            return blank;
+        }
+    });
+    const [showNote, setShowNote] = useState(false);
+    const [place, setPlace] = useState(null); // { city, state } looked up from the PIN code
+    const [touched, setTouched] = useState(false);
     useEffect(() => {
         const refresh = () => setItems(readCart());
         window.addEventListener("mysaa-cart-updated", refresh);
         return () => window.removeEventListener("mysaa-cart-updated", refresh);
     }, []);
+    // Remember delivery details on this device so repeat orders are one tap.
+    useEffect(() => {
+        try {
+            window.localStorage.setItem(CUSTOMER_KEY, JSON.stringify({ name: customer.name, address: customer.address, pincode: customer.pincode }));
+        }
+        catch (_) { }
+    }, [customer.name, customer.address, customer.pincode]);
+    // Auto-fill city & state from the PIN code (best effort; the order works without it).
+    useEffect(() => {
+        setPlace(null);
+        if (!/^\d{6}$/.test(customer.pincode))
+            return;
+        let cancelled = false;
+        fetch(`https://api.postalpincode.in/pincode/${customer.pincode}`)
+            .then((r) => r.json())
+            .then((res) => {
+            const office = res && res[0] && res[0].Status === "Success" && res[0].PostOffice && res[0].PostOffice[0];
+            if (!cancelled && office)
+                setPlace({ city: office.District, state: office.State });
+        })
+            .catch(() => { });
+        return () => { cancelled = true; };
+    }, [customer.pincode]);
     const total = cartTotal(items);
-    const setCustomerField = (key) => (e) => setCustomer((v) => ({ ...v, [key]: e.target.value }));
-    const orderBody = [
-        "Hello Mysaa Rituals, I'd like to place the following order:",
-        "",
-        ...items.map((item, i) => `${i + 1}. ${item.name}\n   Quantity: ${item.qty}${item.moq ? ` (MOQ ${item.moq})` : ""}\n   Unit price: ${inr(item.unitPrice)}\n   ${item.details || ""}${item.giftWrap ? `\n   Gift wrapping: +${inr(item.giftWrapCharge || GIFT_WRAP_CHARGE)}` : ""}\n   Line total: ${inr(Number(item.unitPrice) * Number(item.qty) + (item.giftWrap ? Number(item.giftWrapCharge || GIFT_WRAP_CHARGE) : 0))}`),
-        "",
-        `Order total: ${inr(total)}`,
-        "",
-        `Name: ${customer.name || ""}`,
-        `Email: ${customer.email || ""}`,
-        `Address: ${customer.address || ""}`,
-        `City: ${customer.city || ""}`,
-        `State: ${customer.state || ""}`,
-        `PIN / Postal Code: ${customer.pincode || ""}`,
-        customer.landmark ? `Landmark: ${customer.landmark}` : "",
-        customer.note ? `Notes: ${customer.note}` : "",
-        "",
-        "Please confirm availability, delivery charges and final delivery details."
-    ].filter(Boolean).join("\n");
+    const setCustomerField = (key) => (e) => {
+        const value = key === "pincode" ? e.target.value.replace(/\D/g, "").slice(0, 6) : e.target.value;
+        setCustomer((v) => ({ ...v, [key]: value }));
+    };
+    const errors = {
+        name: customer.name.trim().length < 2 ? "Please tell us your name" : "",
+        address: customer.address.trim().length < 6 ? "Please add your delivery address" : "",
+        pincode: /^\d{6}$/.test(customer.pincode) ? "" : "Enter a 6-digit PIN code"
+    };
+    const hasErrors = Object.values(errors).some(Boolean);
+    const lineTotalOf = (item) => Number(item.unitPrice) * Number(item.qty) + (item.giftWrap ? Number(item.giftWrapCharge || GIFT_WRAP_CHARGE) : 0);
+    const buildOrderMessage = (orderId) => {
+        const hr = "━━━━━━━━━━━━━━━━";
+        const lines = [];
+        items.forEach((item, i) => {
+            lines.push(`*${i + 1}. ${item.name}*`);
+            if (item.fragranceName && !String(item.name).includes(item.fragranceName))
+                lines.push(`Fragrance: ${item.fragranceName}`);
+            lines.push(`Qty ${item.qty} × ${inr(item.unitPrice)} = ${inr(Number(item.unitPrice) * Number(item.qty))}`);
+            String(item.details || "").split(/\n|·|\|/).map((d) => d.trim()).filter(Boolean).forEach((d) => lines.push(`• ${d}`));
+            if (item.giftWrap)
+                lines.push(`• Gift wrapping +${inr(item.giftWrapCharge || GIFT_WRAP_CHARGE)}`);
+            if (items.length > 1 || item.giftWrap)
+                lines.push(`Subtotal: *${inr(lineTotalOf(item))}*`);
+            lines.push("");
+        });
+        const cityState = place ? `${place.city}, ${place.state}` : "";
+        return [
+            "🕯️ *MYSAA RITUALS — New Order*",
+            `Order ID: *${orderId}*`,
+            hr,
+            "",
+            ...lines,
+            hr,
+            `*Order total: ${inr(total)}*`,
+            "_Shipping is extra and will be shared at payment._",
+            "",
+            "📦 *Deliver to*",
+            customer.name.trim(),
+            customer.address.trim(),
+            `${cityState ? cityState + " – " : "PIN "}${customer.pincode}`,
+            customer.note.trim() ? "" : null,
+            customer.note.trim() ? `📝 *Note:* ${customer.note.trim()}` : null,
+            "",
+            "Please confirm availability and share the payment details. Thank you! 🙏"
+        ].filter((l) => l !== null).join("\n");
+    };
     const sendOrderOnWhatsApp = () => {
-        if (!items.length) return;
-        const orderId = `MYS-${(window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`).toUpperCase()}`;
-        const message = `MYSAA RITUALS — NEW ORDER\\nOrder ID: ${orderId}\\n\\n${orderBody}`;
-        window.open(waLink(settings.whatsapp, message), "_blank", "noopener,noreferrer");
+        if (!items.length)
+            return;
+        setTouched(true);
+        if (hasErrors)
+            return;
+        const d = new Date();
+        const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+        const orderId = `MYS-${String(d.getFullYear()).slice(2)}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}-${rand}`;
+        window.open(waLink(settings.whatsapp, buildOrderMessage(orderId)), "_blank", "noopener,noreferrer");
     };
     const changeQty = (item, delta) => {
         const next = Math.max(item.moq || 1, Number(item.qty || 1) + delta);
@@ -1327,35 +1395,30 @@ function CartPage({ nav, settings }) {
                 React.createElement("div", { className: "cart-summary-total" },
                     React.createElement("span", null, "Total"),
                     React.createElement("strong", null, inr(total))),
-                React.createElement("p", { className: "cart-email-note" }, "Your order will be prepared with a unique order ID and sent to us directly on WhatsApp."),
+                React.createElement("p", { className: "cart-email-note" }, "Just 3 quick details \u2014 we'll confirm everything with you on WhatsApp before you pay."),
                 React.createElement("div", { className: "cart-customer-fields" },
-                    React.createElement("label", null,
-                        React.createElement("span", null, "Name"),
-                        React.createElement("input", { value: customer.name, onChange: setCustomerField("name"), placeholder: "Your name" })),
-                    React.createElement("label", null,
-                        React.createElement("span", null, "Email"),
-                        React.createElement("input", { type: "email", value: customer.email, onChange: setCustomerField("email"), placeholder: "your@email.com" })),
-                    React.createElement("label", null,
-                        React.createElement("span", null, "Full Address"),
-                        React.createElement("textarea", { value: customer.address, onChange: setCustomerField("address"), placeholder: "House / flat, street, area" })),
-                    React.createElement("div", { className: "cart-address-row" },
-                        React.createElement("label", null,
-                            React.createElement("span", null, "City"),
-                            React.createElement("input", { value: customer.city, onChange: setCustomerField("city"), placeholder: "City" })),
-                        React.createElement("label", null,
-                            React.createElement("span", null, "State"),
-                            React.createElement("input", { value: customer.state, onChange: setCustomerField("state"), placeholder: "State" }))),
-                    React.createElement("div", { className: "cart-address-row" },
-                        React.createElement("label", null,
-                            React.createElement("span", null, "PIN / Postal Code"),
-                            React.createElement("input", { value: customer.pincode, onChange: setCustomerField("pincode"), placeholder: "PIN code" })),
-                        React.createElement("label", null,
-                            React.createElement("span", null, "Landmark"),
-                            React.createElement("input", { value: customer.landmark, onChange: setCustomerField("landmark"), placeholder: "Nearby landmark (optional)" }))),
-                    React.createElement("label", null,
-                        React.createElement("span", null, "Order notes"),
-                        React.createElement("textarea", { value: customer.note, onChange: setCustomerField("note"), placeholder: "Occasion, delivery notes, gifting details\u2026" }))),
-                React.createElement("button", { className: "cart-email-button", type: "button", onClick: sendOrderOnWhatsApp }, "Place Order on WhatsApp \\u2192"),
+                    React.createElement("label", { className: touched && errors.name ? "has-error" : "" },
+                        React.createElement("span", null, "Your name"),
+                        React.createElement("input", { value: customer.name, onChange: setCustomerField("name"), placeholder: "e.g. Ananya Sharma", autoComplete: "name" }),
+                        touched && errors.name && React.createElement("em", null, errors.name)),
+                    React.createElement("label", { className: touched && errors.address ? "has-error" : "" },
+                        React.createElement("span", null, "Delivery address"),
+                        React.createElement("textarea", { rows: 2, value: customer.address, onChange: setCustomerField("address"), placeholder: "House / flat no., street, area", autoComplete: "street-address" }),
+                        touched && errors.address && React.createElement("em", null, errors.address)),
+                    React.createElement("label", { className: touched && errors.pincode ? "has-error" : "" },
+                        React.createElement("span", null, "PIN code"),
+                        React.createElement("input", { value: customer.pincode, onChange: setCustomerField("pincode"), placeholder: "6-digit PIN code", inputMode: "numeric", maxLength: 6, autoComplete: "postal-code" }),
+                        place && React.createElement("small", { className: "pin-place" },
+                            "\u2713 ",
+                            place.city,
+                            ", ",
+                            place.state),
+                        touched && errors.pincode && React.createElement("em", null, errors.pincode)),
+                    showNote ? (React.createElement("label", null,
+                        React.createElement("span", null, "Note (optional)"),
+                        React.createElement("textarea", { rows: 2, value: customer.note, onChange: setCustomerField("note"), placeholder: "Occasion, gift message, delivery timing\u2026" }))) : (React.createElement("button", { type: "button", className: "cart-add-note", onClick: () => setShowNote(true) }, "+ Add a note or gift message"))),
+                React.createElement("button", { className: "cart-email-button", type: "button", onClick: sendOrderOnWhatsApp }, "Place Order on WhatsApp \u2192"),
+                React.createElement("p", { className: "cart-small-note" }, "Opens WhatsApp with your order ready to send."),
                 React.createElement("div", { className: "cart-order-policy" },
                     React.createElement("p", null,
                         React.createElement("strong", null, "Delivery"),

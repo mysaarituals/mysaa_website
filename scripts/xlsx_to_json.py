@@ -71,7 +71,7 @@ def main():
             "isNew": as_bool(r.get("isNew")),
             "customizable": as_bool(r.get("customizable")),
             "active": as_bool(r.get("active")),
-            "images": [r.get("image1", "") or "", r.get("image2", "") or "", r.get("image3", "") or ""],
+            "images": [i for i in (r.get("image1", ""), r.get("image2", ""), r.get("image3", "")) if i],
         })
 
     fragrances = [{

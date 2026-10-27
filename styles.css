@@ -673,3 +673,11 @@ button:hover, a:hover { opacity: .82; }
 .fragrance-banner:hover { transform:translateY(-2px); box-shadow:var(--shadow-soft); opacity:1; }
 .fragrance-banner img { display:block; width:100%; height:auto; object-fit:contain; filter:saturate(.92) brightness(1.04); transition:filter .3s ease; }
 .fragrance-banner:hover img { filter:none; }
+
+/* Simplified checkout form */
+.cart-customer-fields label.has-error input, .cart-customer-fields label.has-error textarea { border-color:#B5483A; }
+.cart-customer-fields label em { display:block; margin-top:5px; color:#B5483A; font:400 11.5px 'Karla',sans-serif; font-style:normal; }
+.cart-customer-fields .pin-place { display:block; margin-top:6px; color:var(--ink); font:500 12px 'Karla',sans-serif; }
+.cart-customer-fields textarea { min-height:64px; }
+.cart-customer-fields input, .cart-customer-fields textarea { font-size:16px; } /* avoids iOS zoom-on-focus */
+.cart-add-note { justify-self:start; padding:2px 0; color:var(--rust); font:500 12px 'Karla',sans-serif; text-decoration:underline; text-underline-offset:4px; cursor:pointer; }
