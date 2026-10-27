@@ -2,7 +2,7 @@
 
 A static product catalogue site for Mysaa Rituals: candles (hero jar, wide
 jar, shot glass), wax melts & sachets, and gift hampers — browsable by
-fragrance or by format, with email-only ordering and a cart for order preparation.
+fragrance or by format, with WhatsApp ordering and a cart for order preparation.
 
 No server or database — it runs as plain files, which makes it a perfect
 fit for **GitHub Pages**.
@@ -103,7 +103,7 @@ Then open `http://localhost:8000`.
 
 ## Notes
 
-- Product ordering is handled through the shopping cart and email only. There is no online payment/checkout backend. Customers add products, review quantities and gift wrapping, enter their details, and use **Send Order by Email** to open an email addressed to the configured order email.
+- Product ordering is handled through the shopping cart and WhatsApp. There is no online payment/checkout backend. Customers add products, review quantities and gift wrapping, enter their delivery details, and use **Place Order on WhatsApp** to send the order with a generated unique order ID. Custom ritual requests are also sent through WhatsApp. Contact-page email and other email functionality remain available.
 - WhatsApp remains available for direct contact on the Contact page and in the footer only.
 
 

@@ -1098,14 +1098,14 @@ function CreateRitualPage({ settings, data }) {
         form.notes && `Notes: ${form.notes}`,
     ].filter(Boolean).join("\n");
     return (React.createElement("div", { className: "container", style: { padding: "48px 20px 80px", maxWidth: 680 } },
-        React.createElement(SectionHeading, { eyebrow: "Made Just For You", title: "Create Your Own Ritual", sub: "Tell us a little about what you're looking for, and send your custom request to us by email." }),
+        React.createElement(SectionHeading, { eyebrow: "Made Just For You", title: "Create Your Own Ritual", sub: "Tell us a little about what you're looking for, and send your custom request directly to us on WhatsApp." }),
         React.createElement("div", { style: { marginTop: 36, display: "grid", gap: 18 } },
             React.createElement(Field, { label: "Your name", value: form.name, onChange: set("name") }),
             React.createElement(SelectField, { label: "Preferred fragrance or mood", value: form.fragrance, onChange: set("fragrance"), placeholder: "Help me choose", options: (data.fragrances || []).filter((f) => f.active !== false).map((f) => f.name) }),
             React.createElement(SelectField, { label: "Format", value: form.format, onChange: set("format"), placeholder: "Not sure", options: (data.categories || []).filter((c) => c.active !== false).map((c) => c.name) }),
             React.createElement(SelectField, { label: "Occasion", value: form.occasion, onChange: set("occasion"), placeholder: "Not sure yet", options: ["Birthday", "Anniversary", "Wedding / Wedding Favour", "Festival", "Housewarming", "Corporate / Gifting", "Other"] }),
             React.createElement(FieldArea, { label: "Anything else we should know?", value: form.notes, onChange: set("notes") }),
-            React.createElement(Button, { href: `mailto:${settings.email}?subject=${encodeURIComponent("Mysaa Rituals — Custom Ritual Request")}&body=${encodeURIComponent(message)}`, style: { marginTop: 8, width: "fit-content" } }, "Send via Email"))));
+            React.createElement(Button, { href: waLink(settings.whatsapp, `MYSAA RITUALS — CUSTOM ORDER REQUEST\\n\\n${message}`), style: { marginTop: 8, width: "fit-content" } }, "Send Custom Request on WhatsApp"))));
 }
 function Field({ label: text, ...props }) {
     return (React.createElement("label", { style: { display: "block" } },
@@ -1282,7 +1282,12 @@ function CartPage({ nav, settings }) {
         "",
         "Please confirm availability, delivery charges and final delivery details."
     ].filter(Boolean).join("\n");
-    const emailHref = `mailto:${settings.email}?subject=${encodeURIComponent(`Mysaa Rituals Order — ${customer.name || "Customer"}`)}&body=${encodeURIComponent(orderBody)}`;
+    const sendOrderOnWhatsApp = () => {
+        if (!items.length) return;
+        const orderId = `MYS-${(window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`).toUpperCase()}`;
+        const message = `MYSAA RITUALS — NEW ORDER\\nOrder ID: ${orderId}\\n\\n${orderBody}`;
+        window.open(waLink(settings.whatsapp, message), "_blank", "noopener,noreferrer");
+    };
     const changeQty = (item, delta) => {
         const next = Math.max(item.moq || 1, Number(item.qty || 1) + delta);
         updateCartItem(item.key, next);
@@ -1290,7 +1295,7 @@ function CartPage({ nav, settings }) {
     };
     const remove = (key) => { removeCartItem(key); setItems(readCart()); };
     return (React.createElement("div", { className: "container cart-page", style: { padding: "48px 20px 80px" } },
-        React.createElement(SectionHeading, { eyebrow: "Your Cart", title: "Ready to make it a ritual?", sub: "Review your products, add gift wrapping if you need it, then send the complete order to us by email." }),
+        React.createElement(SectionHeading, { eyebrow: "Your Cart", title: "Ready to make it a ritual?", sub: "Review your products, add your delivery details, then send your order directly to Mysaa Rituals on WhatsApp." }),
         items.length === 0 ? (React.createElement("div", { className: "cart-empty" },
             React.createElement("p", { style: { ...serif, fontSize: 26, color: C.ink, marginBottom: 10 } }, "Your cart is empty."),
             React.createElement("p", { style: { ...sans, fontSize: 14, color: C.ink70, marginBottom: 20 } }, "Choose something from the catalogue and it will appear here."),
@@ -1322,7 +1327,7 @@ function CartPage({ nav, settings }) {
                 React.createElement("div", { className: "cart-summary-total" },
                     React.createElement("span", null, "Total"),
                     React.createElement("strong", null, inr(total))),
-                React.createElement("p", { className: "cart-email-note" }, "Orders are placed through email only. Your email app will open with the order details already filled in."),
+                React.createElement("p", { className: "cart-email-note" }, "Your order will be prepared with a unique order ID and sent to us directly on WhatsApp."),
                 React.createElement("div", { className: "cart-customer-fields" },
                     React.createElement("label", null,
                         React.createElement("span", null, "Name"),
@@ -1350,10 +1355,7 @@ function CartPage({ nav, settings }) {
                     React.createElement("label", null,
                         React.createElement("span", null, "Order notes"),
                         React.createElement("textarea", { value: customer.note, onChange: setCustomerField("note"), placeholder: "Occasion, delivery notes, gifting details\u2026" }))),
-                React.createElement("a", { className: "cart-email-button", href: emailHref }, "Send Order by Email \u2192"),
-                React.createElement("p", { className: "cart-small-note" },
-                    "To: ",
-                    settings.email),
+                React.createElement("button", { className: "cart-email-button", type: "button", onClick: sendOrderOnWhatsApp }, "Place Order on WhatsApp \\u2192"),
                 React.createElement("div", { className: "cart-order-policy" },
                     React.createElement("p", null,
                         React.createElement("strong", null, "Delivery"),

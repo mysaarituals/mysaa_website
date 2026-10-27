@@ -504,7 +504,7 @@ button:hover, a:hover { opacity: .82; }
 .cart-customer-fields label span { display:block; margin-bottom:6px; color:var(--muted); font:500 10px 'Karla',sans-serif; letter-spacing:.13em; text-transform:uppercase; }
 .cart-customer-fields input, .cart-customer-fields textarea { width:100%; padding:11px 12px; border:1px solid var(--border); background:#fff; color:var(--ink); font:400 13px 'Karla',sans-serif; resize:vertical; }
 .cart-customer-fields textarea { min-height:90px; }
-.cart-email-button { display:flex; align-items:center; justify-content:center; min-height:48px; margin-top:18px; background:var(--ink); color:#fff; font:600 10.5px 'Karla',sans-serif; letter-spacing:.12em; text-transform:uppercase; }
+.cart-email-button { display:flex; align-items:center; justify-content:center; width:100%; min-height:48px; margin-top:18px; padding:12px 16px; border:0; border-radius:0; background:var(--ink); color:#fff; font:600 10.5px 'Karla',sans-serif; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; }
 .cart-small-note { margin:9px 0 0; text-align:center; font-size:10.5px; }
 .cart-empty { margin-top:40px; padding:50px 28px; text-align:center; border:1px solid var(--border); background:#FCFAF7; }
 

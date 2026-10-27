@@ -1478,7 +1478,7 @@ function CreateRitualPage({ settings, data }) {
 
   return (
     <div className="container" style={{ padding: "48px 20px 80px", maxWidth: 680 }}>
-      <SectionHeading eyebrow="Made Just For You" title="Create Your Own Ritual" sub="Tell us a little about what you're looking for, and send your custom request to us by email." />
+      <SectionHeading eyebrow="Made Just For You" title="Create Your Own Ritual" sub="Tell us a little about what you're looking for, and send your custom request directly to us on WhatsApp." />
       <div style={{ marginTop: 36, display: "grid", gap: 18 }}>
         <Field label="Your name" value={form.name} onChange={set("name")} />
         <SelectField
@@ -1503,7 +1503,7 @@ function CreateRitualPage({ settings, data }) {
           options={["Birthday", "Anniversary", "Wedding / Wedding Favour", "Festival", "Housewarming", "Corporate / Gifting", "Other"]}
         />
         <FieldArea label="Anything else we should know?" value={form.notes} onChange={set("notes")} />
-        <Button href={`mailto:${settings.email}?subject=${encodeURIComponent("Mysaa Rituals — Custom Ritual Request")}&body=${encodeURIComponent(message)}`} style={{ marginTop: 8, width: "fit-content" }}>Send via Email</Button>
+        <Button href={waLink(settings.whatsapp, `MYSAA RITUALS — CUSTOM ORDER REQUEST\\n\\n${message}`)} style={{ marginTop: 8, width: "fit-content" }}>Send Custom Request on WhatsApp</Button>
       </div>
     </div>
   );
@@ -1731,7 +1731,12 @@ function CartPage({ nav, settings }) {
     "",
     "Please confirm availability, delivery charges and final delivery details."
   ].filter(Boolean).join("\n");
-  const emailHref = `mailto:${settings.email}?subject=${encodeURIComponent(`Mysaa Rituals Order — ${customer.name || "Customer"}`)}&body=${encodeURIComponent(orderBody)}`;
+  const sendOrderOnWhatsApp = () => {
+    if (!items.length) return;
+    const orderId = `MYS-${(window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`).toUpperCase()}`;
+    const message = `MYSAA RITUALS — NEW ORDER\\nOrder ID: ${orderId}\\n\\n${orderBody}`;
+    window.open(waLink(settings.whatsapp, message), "_blank", "noopener,noreferrer");
+  };
   const changeQty = (item, delta) => {
     const next = Math.max(item.moq || 1, Number(item.qty || 1) + delta);
     updateCartItem(item.key, next);
@@ -1740,7 +1745,7 @@ function CartPage({ nav, settings }) {
   const remove = (key) => { removeCartItem(key); setItems(readCart()); };
   return (
     <div className="container cart-page" style={{ padding: "48px 20px 80px" }}>
-      <SectionHeading eyebrow="Your Cart" title="Ready to make it a ritual?" sub="Review your products, add gift wrapping if you need it, then send the complete order to us by email." />
+      <SectionHeading eyebrow="Your Cart" title="Ready to make it a ritual?" sub="Review your products, add your delivery details, then send your order directly to Mysaa Rituals on WhatsApp." />
       {items.length === 0 ? (
         <div className="cart-empty">
           <p style={{ ...serif, fontSize: 26, color: C.ink, marginBottom: 10 }}>Your cart is empty.</p>
@@ -1774,7 +1779,7 @@ function CartPage({ nav, settings }) {
           </div>
           <aside className="cart-summary">
             <div className="cart-summary-total"><span>Total</span><strong>{inr(total)}</strong></div>
-            <p className="cart-email-note">Orders are placed through email only. Your email app will open with the order details already filled in.</p>
+            <p className="cart-email-note">Your order will be prepared with a unique order ID and sent to us directly on WhatsApp.</p>
             <div className="cart-customer-fields">
               <label><span>Name</span><input value={customer.name} onChange={setCustomerField("name")} placeholder="Your name" /></label>
               <label><span>Email</span><input type="email" value={customer.email} onChange={setCustomerField("email")} placeholder="your@email.com" /></label>
@@ -1789,8 +1794,7 @@ function CartPage({ nav, settings }) {
               </div>
               <label><span>Order notes</span><textarea value={customer.note} onChange={setCustomerField("note")} placeholder="Occasion, delivery notes, gifting details…" /></label>
             </div>
-            <a className="cart-email-button" href={emailHref}>Send Order by Email →</a>
-            <p className="cart-small-note">To: {settings.email}</p>
+            <button className="cart-email-button" type="button" onClick={sendOrderOnWhatsApp}>Place Order on WhatsApp →</button>
             <div className="cart-order-policy">
               <p><strong>Delivery</strong><span>Estimated delivery time is confirmed with your order.</span></p>
               <p><strong>Shipping</strong><span>Shipping cost is separate and will be shared while confirming payment.</span></p>
